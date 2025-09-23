@@ -93,10 +93,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="dashboard-col " style="height: 500px;">
+                <div class="dashboard-col">
                     <h2 class="section-title"><i class="bi bi-p-circle-fill"></i> ARMADA STANDBY <span>{{
                             armadaStandby.length }}</span></h2>
-                    <div class="armada-grid overflow-y-scroll standby">
+                    <div class="armada-grid standby overflow-y-scroll">
                         <div v-for="armada in armadaStandby" class="armada-card standby"
                             @click="openTripModal(null, armada.id)">
                             <div class="armada-card-header">
@@ -176,22 +176,19 @@
                             filteredHistory.length }}</span></h2>
                     <div class="trip-list">
                         <div v-if="filteredHistory.length === 0" class="empty-state">Tidak ada riwayat yang cocok.</div>
-                        <div v-else class="trip-card card mb-2 bg-white d-flex justify-content-between flex-row p-3 "
-                            v-for="trip in filteredHistory" @click="openTripModal(trip)">
-                            <div class="trip-details ">
-                                <div class="trip-route fw-bold mb-3"><span class="location-code">{{ trip.originCode
-                                        }}</span><i class="bi bi-arrow-right-circle-fill"></i><span
-                                        class="location-code">{{
+                        <div v-else class="bg-white p-3 shadow rounded-3 color-grey d-flex justify-content-between" v-for="trip in filteredHistory"
+                            @click="openTripModal(trip)">
+                            <div class="trip-details">
+                                <div class="trip-route"><span class="location-code">{{ trip.originCode }}</span><i
+                                        class="bi bi-arrow-right-circle-fill"></i><span class="location-code">{{
                                         trip.destinationCode }}</span></div>
                                 <div class="trip-time"><i class="bi bi-calendar3"></i> {{
                                     formatFullDate(trip.departureTime) }}</div>
-                                <div class="trip-fleet ">
-                                    <img :src="trip.fleet.image" alt="Ikon Kendaraan"
-                                        style="width: 20px; height: 20px; margin-right: 8px; vertical-align: text-bottom;">
-                                    {{ trip.fleet.name }}
-                                </div>
+                                <div class="trip-fleet"><i
+                                        :class="trip.fleet.type === 'Hiace' ? 'bi bi-truck-front-fill' : 'bi bi-bus-front-fill'"></i>
+                                    {{ trip.fleet.name }}</div>
                             </div>
-                            <div class="trip-status-container d-flex flex-column justify-content-between text-end">
+                            <div class="trip-status-container d-flex text-end flex-column justify-content-between">
                                 <div class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</div>
                                 <div class="trip-assignee">{{ trip.assignee }}</div>
                             </div>
@@ -202,7 +199,7 @@
 
             <div v-if="view === 'display'" class="content-body display-view">
                 <div class="trip-section">
-                    <h2 class="section-title"><i class="bi bi-box-arrow-right"></i> Keberangkatan / Departures</h2>
+                    <h2 class="section-title text-dark"><i class="bi bi-box-arrow-right"></i> Keberangkatan / Departures</h2>
                     <div class="display-list">
                         <div class="display-header-row">
                             <div class="col-time">JAM</div>

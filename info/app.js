@@ -468,24 +468,14 @@ const app = createApp({
 
     const saveVehicle = () => {
       let vehicle = vehicleModal.value.data;
-      const capacityText = vehicle.capacity
-        ? `${vehicle.capacity} Kursi`
-        : "Kapasitas";
-      const bgColor = vehicle.type === "Hiace" ? "D4AF37" : "3498DB";
-      const color = vehicle.type === "Hiace" ? "121212" : "FFFFFF";
       const icon =
         vehicle.type === "Hiace"
           ? "bi bi-truck-front-fill"
           : "bi bi-bus-front-fill";
-
-      vehicle.image = `https://ui-avatars.com/api/?name=${capacityText.replace(
-        " ",
-        "+"
-      )}&background=${bgColor}&color=${color}&bold=true&format=svg&size=64`;
       vehicle.icon = icon;
 
       if (!vehicle.id) {
-        const prefix = vehicle.type.charAt(0);
+        const prefix = vehicle.type === "Hiace" ? "H" : "B";
         const newIdNumber =
           fleet.value.filter((f) => f.id.startsWith(prefix)).length + 1;
         vehicle.id = prefix + newIdNumber;
