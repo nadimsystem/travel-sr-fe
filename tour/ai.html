@@ -245,10 +245,8 @@
 <body>
     <div id="app">
         <div class="planner-container">
-             <header class="planner-header">
-                <div class="d-flex w-100 justify-content-center">
-                    <img src="../image/logo.png" width="50px" alt="">
-                </div>
+            <header class="planner-header">
+                <img src="https://img.icons8.com/ios-filled/50/D4AF37/crown.png" width="40px" alt="Sutan Raya Logo">
                 <a href="#" @click.prevent="returnToDashboard" class="logo">SUTAN RAYA</a>
                 <p class="mb-0 small opacity-75">Tour Management Panel</p>
             </header>
@@ -512,6 +510,7 @@
                     isEditingRundown: false,
                     manualRundownInput: [],
                     timeSlots: [],
+                    apiKey: "AIzaSyBenjmDRAgqo8D9T-H4U1qfN_oW2EdhMcw", // <<< GANTI DENGAN API KEY ANDA
                     // --- DATA MASTER & HARGA ---
                     costs: {
                         driverMeal: 100000, // per hari
@@ -655,6 +654,11 @@
                 },
                 async generateRundownAI(tour) {
                     this.isLoadingRundown = true;
+                    if (this.apiKey === "AIzaSyBenjmDRAgqo8D9T-H4U1qfN_oW2EdhMcw" || !this.apiKey) {
+                        alert("masih riset buat fitur ini.");
+                        this.isLoadingRundown = false;
+                        return;
+                    }
                     const duration = this.calculatedDuration(tour);
                     const routeString = tour.route.map(r => r.to).join(' -> ');
                     const destinationsString = tour.destinations.map(d => `${d.name} (${d.city})`).join(', ');
@@ -717,13 +721,7 @@ Format output HARUS berupa JSON object yang valid, dengan struktur seperti ini:
                     };
                     
                     try {
-                        const apiKey = "MASUKKAN_API_KEY_ANDA_DISINI"; 
-                        if (apiKey === "MASUKKAN_API_KEY_ANDA_DISINI") {
-                            alert("Mohon masukkan API Key Anda di dalam kode untuk menjalankan fitur ini.");
-                            this.isLoadingRundown = false;
-                            return;
-                        }
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${this.apiKey}`;
                         const response = await fetch(apiUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -750,6 +748,12 @@ Format output HARUS berupa JSON object yang valid, dengan struktur seperti ini:
                 },
                 async suggestDestinationsAI() {
                     this.isLoadingSuggestions = true;
+                    if (this.apiKey === "AIzaSyBenjmDRAgqo8D9T-H4U1qfN_oW2EdhMcw" || !this.apiKey) {
+                        alert("masih riset buat fitur ini.");
+                        this.isLoadingSuggestions = false;
+                        return;
+                    }
+
                     const availableDestinations = this.routeCities.flatMap(city => this.destinationsByCity(city));
                     const destinationList = availableDestinations.map(d => d.name).join(', ');
 
@@ -777,13 +781,7 @@ Format output HARUS berupa JSON object yang valid, dengan struktur seperti ini:
                     };
 
                     try {
-                        const apiKey = "MASUKKAN_API_KEY_ANDA_DISINI"; 
-                        if (apiKey === "MASUKKAN_API_KEY_ANDA_DISINI") {
-                            alert("Mohon masukkan API Key Anda di dalam kode untuk menjalankan fitur ini.");
-                            this.isLoadingSuggestions = false;
-                            return;
-                        }
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${this.apiKey}`;
                         const response = await fetch(apiUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -826,25 +824,18 @@ Format output HARUS berupa JSON object yang valid, dengan struktur seperti ini:
                     let processedRundown = clone(tour.rundown || []);
 
                     // Buat template jika rundown belum ada atau tidak sesuai durasi
-                    if (processedRundown.length !== duration) {
-                        processedRundown = [];
-                        for(let i = 1; i <= duration; i++) {
-                            processedRundown.push({ day: `Hari ${i}`, activities: [] });
-                        }
+                    if (!processedRundown || processedRundown.length !== duration) {
+                        processedRundown = Array.from({ length: duration }, (_, i) => ({
+                            day: `Hari ${i + 1}`,
+                            activities: []
+                        }));
                     }
 
-                    // Siapkan data untuk editor
                     this.manualRundownInput = processedRundown.map(day => {
-                         // Pastikan setiap aktivitas adalah objek
-                        const activitiesAsObjects = day.activities.map(activity => {
-                            if (typeof activity === 'string') { // Konversi dari format AI lama jika ada
-                                const match = activity.match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}):\s*(.*)/);
-                                if (match) return { id: Date.now() + Math.random(), startTime: match[1], endTime: match[2], description: match[3].trim() };
-                                return { id: Date.now() + Math.random(), startTime: '', endTime: '', description: activity };
-                            }
-                            return activity; // Sudah objek, kembalikan
-                        });
-                        return { day: day.day, activities: activitiesAsObjects };
+                        const activitiesAsObjects = day.activities.map(activity => 
+                            typeof activity === 'string' ? this.parseActivityString(activity) : activity
+                        );
+                        return { ...day, activities: activitiesAsObjects };
                     });
                 },
                 saveManualRundown(tour) {
