@@ -19,8 +19,7 @@
     <meta property="og:description"
         content="Panel manajemen tur untuk PO. Sutan Raya. Buat dan kelola paket tur dengan mudah." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://i.pinimg.com/736x/a5/db/29/a5db29789e717e99dab6329c811e2afa.jpg" /> <!-- Placeholder valid image -->
-    <meta property="og:image" content="https://i.pinimg.com/736x/a5/db/29/a5db29789e717e99dab6329c811e2afa.jpg" /> <!-- Placeholder valid image -->
+    <meta property="og:image" content="https://i.imgur.com/8pS13q9.jpg" /> <!-- Placeholder valid image -->
 
 
     <!-- CDN LENGKAP -->
@@ -221,9 +220,9 @@
 <body>
     <div id="app">
         <div class="planner-container">
-            <header class="planner-header d-flex flex-column ">
-                <div class="w-100 text-center">
-                    <img src="../image/logo.png"  width="50px" alt="">
+            <header class="planner-header">
+                <div class="d-flex w-100 justify-content-center">
+                    <img src="../image/logo.png" width="50px" alt="">
                 </div>
                 <a href="#" @click.prevent="returnToDashboard" class="logo">SUTAN RAYA</a>
                 <p class="mb-0 small opacity-75">Tour Management Panel</p>
@@ -232,7 +231,7 @@
             <!-- DASHBOARD VIEW -->
             <main class="planner-step" v-if="currentStep === 'dashboard'">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="step-title mb-0">Dashboard <br> Tour Organizer</h3>
+                    <h3 class="step-title mb-0">Dashboard Paket Tur</h3>
                     <button @click="startPlanner" class="btn btn-sm btn-gold"><i class="bi bi-plus-lg"></i> Buat Paket</button>
                 </div>
                 <div v-if="savedTours.length === 0" class="text-center py-5 opacity-50">
@@ -244,15 +243,20 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="fw-bold mb-1">{{ tour.customerName || 'Paket Tanpa Nama' }}</h6>
-                                <p class="small opacity-75 mb-2"><i class="bi bi-signpost-split"></i> {{ tour.route.length > 0 ? tour.route[0].from : '' }} <i class="bi bi-arrow-right"></i> {{ tour.route.length > 0 ? tour.route[tour.route.length - 1].to : '' }}</p>
+                                <p class="small opacity-75 mb-2"><i class="bi bi-people-fill"></i> {{ tour.pax }} Orang</p>
                             </div>
                             <span class="badge" :class="tour.type === 'Bermalam' ? 'text-bg-primary' : 'text-bg-success'">{{ tour.type }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center small mt-2 border-top border-secondary pt-2">
-                            <span class="opacity-75"><i class="bi bi-wallet2 me-1"></i> Rp {{ (tour.budget || 0).toLocaleString('id-ID') }}</span>
-                            <span class="opacity-75"><i class="bi bi-calendar-event me-1"></i> {{ tour.duration }} Hari</span>
-                            <div class="actions">
-                                <button @click.stop="deleteTour(index)" class="btn btn-sm btn-outline-danger py-0 px-1 ms-1"><i class="bi bi-trash"></i></button>
+                             <div>
+                                 <span class="opacity-75 d-block"><i class="bi bi-calendar-event me-1"></i> {{ tour.duration }} Hari</span>
+                                 <span v-if="tour.budget > 0" class="opacity-75 d-block mt-1"><i class="bi bi-wallet2 me-1"></i> Rp {{ tour.budget.toLocaleString('id-ID') }}/pax</span>
+                            </div>
+                            <div class="text-end">
+                                 <span class="fw-bold text-gold d-block"><i class="bi bi-tags-fill me-1"></i> Rp {{ calculateTotalPrice(tour).toLocaleString('id-ID') }}</span>
+                                 <div class="actions mt-1">
+                                    <button @click.stop="deleteTour(index)" class="btn btn-sm btn-outline-danger py-0 px-1 ms-1"><i class="bi bi-trash"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -264,8 +268,9 @@
                 <h3 class="step-title">Detail Paket Tur</h3>
                 <p class="step-subtitle">Ringkasan lengkap untuk paket <strong class="text-gold">{{ selectedTour.customerName }}</strong>.</p>
                 <div class="p-3 rounded" style="background-color: #222;">
-                    <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ selectedTour.customerName }}</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ selectedTour.customerName }} ({{ selectedTour.pax }} Orang)</p></div>
                     <div class="summary-item"><small class="opacity-75 d-block">Tipe & Durasi</small><p class="fw-bold mb-0">{{ selectedTour.type }}, selama {{ selectedTour.duration }} hari</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Anggaran per Orang</small><p class="fw-bold mb-0">{{ selectedTour.budget > 0 ? `Rp ${selectedTour.budget.toLocaleString('id-ID')}` : 'Tidak diatur' }}</p></div>
                     <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ selectedTour.pickupPoint }}</p></div>
                     <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in selectedTour.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < selectedTour.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
                     <div class="summary-item"><small class="opacity-75 d-block">Transportasi</small><p class="fw-bold mb-0">{{ selectedTour.vehicle }}</p></div>
@@ -273,6 +278,24 @@
                     <div class="summary-item" v-if="selectedTour.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in selectedTour.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
                     <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="selectedTour.addons.outbound ? 'text-success' : 'text-danger'">{{ selectedTour.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="selectedTour.addons.documentation ? 'text-success' : 'text-danger'">{{ selectedTour.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
                 </div>
+                
+                <!-- Price Breakdown -->
+                <div class="mt-4">
+                    <h5 class="step-subtitle fw-bold text-light">Rincian Estimasi Biaya</h5>
+                    <div class="p-3 rounded" style="background-color: #222;">
+                        <template v-for="(value, key) in getPriceBreakdown(selectedTour)">
+                            <div v-if="value > 0" class="summary-item d-flex justify-content-between">
+                                <span class="opacity-75">{{ key }}</span>
+                                <span class="fw-bold">Rp {{ value.toLocaleString('id-ID') }}</span>
+                            </div>
+                        </template>
+                        <div class="summary-item d-flex justify-content-between align-items-center bg-dark mt-2">
+                            <h5 class="text-gold fw-bolder mb-0">Total Estimasi</h5>
+                            <h5 class="text-gold fw-bolder mb-0">Rp {{ calculateTotalPrice(selectedTour).toLocaleString('id-ID') }}</h5>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-grid gap-2 mt-5">
                     <button @click="editTour(selectedTour)" class="btn btn-gold"><i class="bi bi-pencil-square"></i> Edit Paket Ini</button>
                     <button @click="returnToDashboard" class="btn btn-outline-gold">Kembali ke Dashboard</button>
@@ -282,12 +305,13 @@
             <!-- WIZARD STEPS -->
             <template v-if="currentStep.startsWith('step')">
                 <main class="planner-step" v-if="currentStep === 'step1'">
-                    <h3 class="step-title">{{ isEditing ? 'Edit Info & Anggaran' : 'Langkah 1: Info & Anggaran' }}</h3>
-                    <p class="step-subtitle">Masukkan data pelanggan dan perkiraan anggaran.</p>
+                    <h3 class="step-title">{{ isEditing ? 'Edit Info Klien' : 'Langkah 1: Info Klien' }}</h3>
+                    <p class="step-subtitle">Masukkan data pelanggan, jumlah peserta, dan anggaran jika ada.</p>
                     <div class="mb-4"><label for="customerName" class="form-label">Nama Pelanggan / Grup</label><input type="text" class="form-control" id="customerName" placeholder="Contoh: Keluarga Bpk. Ahmad" v-model="trip.customerName"></div>
-                    <div class="mb-4"><label for="budget" class="form-label">Anggaran (per orang)</label><div class="input-group"><span class="input-group-text">Rp</span><input type="number" class="form-control" id="budget" placeholder="1500000" min="1" v-model.number="trip.budget"></div></div>
+                    <div class="mb-4"><label for="pax" class="form-label">Jumlah Orang</label><div class="input-group"><input type="number" class="form-control" id="pax" placeholder="10" min="1" v-model.number="trip.pax"><span class="input-group-text">Orang</span></div></div>
+                    <div class="mb-4"><label for="budget" class="form-label">Anggaran per Orang (Opsional)</label><div class="input-group"><span class="input-group-text">Rp</span><input type="number" class="form-control" id="budget" placeholder="Boleh dikosongkan" min="1" v-model.number="trip.budget"></div></div>
                     <div class="d-grid mt-5">
-                        <button @click="nextStep" class="btn btn-gold" :disabled="!trip.customerName || !trip.budget || trip.budget <= 0">Lanjut <i class="bi bi-arrow-right"></i></button>
+                        <button @click="nextStep" class="btn btn-gold" :disabled="!trip.customerName || !trip.pax || trip.pax <= 0">Lanjut <i class="bi bi-arrow-right"></i></button>
                         <button @click="returnToDashboard" class="btn btn-link text-light mt-2">Batal</button>
                     </div>
                 </main>
@@ -354,7 +378,7 @@
                     <h3 class="step-title">Ringkasan Paket Tur</h3>
                     <p class="step-subtitle">Periksa kembali detail paket untuk pelanggan.</p>
                     <div class="p-3 rounded" style="background-color: #222;">
-                        <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ trip.customerName }}</p></div>
+                         <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ trip.customerName }} ({{ trip.pax }} Orang)</p></div>
                         <div class="summary-item"><small class="opacity-75 d-block">Tipe & Durasi</small><p class="fw-bold mb-0">{{ trip.type }}, selama {{ trip.duration }} hari</p></div>
                         <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ trip.pickupPoint }}</p></div>
                         <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in trip.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < trip.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
@@ -363,9 +387,23 @@
                         <div class="summary-item" v-if="trip.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in trip.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
                         <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="trip.addons.outbound ? 'text-success' : 'text-danger'">{{ trip.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="trip.addons.documentation ? 'text-success' : 'text-danger'">{{ trip.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
                     </div>
+                     <div class="mt-4">
+                        <h5 class="step-subtitle fw-bold text-light">Rincian Estimasi Biaya</h5>
+                        <div class="p-3 rounded" style="background-color: #222;">
+                            <template v-for="(value, key) in getPriceBreakdown(trip)">
+                                <div v-if="value > 0" class="summary-item d-flex justify-content-between">
+                                    <span class="opacity-75">{{ key }}</span>
+                                    <span class="fw-bold">Rp {{ value.toLocaleString('id-ID') }}</span>
+                                </div>
+                            </template>
+                            <div class="summary-item d-flex justify-content-between align-items-center bg-dark mt-2">
+                                <h5 class="text-gold fw-bolder mb-0">Total Estimasi</h5>
+                                <h5 class="text-gold fw-bolder mb-0">Rp {{ calculateTotalPrice(trip).toLocaleString('id-ID') }}</h5>
+                            </div>
+                        </div>
+                    </div>
                     <div class="d-grid mt-5"><button @click="saveTour" class="btn btn-gold">{{ isEditing ? 'Update Paket' : 'Simpan Paket' }} <i class="bi bi-save"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
                 </main>
-
             </template>
         </div>
     </div>
@@ -374,13 +412,12 @@
         const { createApp } = Vue;
 
         function clone(obj) {
-            // Fallback aman untuk structuredClone, kompatibel di semua browser
             return JSON.parse(JSON.stringify(obj));
         }
 
         function getEmptyTripObject() {
             return {
-                id: null, customerName: '', type: '', budget: null, duration: null,
+                id: null, customerName: '', type: '', duration: null, pax: null, budget: null,
                 pickupPoint: '',
                 route: [], vehicle: '', accommodations: [], destinations: [],
                 addons: { outbound: false, documentation: false },
@@ -394,15 +431,22 @@
                     isEditing: false,
                     selectedTour: null,
                     savedTours: [],
+                    // --- DATA MASTER & HARGA ---
+                    costs: {
+                        driverMeal: 100000, // per hari
+                        driverLodge: 100000, // per malam
+                        documentation: 2500000, // flat
+                        outboundPerPax: 150000 // per orang
+                    },
                     cities: ['Padang', 'Bukittinggi', 'Payakumbuh', 'Batusangkar', 'Alahan Panjang'],
                     newRoute: { from: 'Padang', to: '' },
                     vehicles: [
-                        { name: 'Big Bus', capacity: 'Kapasitas 45 seats', icon: 'bi bi-bus-front-fill' },
-                        { name: 'Medium Bus', capacity: 'Kapasitas 35 seats', icon: 'bi bi-bus-front' },
-                        { name: 'Hiace Premio / Commuter', capacity: 'Kapasitas 7 seats (Luxury)', icon: 'bi bi-truck-front-fill' },
+                        { name: 'Big Bus', capacity: 'Kapasitas 45 seats', icon: 'bi bi-bus-front-fill', pricePerDay: 3500000 },
+                        { name: 'Medium Bus', capacity: 'Kapasitas 35 seats', icon: 'bi bi-bus-front', pricePerDay: 2500000 },
+                        { name: 'Hiace Premio / Commuter', capacity: 'Kapasitas 7 seats (Luxury)', icon: 'bi bi-truck-front-fill', pricePerDay: 1200000 },
                     ],
                     allAccommodations: [
-                        { name: 'Hotel Santika Bukittinggi', city: 'Bukittinggi', type: 'Hotel' }, { name: 'The Hills Bukittinggi Hotel', city: 'Bukittinggi', type: 'Hotel' }, { name: 'Grand Rocky Hotel', city: 'Bukittinggi', type: 'Hotel' }, { name: 'Villa Ngarai Sianok', city: 'Bukittinggi', type: 'Villa' }, { name: 'Mercure Padang', city: 'Padang', type: 'Hotel' }, { name: 'Santika Premiere Padang', city: 'Padang', type: 'Hotel' }, { name: 'Emersia Hotel Batusangkar', city: 'Batusangkar', type: 'Hotel' }, { name: 'Pagaruyung Hotel', city: 'Batusangkar', type: 'Hotel' }, { name: 'Alahan Panjang Resort', city: 'Alahan Panjang', type: 'Villa' }, { name: 'Villa Danau Diatas', city: 'Alahan Panjang', type: 'Villa' }, { name: 'Villa Kayu Putih', city: 'Alahan Panjang', type: 'Villa' },
+                        { name: 'Hotel Santika Bukittinggi', city: 'Bukittinggi', type: 'Hotel', pricePerNight: 550000 }, { name: 'The Hills Bukittinggi Hotel', city: 'Bukittinggi', type: 'Hotel', pricePerNight: 700000 }, { name: 'Grand Rocky Hotel', city: 'Bukittinggi', type: 'Hotel', pricePerNight: 650000 }, { name: 'Villa Ngarai Sianok', city: 'Bukittinggi', type: 'Villa', pricePerNight: 1800000 }, { name: 'Mercure Padang', city: 'Padang', type: 'Hotel', pricePerNight: 800000 }, { name: 'Santika Premiere Padang', city: 'Padang', type: 'Hotel', pricePerNight: 750000 }, { name: 'Emersia Hotel Batusangkar', city: 'Batusangkar', type: 'Hotel', pricePerNight: 600000 }, { name: 'Pagaruyung Hotel', city: 'Batusangkar', type: 'Hotel', pricePerNight: 450000 }, { name: 'Alahan Panjang Resort', city: 'Alahan Panjang', type: 'Villa', pricePerNight: 1500000 }, { name: 'Villa Danau Diatas', city: 'Alahan Panjang', type: 'Villa', pricePerNight: 2000000 }, { name: 'Villa Kayu Putih', city: 'Alahan Panjang', type: 'Villa', pricePerNight: 1700000 },
                     ],
                     allDestinations: [
                         { name: 'Pantai Air Manis', city: 'Padang', category: 'Alam', category_class: 'bg-primary' }, { name: 'Jembatan Siti Nurbaya', city: 'Padang', category: 'Budaya', category_class: 'bg-info' }, { name: 'Masjid Raya Sumbar', city: 'Padang', category: 'Budaya', category_class: 'bg-info' }, { name: 'RM Lamun Ombak', city: 'Padang', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Ngarai Sianok', city: 'Bukittinggi', category: 'Alam', category_class: 'bg-primary' }, { name: 'Jam Gadang', city: 'Bukittinggi', category: 'Budaya', category_class: 'bg-info' }, { name: 'Lobang Jepang', city: 'Bukittinggi', category: 'Budaya', category_class: 'bg-info' }, { name: 'Nasi Kapau Pasar Atas', city: 'Bukittinggi', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Lembah Harau', city: 'Payakumbuh', category: 'Alam', category_class: 'bg-primary' }, { name: 'Kelok 9', city: 'Payakumbuh', category: 'Alam', category_class: 'bg-primary' }, { name: 'RM Pongek Situjuah', city: 'Payakumbuh', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Istano Basa Pagaruyung', city: 'Batusangkar', category: 'Budaya', category_class: 'bg-info' }, { name: 'Kopi Kinikko', city: 'Batusangkar', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Danau Kembar (Diatas & Dibawah)', city: 'Alahan Panjang', category: 'Alam', category_class: 'bg-primary' }, { name: 'Kebun Teh Alahan Panjang', city: 'Alahan Panjang', category: 'Alam', category_class: 'bg-primary' },
@@ -436,13 +480,54 @@
                 }
             },
             methods: {
+                getPriceBreakdown(tour) {
+                    if (!tour || !tour.duration || !tour.pax) return {};
+
+                    const breakdown = {};
+                    const nights = tour.duration > 1 ? tour.duration - 1 : 0;
+
+                    // 1. Biaya Transportasi & Kru
+                    const vehicleData = this.vehicles.find(v => v.name === tour.vehicle);
+                    if (vehicleData) {
+                        breakdown['Sewa Kendaraan'] = vehicleData.pricePerDay * tour.duration;
+                        let crewCost = this.costs.driverMeal * tour.duration;
+                        if (tour.type === 'Bermalam' && nights > 0) {
+                            crewCost += this.costs.driverLodge * nights;
+                        }
+                        breakdown['Biaya Operasional Kru'] = crewCost;
+                    }
+
+                    // 2. Biaya Akomodasi Pelanggan
+                    if (tour.type === 'Bermalam' && tour.accommodations.length > 0) {
+                        let accommodationCost = 0;
+                        tour.accommodations.forEach(acc => {
+                            const roomsNeeded = acc.type === 'Hotel' ? Math.ceil(tour.pax / 2) : 1;
+                            accommodationCost += acc.pricePerNight * roomsNeeded * nights;
+                        });
+                        breakdown['Akomodasi Pelanggan'] = accommodationCost;
+                    }
+
+                    // 3. Biaya Add-ons
+                    let addonsCost = 0;
+                    if (tour.addons.documentation) addonsCost += this.costs.documentation;
+                    if (tour.addons.outbound) addonsCost += this.costs.outboundPerPax * tour.pax;
+                    if (addonsCost > 0) breakdown['Layanan Tambahan'] = addonsCost;
+
+                    return breakdown;
+                },
+                calculateTotalPrice(tour) {
+                    const breakdown = this.getPriceBreakdown(tour);
+                    return Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+                },
                 nextStep() {
                     const stepNumber = parseInt(this.currentStep.replace('step', ''));
+                    // Skip step 6 (akomodasi) jika trip harian
                     if (stepNumber === 5 && this.trip.type === 'Harian') { this.currentStep = 'step7'; } 
                     else { this.currentStep = `step${stepNumber + 1}`; }
                 },
                 prevStep() {
                     const stepNumber = parseInt(this.currentStep.replace('step', ''));
+                    // Skip step 6 (akomodasi) jika trip harian
                     if (stepNumber === 7 && this.trip.type === 'Harian') { this.currentStep = 'step5'; }
                     else { this.currentStep = `step${stepNumber - 1}`; }
                 },
@@ -502,3 +587,4 @@
 </body>
 
 </html>
+
