@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor Keuangan Sutan Raya (Vue.js)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 2em; background-color: #f4f7f6; color: #333; }
+        #app { display: grid; grid-template-columns: 1fr; gap: 2em; max-width: 1200px; margin: auto; }
+        .chart-container { background: white; padding: 2em; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h1, h2 { text-align: center; color: #2c3e50; }
+        .loading { text-align: center; padding: 2em; }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <h1>Dasbor Keuangan Sutan Raya Travel</h1>
+
+        <div class="chart-container">
+            <h2>Laporan Laba Rugi Bulanan</h2>
+            <div v-if="isLoading.labaRugi" class="loading">Memuat data...</div>
+            <canvas id="labaRugiChart" v-show="!isLoading.labaRugi"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2 v-if="!isLoading.neraca">Komposisi Aset ({{ neraca.month }})</h2>
+            <div v-if="isLoading.neraca" class="loading">Memuat data...</div>
+            <canvas id="neracaChart" v-show="!isLoading.neraca" style="max-height: 400px; margin: auto;"></canvas>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // Gunakan objek untuk status loading setiap chart
+                    isLoading: {
+                        labaRugi: true,
+                        neraca: true
+                    },
+                    // Simpan data neraca
+                    neraca: {
+                        month: ''
+                    },
+                    // Simpan instance chart untuk mencegah duplikasi
+                    charts: {
+                        labaRugi: null,
+                        neraca: null
+                    }
+                }
+            },
+            async mounted() {
+                this.fetchLabaRugiData();
+                this.fetchNeracaData();
+            },
+            methods: {
+                // Method untuk mengambil data Laba Rugi
+                async fetchLabaRugiData() {
+                    try {
+                        const response = await fetch('/api/laba-rugi');
+                        const chartData = await response.json();
+                        this.renderLabaRugiChart(chartData);
+                    } catch (error) {
+                        console.error("Gagal memuat data laba rugi:", error);
+                    } finally {
+                        this.isLoading.labaRugi = false;
+                    }
+                },
+                // Method BARU untuk mengambil data Neraca
+                async fetchNeracaData() {
+                    try {
+                        const response = await fetch('/api/neraca');
+                        const chartData = await response.json();
+                        this.neraca.month = chartData.month; // Simpan nama bulan
+                        this.renderNeracaChart(chartData);
+                    } catch (error) {
+                        console.error("Gagal memuat data neraca:", error);
+                    } finally {
+                        this.isLoading.neraca = false;
+                    }
+                },
+                // Method untuk render grafik Laba Rugi
+                renderLabaRugiChart(data) {
+                    const ctx = document.getElementById('labaRugiChart');
+                    if (!ctx) return;
+                    if (this.charts.labaRugi) this.charts.labaRugi.destroy();
+
+                    this.charts.labaRugi = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [
+                                { label: 'Total Pendapatan', data: data.pendapatan, borderColor: 'rgb(75, 192, 192)', tension: 0.1 },
+                                { label: 'Laba Bersih', data: data.laba, borderColor: 'rgb(255, 99, 132)', tension: 0.1 }
+                            ]
+                        }
+                    });
+                },
+                // Method BARU untuk render grafik Neraca
+                renderNeracaChart(data) {
+                    const ctx = document.getElementById('neracaChart');
+                    if (!ctx) return;
+                    if (this.charts.neraca) this.charts.neraca.destroy();
+
+                    this.charts.neraca = new Chart(ctx, {
+                        type: 'doughnut', // Jenis grafik: Donat
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Jumlah',
+                                data: data.values,
+                                backgroundColor: [
+                                    'rgb(54, 162, 235)', // Biru untuk Aset Lancar
+                                    'rgb(255, 205, 86)'  // Kuning untuk Aset Tetap
+                                ],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }
+                    });
+                }
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
