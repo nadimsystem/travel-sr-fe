@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- META TAGS -->
+    <title>Sutan Raya - Tour Management</title>
+    <meta name="author" content="PO. Sutan Raya" />
+    <meta name="description"
+        content="Panel manajemen tur untuk PO. Sutan Raya. Buat dan kelola paket tur dengan mudah." />
+    <meta name="keywords"
+        content="sewa hiace padang, bus pariwisata sumatera barat, travel luxury padang, po sutan raya, tour organizer sumbar, paket outbound padang" />
+    <link rel="icon" type="image/svg+xml" href="https://img.icons8.com/ios-filled/50/D4AF37/crown.png" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Sutan Raya - Tour Management" />
+    <meta property="og:description"
+        content="Panel manajemen tur untuk PO. Sutan Raya. Buat dan kelola paket tur dengan mudah." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i.imgur.com/8pS13q9.jpg" /> <!-- Placeholder valid image -->
+
+
+    <!-- CDN LENGKAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+        :root {
+            --sutan-dark: #121212;
+            --sutan-gold: #D4AF37;
+            --sutan-light: #f8f9fa;
+            --bs-body-font-family: 'Plus Jakarta Sans', sans-serif;
+            --bs-body-bg: var(--sutan-dark);
+            --bs-body-color: var(--sutan-light);
+        }
+
+        /* GENERAL STYLES */
+        body {
+            font-family: var(--bs-body-font-family);
+            background-color: var(--sutan-dark);
+            color: var(--sutan-light);
+        }
+
+        #app {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .planner-container {
+            max-width: 500px;
+            margin: auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--sutan-dark);
+        }
+
+        .planner-header {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            position: sticky;
+            top: 0;
+            background-color: var(--sutan-dark);
+            z-index: 10;
+        }
+
+        .planner-header .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--sutan-gold);
+            text-decoration: none;
+        }
+
+        .planner-step {
+            flex-grow: 1;
+            padding: 1.5rem;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--sutan-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        /* BUTTONS */
+        .btn-gold {
+            background-color: var(--sutan-gold);
+            border-color: var(--sutan-gold);
+            color: var(--sutan-dark);
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+        .btn-gold:disabled {
+            background-color: #555;
+            border-color: #555;
+            color: #999;
+        }
+
+        .btn-gold:hover,
+        .btn-gold:focus {
+            background-color: #c8a432;
+            border-color: #c8a432;
+            color: var(--sutan-dark);
+        }
+
+        .btn-outline-gold {
+            border-color: var(--sutan-gold);
+            color: var(--sutan-gold);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-outline-gold:hover,
+        .btn-outline-gold.active {
+            background-color: var(--sutan-gold);
+            color: var(--sutan-dark);
+        }
+
+        /* FORM CONTROLS */
+        .form-control,
+        .form-select {
+            background-color: #222;
+            border: 1px solid #444;
+            color: var(--sutan-light);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #222;
+            border-color: var(--sutan-gold);
+            color: var(--sutan-light);
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #888;
+        }
+
+        .input-group-text {
+            background-color: #333;
+            border-color: #444;
+            color: var(--sutan-gold);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--sutan-gold);
+            border-color: var(--sutan-gold);
+        }
+
+        /* CUSTOM COMPONENTS */
+        .choice-card {
+            border: 1px solid #444;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .choice-card.active {
+            border-color: var(--sutan-gold);
+            background-color: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .choice-card .icon {
+            font-size: 2rem;
+            color: var(--sutan-gold);
+        }
+
+        .route-item {
+            background-color: #222;
+            border-left: 3px solid var(--sutan-gold);
+        }
+
+        .summary-item {
+            border-bottom: 1px solid #333;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        /* DASHBOARD & DETAIL SPECIFIC */
+        .tour-card {
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: .5rem;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+
+        .tour-card:hover {
+            border-color: var(--sutan-gold);
+            transform: translateY(-3px);
+        }
+
+        .tour-card .badge {
+            font-size: .7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="planner-container">
+            <header class="planner-header">
+                <a href="#" @click.prevent="returnToDashboard" class="logo">SUTAN RAYA</a>
+                <p class="mb-0 small opacity-75">Tour Management Panel</p>
+            </header>
+
+            <!-- DASHBOARD VIEW -->
+            <main class="planner-step" v-if="currentStep === 'dashboard'">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="step-title mb-0">Dashboard Paket Tur</h3>
+                    <button @click="startPlanner" class="btn btn-sm btn-gold"><i class="bi bi-plus-lg"></i> Buat Paket</button>
+                </div>
+                <div v-if="savedTours.length === 0" class="text-center py-5 opacity-50">
+                    <i class="bi bi-journal-x" style="font-size: 4rem;"></i>
+                    <p class="mt-3">Belum ada paket tur yang dibuat.</p>
+                </div>
+                <div v-else class="d-grid gap-3">
+                    <div v-for="(tour, index) in savedTours" :key="tour.id" class="tour-card p-3" @click="viewDetails(tour)">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ tour.customerName || 'Paket Tanpa Nama' }}</h6>
+                                <p class="small opacity-75 mb-2"><i class="bi bi-signpost-split"></i> {{ tour.route.length > 0 ? tour.route[0].from : '' }} <i class="bi bi-arrow-right"></i> {{ tour.route.length > 0 ? tour.route[tour.route.length - 1].to : '' }}</p>
+                            </div>
+                            <span class="badge" :class="tour.type === 'Bermalam' ? 'text-bg-primary' : 'text-bg-success'">{{ tour.type }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2 border-top border-secondary pt-2">
+                            <span class="opacity-75"><i class="bi bi-wallet2 me-1"></i> Rp {{ (tour.budget || 0).toLocaleString('id-ID') }}</span>
+                            <span class="opacity-75"><i class="bi bi-calendar-event me-1"></i> {{ tour.duration }} Hari</span>
+                            <div class="actions">
+                                <button @click.stop="deleteTour(index)" class="btn btn-sm btn-outline-danger py-0 px-1 ms-1"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- DETAIL VIEW -->
+            <main class="planner-step" v-if="currentStep === 'details' && selectedTour">
+                <h3 class="step-title">Detail Paket Tur</h3>
+                <p class="step-subtitle">Ringkasan lengkap untuk paket <strong class="text-gold">{{ selectedTour.customerName }}</strong>.</p>
+                <div class="p-3 rounded" style="background-color: #222;">
+                    <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ selectedTour.customerName }}</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Tipe & Durasi</small><p class="fw-bold mb-0">{{ selectedTour.type }}, selama {{ selectedTour.duration }} hari</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ selectedTour.pickupPoint }}</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in selectedTour.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < selectedTour.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Transportasi</small><p class="fw-bold mb-0">{{ selectedTour.vehicle }}</p></div>
+                    <div class="summary-item" v-if="selectedTour.type === 'Bermalam' && selectedTour.accommodations.length > 0"><small class="opacity-75 d-block">Akomodasi</small><p class="fw-bold mb-0"><span v-for="(a, i) in selectedTour.accommodations" :key="i" class="badge bg-secondary me-1 mb-1">{{ a.name }}</span></p></div>
+                    <div class="summary-item" v-if="selectedTour.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in selectedTour.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="selectedTour.addons.outbound ? 'text-success' : 'text-danger'">{{ selectedTour.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="selectedTour.addons.documentation ? 'text-success' : 'text-danger'">{{ selectedTour.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
+                </div>
+                <div class="d-grid gap-2 mt-5">
+                    <button @click="editTour(selectedTour)" class="btn btn-gold"><i class="bi bi-pencil-square"></i> Edit Paket Ini</button>
+                    <button @click="returnToDashboard" class="btn btn-outline-gold">Kembali ke Dashboard</button>
+                </div>
+            </main>
+
+            <!-- WIZARD STEPS -->
+            <template v-if="currentStep.startsWith('step')">
+                <main class="planner-step" v-if="currentStep === 'step1'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Info & Anggaran' : 'Langkah 1: Info & Anggaran' }}</h3>
+                    <p class="step-subtitle">Masukkan data pelanggan dan perkiraan anggaran.</p>
+                    <div class="mb-4"><label for="customerName" class="form-label">Nama Pelanggan / Grup</label><input type="text" class="form-control" id="customerName" placeholder="Contoh: Keluarga Bpk. Ahmad" v-model="trip.customerName"></div>
+                    <div class="mb-4"><label for="budget" class="form-label">Anggaran (per orang)</label><div class="input-group"><span class="input-group-text">Rp</span><input type="number" class="form-control" id="budget" placeholder="1500000" min="1" v-model.number="trip.budget"></div></div>
+                    <div class="d-grid mt-5">
+                        <button @click="nextStep" class="btn btn-gold" :disabled="!trip.customerName || !trip.budget || trip.budget <= 0">Lanjut <i class="bi bi-arrow-right"></i></button>
+                        <button @click="returnToDashboard" class="btn btn-link text-light mt-2">Batal</button>
+                    </div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step2'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Tipe & Durasi' : 'Langkah 2: Tipe & Durasi' }}</h3>
+                    <p class="step-subtitle">Pilih tipe perjalanan dan tentukan durasinya.</p>
+                    <label class="form-label">Tipe Perjalanan</label>
+                    <div class="btn-group w-100 mb-4" role="group">
+                        <input type="radio" class="btn-check" name="tripType" id="typeBermalam" value="Bermalam" v-model="trip.type" autocomplete="off"><label class="btn btn-outline-gold" for="typeBermalam"><i class="bi bi-moon-stars-fill"></i> Bermalam</label>
+                        <input type="radio" class="btn-check" name="tripType" id="typeHarian" value="Harian" v-model="trip.type" autocomplete="off"><label class="btn btn-outline-gold" for="typeHarian"><i class="bi bi-sun-fill"></i> Harian</label>
+                    </div>
+                    <div class="mb-4"><label for="duration" class="form-label">Durasi Perjalanan</label><div class="input-group"><input type="number" class="form-control" id="duration" placeholder="3" min="1" v-model.number="trip.duration"><span class="input-group-text">Hari</span></div></div>
+                    <div class="d-grid mt-5">
+                        <button @click="nextStep" class="btn btn-gold" :disabled="!trip.type || !trip.duration || trip.duration <= 0">Lanjut <i class="bi bi-arrow-right"></i></button>
+                        <button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button>
+                    </div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step3'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Rute' : 'Langkah 3: Tentukan Rute' }}</h3>
+                    <p class="step-subtitle">Pilih kota asal dan tujuan. Anda bisa menambahkan beberapa rute.</p>
+                    <div v-if="trip.route.length > 0" class="mb-4"><p class="fw-bold">Rute Anda:</p><div v-for="(r, index) in trip.route" :key="index" class="p-2 mb-2 rounded route-item d-flex justify-content-between align-items-center"><span>{{ index + 1 }}. {{ r.from }} <i class="bi bi-arrow-right mx-2"></i> {{ r.to }}</span><button @click="removeRoute(index)" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button></div></div>
+                    <div class="border rounded p-3" style="border-color: #444 !important;"><p class="fw-bold mb-2">{{ trip.route.length > 0 ? 'Tambah Rute' : 'Rute Pertama' }}</p><div class="mb-3"><label class="form-label small">Dari</label><input type="text" class="form-control" v-model="newRoute.from" readonly></div><div class="mb-3"><label class="form-label small">Ke</label><select class="form-select" v-model="newRoute.to"><option disabled value="">Pilih Tujuan</option><option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option></select></div><div class="d-grid"><button @click="addRoute" class="btn btn-outline-gold" :disabled="!newRoute.to"><i class="bi bi-plus-circle"></i> Tambahkan</button></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="trip.route.length === 0">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step4'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Titik Penjemputan' : 'Langkah 4: Titik Penjemputan' }}</h3>
+                    <p class="step-subtitle">Masukkan alamat lengkap atau titik kumpul yang disepakati.</p>
+                    <div class="mb-4"><label for="pickupPoint" class="form-label">Alamat / Nama Lokasi</label><textarea class="form-control" id="pickupPoint" rows="3" placeholder="Contoh: Depan Hotel Santika Padang, atau bisa juga alamat lengkap rumah." v-model="trip.pickupPoint"></textarea></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.pickupPoint">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+                
+                <main class="planner-step" v-if="currentStep === 'step5'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Kendaraan' : 'Langkah 5: Pilih Kendaraan' }}</h3>
+                    <p class="step-subtitle">Pilih armada yang paling sesuai untuk grup.</p>
+                    <div class="d-grid gap-3"><div v-for="vehicle in vehicles" :key="vehicle.name" @click="trip.vehicle = vehicle.name" class="choice-card" :class="{ active: trip.vehicle === vehicle.name }"><div class="d-flex align-items-center"><div class="icon me-3"><i :class="vehicle.icon"></i></div><div><h6 class="mb-0 fw-bold">{{ vehicle.name }}</h6><small class="opacity-75">{{ vehicle.capacity }}</small></div></div></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.vehicle">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step6' && trip.type === 'Bermalam'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Akomodasi' : 'Langkah 6: Pilih Akomodasi' }}</h3>
+                    <p class="step-subtitle">Pilih penginapan yang tersedia di kota tujuan.</p>
+                    <div v-for="city in routeCities" :key="city"><h5 class="mt-4 mb-3" style="color: var(--sutan-gold);">Penginapan di {{ city }}</h5><div v-for="acc in accommodationsByCity(city)" :key="acc.name" class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" :id="acc.name" :value="acc" v-model="trip.accommodations"><label class="form-check-label" :for="acc.name">{{ acc.name }} <span class="badge bg-secondary">{{ acc.type }}</span></label></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+            
+                <main class="planner-step" v-if="currentStep === 'step7'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Destinasi' : 'Langkah 7: Destinasi Wisata' }}</h3>
+                    <p class="step-subtitle">Pilih tempat-tempat yang ingin dikunjungi.</p>
+                    <div v-for="city in routeCities" :key="city"><h5 class="mt-4 mb-3" style="color: var(--sutan-gold);">Destinasi di {{ city }}</h5><div v-for="dest in destinationsByCity(city)" :key="dest.name" class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" :id="dest.name" :value="dest" v-model="trip.destinations"><label class="form-check-label" :for="dest.name">{{ dest.name }} <span class="badge rounded-pill" :class="dest.category_class">{{ dest.category }}</span></label></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step8'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Opsi Tambahan' : 'Langkah 8: Opsi Tambahan' }}</h3>
+                    <p class="step-subtitle">Lengkapi perjalanan dengan layanan ekstra.</p>
+                    <div class="list-group list-group-flush"><div class="list-group-item bg-transparent text-light px-0 d-flex justify-content-between align-items-center"><div><h6 class="mb-0">Aktivitas Outbound</h6><small>Perkuat kebersamaan tim.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="outbound" v-model="trip.addons.outbound"></div></div><div class="list-group-item bg-transparent text-light px-0 d-flex justify-content-between align-items-center mt-3"><div><h6 class="mb-0">Dokumentasi (Foto & Video)</h6><small>Abadikan setiap momen.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="documentation" v-model="trip.addons.documentation"></div></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lihat Ringkasan <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+                
+                <main class="planner-step" v-if="currentStep === 'step9'">
+                    <h3 class="step-title">Ringkasan Paket Tur</h3>
+                    <p class="step-subtitle">Periksa kembali detail paket untuk pelanggan.</p>
+                    <div class="p-3 rounded" style="background-color: #222;">
+                        <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ trip.customerName }}</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Tipe & Durasi</small><p class="fw-bold mb-0">{{ trip.type }}, selama {{ trip.duration }} hari</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ trip.pickupPoint }}</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in trip.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < trip.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Transportasi</small><p class="fw-bold mb-0">{{ trip.vehicle }}</p></div>
+                        <div class="summary-item" v-if="trip.type === 'Bermalam' && trip.accommodations.length > 0"><small class="opacity-75 d-block">Akomodasi</small><p class="fw-bold mb-0"><span v-for="(a, i) in trip.accommodations" :key="i" class="badge bg-secondary me-1 mb-1">{{ a.name }}</span></p></div>
+                        <div class="summary-item" v-if="trip.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in trip.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="trip.addons.outbound ? 'text-success' : 'text-danger'">{{ trip.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="trip.addons.documentation ? 'text-success' : 'text-danger'">{{ trip.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
+                    </div>
+                    <div class="d-grid mt-5"><button @click="saveTour" class="btn btn-gold">{{ isEditing ? 'Update Paket' : 'Simpan Paket' }} <i class="bi bi-save"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+            </template>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        function clone(obj) {
+            // Fallback aman untuk structuredClone, kompatibel di semua browser
+            return JSON.parse(JSON.stringify(obj));
+        }
+
+        function getEmptyTripObject() {
+            return {
+                id: null, customerName: '', type: '', budget: null, duration: null,
+                pickupPoint: '',
+                route: [], vehicle: '', accommodations: [], destinations: [],
+                addons: { outbound: false, documentation: false },
+            };
+        }
+
+        createApp({
+            data() {
+                return {
+                    currentStep: 'dashboard',
+                    isEditing: false,
+                    selectedTour: null,
+                    savedTours: [],
+                    cities: ['Padang', 'Bukittinggi', 'Payakumbuh', 'Batusangkar', 'Alahan Panjang'],
+                    newRoute: { from: 'Padang', to: '' },
+                    vehicles: [
+                        { name: 'Big Bus', capacity: 'Kapasitas 45 seats', icon: 'bi bi-bus-front-fill' },
+                        { name: 'Medium Bus', capacity: 'Kapasitas 35 seats', icon: 'bi bi-bus-front' },
+                        { name: 'Hiace Premio / Commuter', capacity: 'Kapasitas 7 seats (Luxury)', icon: 'bi bi-truck-front-fill' },
+                    ],
+                    allAccommodations: [
+                        { name: 'Hotel Santika Bukittinggi', city: 'Bukittinggi', type: 'Hotel' }, { name: 'The Hills Bukittinggi Hotel', city: 'Bukittinggi', type: 'Hotel' }, { name: 'Grand Rocky Hotel', city: 'Bukittinggi', type: 'Hotel' }, { name: 'Villa Ngarai Sianok', city: 'Bukittinggi', type: 'Villa' }, { name: 'Mercure Padang', city: 'Padang', type: 'Hotel' }, { name: 'Santika Premiere Padang', city: 'Padang', type: 'Hotel' }, { name: 'Emersia Hotel Batusangkar', city: 'Batusangkar', type: 'Hotel' }, { name: 'Pagaruyung Hotel', city: 'Batusangkar', type: 'Hotel' }, { name: 'Alahan Panjang Resort', city: 'Alahan Panjang', type: 'Villa' }, { name: 'Villa Danau Diatas', city: 'Alahan Panjang', type: 'Villa' }, { name: 'Villa Kayu Putih', city: 'Alahan Panjang', type: 'Villa' },
+                    ],
+                    allDestinations: [
+                        { name: 'Pantai Air Manis', city: 'Padang', category: 'Alam', category_class: 'bg-primary' }, { name: 'Jembatan Siti Nurbaya', city: 'Padang', category: 'Budaya', category_class: 'bg-info' }, { name: 'Masjid Raya Sumbar', city: 'Padang', category: 'Budaya', category_class: 'bg-info' }, { name: 'RM Lamun Ombak', city: 'Padang', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Ngarai Sianok', city: 'Bukittinggi', category: 'Alam', category_class: 'bg-primary' }, { name: 'Jam Gadang', city: 'Bukittinggi', category: 'Budaya', category_class: 'bg-info' }, { name: 'Lobang Jepang', city: 'Bukittinggi', category: 'Budaya', category_class: 'bg-info' }, { name: 'Nasi Kapau Pasar Atas', city: 'Bukittinggi', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Lembah Harau', city: 'Payakumbuh', category: 'Alam', category_class: 'bg-primary' }, { name: 'Kelok 9', city: 'Payakumbuh', category: 'Alam', category_class: 'bg-primary' }, { name: 'RM Pongek Situjuah', city: 'Payakumbuh', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Istano Basa Pagaruyung', city: 'Batusangkar', category: 'Budaya', category_class: 'bg-info' }, { name: 'Kopi Kinikko', city: 'Batusangkar', category: 'Kuliner', category_class: 'bg-warning text-dark' }, { name: 'Danau Kembar (Diatas & Dibawah)', city: 'Alahan Panjang', category: 'Alam', category_class: 'bg-primary' }, { name: 'Kebun Teh Alahan Panjang', city: 'Alahan Panjang', category: 'Alam', category_class: 'bg-primary' },
+                    ],
+                    trip: getEmptyTripObject()
+                }
+            },
+            watch: {
+                savedTours: {
+                    handler(newTours) {
+                        localStorage.setItem('sutanRayaTours', JSON.stringify(newTours));
+                    },
+                    deep: true
+                }
+            },
+            created() {
+                const toursFromStorage = localStorage.getItem('sutanRayaTours');
+                if (toursFromStorage) {
+                    this.savedTours = JSON.parse(toursFromStorage);
+                }
+            },
+            computed: {
+                availableCities() {
+                    const usedDestinations = new Set(this.trip.route.map(r => r.to));
+                    return this.cities.filter(city => !usedDestinations.has(city) && city !== this.newRoute.from);
+                },
+                routeCities() {
+                    const citiesInRoute = new Set();
+                    this.trip.route.forEach(r => { citiesInRoute.add(r.from); citiesInRoute.add(r.to); });
+                    return Array.from(citiesInRoute);
+                }
+            },
+            methods: {
+                nextStep() {
+                    const stepNumber = parseInt(this.currentStep.replace('step', ''));
+                    if (stepNumber === 5 && this.trip.type === 'Harian') { this.currentStep = 'step7'; } 
+                    else { this.currentStep = `step${stepNumber + 1}`; }
+                },
+                prevStep() {
+                    const stepNumber = parseInt(this.currentStep.replace('step', ''));
+                    if (stepNumber === 7 && this.trip.type === 'Harian') { this.currentStep = 'step5'; }
+                    else { this.currentStep = `step${stepNumber - 1}`; }
+                },
+                startPlanner() {
+                    this.isEditing = false;
+                    this.trip = getEmptyTripObject();
+                    this.trip.id = Date.now() + Math.random();
+                    this.newRoute.from = 'Padang';
+                    this.currentStep = 'step1';
+                },
+                viewDetails(tour) {
+                    this.selectedTour = tour;
+                    this.currentStep = 'details';
+                },
+                editTour(tourToEdit) {
+                    this.isEditing = true;
+                    this.trip = clone(tourToEdit);
+                    this.newRoute.from = this.trip.route.length > 0 ? this.trip.route[this.trip.route.length - 1].to : 'Padang';
+                    this.currentStep = 'step1';
+                },
+                returnToDashboard() {
+                    this.currentStep = 'dashboard';
+                    this.isEditing = false;
+                    this.selectedTour = null;
+                },
+                addRoute() {
+                    if (this.newRoute.to) {
+                        this.trip.route.push({ ...this.newRoute });
+                        this.newRoute.from = this.newRoute.to;
+                        this.newRoute.to = '';
+                    }
+                },
+                removeRoute(index) {
+                    this.trip.route.splice(index, 1);
+                    this.newRoute.from = this.trip.route.length > 0 ? this.trip.route[this.trip.route.length - 1].to : 'Padang';
+                },
+                destinationsByCity(city) { return this.allDestinations.filter(d => d.city === city); },
+                accommodationsByCity(city) { return this.allAccommodations.filter(a => a.city === city); },
+                saveTour() {
+                    if (this.isEditing) {
+                        const index = this.savedTours.findIndex(tour => tour.id === this.trip.id);
+                        if (index !== -1) { this.savedTours[index] = this.trip; }
+                    } else {
+                        this.savedTours.push(this.trip);
+                    }
+                    this.returnToDashboard();
+                },
+                deleteTour(index) {
+                    if (confirm('Yakin ingin menghapus paket ini?')) {
+                        this.savedTours.splice(index, 1);
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+
+</html>

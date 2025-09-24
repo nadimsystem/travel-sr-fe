@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Keuangan Interaktif</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform .2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .upload-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .file-drop-area {
+            border: 2px dashed #0d6efd;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            transition: background-color .2s;
+        }
+        .file-drop-area.drag-over {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="container my-5">
+        <header class="text-center mb-5">
+            <h1 class="display-5 fw-bold">🚀 Visualisasi Laporan Keuangan</h1>
+            <p class="text-muted">Unggah file CSV Laporan Keuangan Anda untuk membuat visualisasi secara otomatis.</p>
+        </header>
+
+        <section class="upload-section card mb-5">
+            <div class="file-drop-area" 
+                 @dragover.prevent="dragOver" 
+                 @dragleave.prevent="dragLeave" 
+                 @drop.prevent="handleDrop"
+                 :class="{'drag-over': isDragging}">
+                
+                <i class="bi bi-cloud-arrow-up" style="font-size: 3rem; color: #0d6efd;"></i>
+                <h4 class="mt-3">Pilih atau Seret File ke Sini</h4>
+                <p class="text-muted mb-3">Website ini dirancang untuk memproses file:<br>
+                    <code>Laba Rugi.csv</code> atau <code>Neraca.csv</code>
+                </p>
+                <input type="file" @change="handleFileUpload" class="d-none" ref="fileInput">
+                <button @click="$refs.fileInput.click()" class="btn btn-primary btn-lg">
+                    <i class="bi bi-upload"></i> Pilih File
+                </button>
+            </div>
+            <div v-if="fileName" class="mt-3">
+                <p><strong>File Terpilih:</strong> {{ fileName }}</p>
+            </div>
+        </section>
+
+        <div v-if="isFileUploaded" class="row">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Berhasil!</h4>
+                    <p>Data dari <strong>{{ chartTitle }}</strong> berhasil divisualisasikan di bawah ini.</p>
+                </div>
+            </div>
+            <div class="col-lg-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">{{ chartTitle }}</h3>
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else class="text-center">
+            <p class="text-muted">Grafik akan muncul di sini setelah Anda mengunggah file.</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    fileName: '',
+                    chartTitle: '',
+                    isFileUploaded: false,
+                    mainChart: null,
+                    isDragging: false,
+                }
+            },
+            methods: {
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.processFile(file);
+                    }
+                },
+                handleDrop(event) {
+                    this.isDragging = false;
+                    const file = event.dataTransfer.files[0];
+                    if (file) {
+                        this.processFile(file);
+                    }
+                },
+                dragOver() { this.isDragging = true; },
+                dragLeave() { this.isDragging = false; },
+                processFile(file) {
+                    this.fileName = file.name;
+
+                    Papa.parse(file, {
+                        complete: (results) => {
+                            if (file.name.toLowerCase().includes('laba rugi')) {
+                                this.parseLabaRugi(results.data);
+                            } else if (file.name.toLowerCase().includes('neraca')) {
+                                this.parseNeraca(results.data);
+                            } else {
+                                alert('File tidak dikenali. Harap unggah file "Laba Rugi" atau "Neraca".');
+                            }
+                            this.isFileUploaded = true;
+                        },
+                        error: (error) => {
+                            console.error('Error parsing file:', error);
+                            alert('Gagal memproses file. Periksa konsol untuk detailnya.');
+                        }
+                    });
+                },
+                parseLabaRugi(data) {
+                    this.chartTitle = 'Analisis Laba Rugi Bulanan';
+                    
+                    const labels = data[2].slice(1, 13).filter(Boolean); // Ambil nama bulan, Jan-Des
+                    const pendapatan = data.find(row => row[0] && row[0].includes('PENDAPATAN'))?.slice(1, 13).map(v => parseFloat(v) || 0) || [];
+                    const beban = data.find(row => row[1] && row[1].includes('Total Beban'))?.slice(1, 13).map(v => parseFloat(v) || 0) || [];
+                    const laba = data.find(row => row[1] && row[1].includes('LABA BERSIH'))?.slice(1, 13).map(v => parseFloat(v) || 0) || [];
+                    
+                    const chartData = {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Pendapatan', data: pendapatan, borderColor: '#198754', tension: 0.1,
+                            }, {
+                                label: 'Beban', data: beban, borderColor: '#dc3545', tension: 0.1,
+                            }, {
+                                label: 'Laba Bersih', data: laba, borderColor: '#0d6efd', tension: 0.1,
+                            }]
+                        }
+                    };
+                    this.renderChart(chartData);
+                },
+                parseNeraca(data) {
+                    this.chartTitle = `Komposisi Aset (Januari 2025)`;
+                    
+                    const asetLabels = ['Kas & Setara Kas', 'Piutang Usaha', 'Aset Lancar Lainnya', 'Aset Tetap'];
+                    const kas = parseFloat(data.find(row => row[1] && row[1].includes('Kas'))?.[2] || 0);
+                    const piutang = parseFloat(data.find(row => row[1] && row[1].includes('Piutang Usaha'))?.[2] || 0);
+                    const asetLain = parseFloat(data.find(row => row[1] && row[1].includes('Biaya Dibayar Dimuka'))?.[2] || 0);
+                    const asetTetap = parseFloat(data.find(row => row[1] && row[1].includes('Total Aset Tetap'))?.[2] || 0);
+
+                    const asetValues = [kas, piutang, asetLain, asetTetap];
+
+                    const chartData = {
+                        type: 'pie',
+                        data: {
+                            labels: asetLabels,
+                            datasets: [{
+                                label: 'Nilai Aset',
+                                data: asetValues,
+                                backgroundColor: ['#0dcaf0', '#ffc107', '#fd7e14', '#0d6efd'],
+                            }]
+                        }
+                    };
+                    this.renderChart(chartData);
+                },
+                renderChart(chartData) {
+                    const ctx = document.getElementById('mainChart').getContext('2d');
+                    if (this.mainChart) {
+                        this.mainChart.destroy();
+                    }
+                    this.mainChart = new Chart(ctx, {
+                        ...chartData,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) label += ': ';
+                                            if (context.parsed.y !== null) {
+                                                label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
