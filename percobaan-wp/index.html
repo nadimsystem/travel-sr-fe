@@ -306,43 +306,44 @@
                 <transition name="view">
                     <div v-if="currentView !== 'home'" class="absolute inset-0 z-20 flex flex-col" :style="{backgroundColor: 'var(--bg-color)'}">
                         <div class="p-4 flex-shrink-0"><h1 class="text-5xl font-light lowercase tracking-wide text-accent">{{ currentView }}</h1></div>
-                        <div class="flex-grow flex flex-col overflow-hidden">
-                            <div class="flex-grow overflow-y-auto custom-scrollbar px-4 pb-24">
-                                <!-- VIEWS KONTEN -->
-                                <div v-if="currentView === 'todo'"> <!-- Konten Todo --> </div>
-                                <div v-if="currentView === 'kanban'"> <!-- Konten Kanban --> </div>
-                                <div v-if="currentView === 'calendar'"> <!-- Konten Kalender --> </div>
-                                <div v-if="currentView === 'create_tile'" class="p-4">
-                                    <form @submit.prevent="createCustomTile">
-                                        <div class="mb-4"> <label class="block mb-1">Nama Tile</label> <input name="nama" type="text" class="w-full p-2 bg-gray-800 rounded"> </div>
-                                        <div class="mb-4"> <label class="block mb-1">Ikon (Kelas Bootstrap)</label> <input name="ikon" type="text" placeholder="cth: bi bi-star" class="w-full p-2 bg-gray-800 rounded"> </div>
-                                        <div class="mb-4"> <label class="block mb-1">Warna</label> <input name="warna" type="color" class="w-full h-10 p-1"> </div>
-                                        <div class="mb-4"> <label class="block mb-1">Ukuran</label> <select name="ukuran" class="w-full p-2 bg-gray-800 rounded"> <option>kecil</option> <option>sedang</option> <option>lebar</option> </select> </div>
-                                        <button type="submit" class="w-full p-3 bg-accent font-bold rounded">Buat Tile</button>
-                                    </form>
-                                </div>
-                                <div v-if="currentView === 'settings'">
-                                    <h2 class="text-xl mb-4 font-bold">tampilan</h2>
-                                    <div class="mb-6"><label class="block mb-2 font-medium">mode</label>
-                                        <div class="flex gap-2 p-1 bg-gray-800 rounded-full">
-                                            <button @click="setTheme('light')" class="w-full py-2 rounded-full" :class="theme === 'light' ? 'bg-white text-black' : ''">Terang</button>
-                                            <button @click="setTheme('dark')" class="w-full py-2 rounded-full" :class="theme === 'dark' ? 'bg-black text-white' : ''">Gelap</button>
-                                        </div>
-                                    </div>
-                                    <div class="mb-6"><label class="block mb-2 font-medium">warna aksen</label>
-                                        <div class="flex gap-2"><button @click="setAccentColor('#0ea5e9')" class="w-10 h-10 rounded-full bg-sky-500" :class="{'ring-2 ring-offset-2 ring-white ring-offset-black': accentColor === '#0ea5e9'}"></button> <!-- ... more colors --> </div>
-                                    </div>
-                                    <div><label class="block mb-2 font-medium">latar belakang</label><button @click="triggerBgUpload" class="bg-gray-800 px-4 py-2 flex items-center gap-2 hover:bg-gray-700"><i class="bi bi-image"></i> Pilih Gambar</button><input type="file" id="bg-upload" @change="handleBgUpload" class="hidden" accept="image/*"></div>
-                                </div>
-                                <div v-if="['messaging', 'people', 'music', 'ai_dummy', 'dummy_view'].includes(currentView)" class="text-center pt-20">
-                                    <p class="mt-4 text-gray-500">Fitur '{{ currentView }}' sedang dalam pengembangan.</p>
-                                </div>
+                        
+                        <!-- Konten (Scrollable) -->
+                        <div class="flex-grow overflow-y-auto custom-scrollbar px-4">
+                            <!-- VIEWS KONTEN -->
+                            <div v-if="currentView === 'todo'"> <!-- Konten Todo --> </div>
+                            <div v-if="currentView === 'kanban'"> <!-- Konten Kanban --> </div>
+                            <div v-if="currentView === 'calendar'"> <!-- Konten Kalender --> </div>
+                            <div v-if="currentView === 'create_tile'" class="p-4">
+                                <form @submit.prevent="createCustomTile">
+                                    <div class="mb-4"> <label class="block mb-1">Nama Tile</label> <input name="nama" type="text" class="w-full p-2 bg-gray-800 rounded"> </div>
+                                    <div class="mb-4"> <label class="block mb-1">Ikon (Kelas Bootstrap)</label> <input name="ikon" type="text" placeholder="cth: bi bi-star" class="w-full p-2 bg-gray-800 rounded"> </div>
+                                    <div class="mb-4"> <label class="block mb-1">Warna</label> <input name="warna" type="color" class="w-full h-10 p-1"> </div>
+                                    <div class="mb-4"> <label class="block mb-1">Ukuran</label> <select name="ukuran" class="w-full p-2 bg-gray-800 rounded"> <option>kecil</option> <option>sedang</option> <option>lebar</option> </select> </div>
+                                    <button type="submit" class="w-full p-3 bg-accent font-bold rounded">Buat Tile</button>
+                                </form>
                             </div>
-                            <!-- App Bar Bawah -->
-                            <div class="absolute bottom-0 left-0 right-0 p-2 flex justify-center items-center gap-8 z-10" :style="{backgroundColor: 'var(--bg-color)'}">
-                                <button @click="goHome" class="w-12 h-12 flex items-center justify-center rounded-full" :class="theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-200'"><i class="bi bi-arrow-left text-2xl"></i></button>
-                                <button v-if="['todo', 'kanban'].includes(currentView)" @click="isAddingTask = !isAddingTask" class="w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:opacity-80"><i class="bi bi-plus text-4xl text-white"></i></button>
+                            <div v-if="currentView === 'settings'">
+                                <h2 class="text-xl mb-4 font-bold">tampilan</h2>
+                                <div class="mb-6"><label class="block mb-2 font-medium">mode</label>
+                                    <div class="flex gap-2 p-1 bg-gray-800 rounded-full">
+                                        <button @click="setTheme('light')" class="w-full py-2 rounded-full" :class="theme === 'light' ? 'bg-white text-black' : ''">Terang</button>
+                                        <button @click="setTheme('dark')" class="w-full py-2 rounded-full" :class="theme === 'dark' ? 'bg-black text-white' : ''">Gelap</button>
+                                    </div>
+                                </div>
+                                <div class="mb-6"><label class="block mb-2 font-medium">warna aksen</label>
+                                    <div class="flex gap-2"><button @click="setAccentColor('#0ea5e9')" class="w-10 h-10 rounded-full bg-sky-500" :class="{'ring-2 ring-offset-2 ring-white ring-offset-black': accentColor === '#0ea5e9'}"></button> <!-- ... more colors --> </div>
+                                </div>
+                                <div><label class="block mb-2 font-medium">latar belakang</label><button @click="triggerBgUpload" class="bg-gray-800 px-4 py-2 flex items-center gap-2 hover:bg-gray-700"><i class="bi bi-image"></i> Pilih Gambar</button><input type="file" id="bg-upload" @change="handleBgUpload" class="hidden" accept="image/*"></div>
                             </div>
+                            <div v-if="['messaging', 'people', 'music', 'ai_dummy', 'dummy_view'].includes(currentView)" class="text-center pt-20">
+                                <p class="mt-4 text-gray-500">Fitur '{{ currentView }}' sedang dalam pengembangan.</p>
+                            </div>
+                        </div>
+
+                        <!-- App Bar Bawah -->
+                        <div class="flex-shrink-0 p-2 flex justify-center items-center gap-8 z-10" :style="{backgroundColor: 'var(--bg-color)'}">
+                            <button @click="goHome" class="w-12 h-12 flex items-center justify-center rounded-full" :class="theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-200'"><i class="bi bi-arrow-left text-2xl"></i></button>
+                            <button v-if="['todo', 'kanban'].includes(currentView)" @click="isAddingTask = !isAddingTask" class="w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:opacity-80"><i class="bi bi-plus text-4xl text-white"></i></button>
                         </div>
                     </div>
                 </transition>
