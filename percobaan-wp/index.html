@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor Produktivitas WP</title>
+    <!-- 1. CDN untuk Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. CDN untuk Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 3. Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 4. Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Style dasar */
+        :root {
+            --accent-color: #0ea5e9; /* Default accent: sky-500 */
+        }
+        body, #app {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden; 
+            background-color: #000;
+            color: #fff;
+        }
+        .text-accent { color: var(--accent-color); }
+        .bg-accent { background-color: var(--accent-color); }
+        .border-accent { border-color: var(--accent-color); }
+        .ring-accent { --tw-ring-color: var(--accent-color); }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #777; }
+
+        /* Style untuk transisi Vue */
+        .slide-enter-active, .slide-leave-active,
+        .view-enter-active, .view-leave-active,
+        .fade-enter-active, .fade-leave-active {
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-enter-from, .slide-leave-to { transform: translateX(100%); }
+        .view-enter-from, .view-leave-to { transform: scale(1.1); opacity: 0; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+        /* Style untuk Animasi Live Tile Flip 3D */
+        .tile-container { perspective: 1000px; }
+        .tile-flipper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .tile-container.is-flipped .tile-flipper { transform: rotateY(180deg); }
+        .tile-front, .tile-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        .tile-back {
+            transform: rotateY(180deg);
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-black">
+
+    <div id="app"></div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    currentView: 'home',
+                    editingTile: null,
+                    longPressTimer: null,
+                    isAgendaVisible: false,
+                    isLoading: {},
+                    apiError: null,
+                    touchStartX: 0,
+                    touchMoveX: 0,
+                    homeBackground: '',
+                    newFeaturePrompt: '',
+                    newTodoText: '',
+                    isAddingTask: false,
+                    newKanbanTaskText: '',
+                    newKanbanColumnIndex: 0,
+                    accentColor: '#0ea5e9', // Default Biru
+                    tiles: [
+                        { id: 1, nama: 'Daftar Tugas', view: 'todo', ukuran: 'sedang', warna: 'bg-accent', ikon: 'bi bi-check2-square', isFlipped: false },
+                        { id: 2, nama: 'Papan Kanban', view: 'kanban', ukuran: 'lebar', warna: 'bg-accent', ikon: 'bi bi-kanban', isFlipped: false },
+                        { id: 3, nama: 'AI Fitur', view: 'ai_feature', ukuran: 'sedang', warna: 'bg-teal-500', ikon: 'bi bi-stars', isFlipped: false },
+                        { id: 4, nama: 'Kalender', view: 'calendar', ukuran: 'sedang', warna: 'bg-accent', ikon: 'bi bi-calendar-event', isFlipped: false },
+                        { id: 6, nama: 'Pengaturan', view: 'settings', ukuran: 'kecil', warna: 'bg-gray-700', ikon: 'bi bi-gear', isFlipped: false },
+                    ],
+                    todos: [{ id: 1, text: 'Selesaikan laporan mingguan', completed: false }],
+                    kanban: { columns: [ { title: 'Rencana', tasks: [] }, { title: 'Dikerjakan', tasks: [] }, { title: 'Selesai', tasks: [] } ] },
+                    pomodoro: { timerId: null, time: 25 * 60, isRunning: false, mode: 'work' },
+                    calendar: { date: new Date(), monthNames: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] }
+                }
+            },
+            computed: {
+                // ... (Computed properties tetap sama)
+                isAnyLoading() { return Object.values(this.isLoading).some(status => status); },
+                pendingTodosCount() { return this.todos.filter(t => !t.completed).length; },
+                pomodoroFormattedTime() {
+                    const minutes = Math.floor(this.pomodoro.time / 60).toString().padStart(2, '0');
+                    const seconds = (this.pomodoro.time % 60).toString().padStart(2, '0');
+                    return `${minutes}:${seconds}`;
+                },
+                calendarHeader() {
+                    return `${this.calendar.monthNames[this.calendar.date.getMonth()]} ${this.calendar.date.getFullYear()}`;
+                },
+                calendarDays() {
+                    const date = new Date(this.calendar.date);
+                    const year = date.getFullYear();
+                    const month = date.getMonth();
+                    const firstDayOfMonth = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const daysArray = [];
+                    for (let i = 0; i < firstDayOfMonth; i++) { daysArray.push(''); }
+                    for (let i = 1; i <= daysInMonth; i++) { daysArray.push(i); }
+                    return daysArray;
+                }
+            },
+            methods: {
+                // ... (Semua methods diletakkan di sini)
+                // --- Navigasi & UI ---
+                setView(view, tile) {
+                    if (view.startsWith('pomodoro_')) { this.currentView = { type: 'pomodoro', id: view }; }
+                    else if (tile && tile.isGenerated && !tile.isFunctional) { this.currentView = { type: 'generated_plan', ...tile }; }
+                    else { this.currentView = view; }
+                },
+                goHome() { this.currentView = 'home'; this.isAddingTask = false; },
+                getGridClasses(ukuran) {
+                    const sizes = { 'kecil': 'col-span-1 row-span-1', 'sedang': 'col-span-2 row-span-2', 'lebar': 'col-span-3 lg:col-span-4 row-span-2' };
+                    return sizes[ukuran] || sizes['kecil'];
+                },
+                triggerBgUpload() { document.getElementById('bg-upload').click(); },
+                handleBgUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) { const reader = new FileReader(); reader.onload = (e) => { this.homeBackground = e.target.result; }; reader.readAsDataURL(file); }
+                },
+                
+                // --- Kustomisasi Tile ---
+                handleTouchStart(tile) { this.longPressTimer = setTimeout(() => this.openEditModal(tile), 500); },
+                handleTouchEnd() { clearTimeout(this.longPressTimer); },
+                handleTouchMove() { clearTimeout(this.longPressTimer); },
+                openEditModal(tile) { this.editingTile = tile; },
+                closeEditModal() { this.editingTile = null; },
+                updateTileColor(event) { if (this.editingTile) this.editingTile.warna = `bg-[${event.target.value}]`; },
+                cycleTileSize() {
+                    if (!this.editingTile) return;
+                    const sizes = ['kecil', 'sedang', 'lebar'];
+                    const currentIndex = sizes.indexOf(this.editingTile.ukuran);
+                    this.editingTile.ukuran = sizes[(currentIndex + 1) % sizes.length];
+                },
+                
+                // --- Logika Swipe ---
+                handleGlobalTouchStart(e) { this.touchStartX = e.touches[0].clientX; },
+                handleGlobalTouchMove(e) { this.touchMoveX = e.touches[0].clientX; },
+                handleGlobalTouchEnd() {
+                    if (this.currentView === 'home' && (this.touchStartX - this.touchMoveX > 70)) this.isAgendaVisible = true;
+                    this.touchStartX = 0; this.touchMoveX = 0;
+                },
+
+                // --- Logika Todo ---
+                addTodo() {
+                    if (this.newTodoText.trim()) {
+                        this.todos.unshift({ id: Date.now(), text: this.newTodoText, completed: false });
+                        this.newTodoText = '';
+                        this.isAddingTask = false;
+                    }
+                },
+                toggleTodo(id) {
+                    const todo = this.todos.find(t => t.id === id);
+                    if (todo) todo.completed = !todo.completed;
+                },
+
+                 // --- Logika Kanban ---
+                addKanbanTask() {
+                    if (this.newKanbanTaskText.trim()) {
+                        this.kanban.columns[this.newKanbanColumnIndex].tasks.unshift({ id: Date.now(), text: this.newKanbanTaskText });
+                        this.newKanbanTaskText = '';
+                        this.isAddingTask = false;
+                    }
+                },
+
+                // --- Logika Kalender ---
+                changeMonth(offset) {
+                    const newDate = new Date(this.calendar.date);
+                    newDate.setMonth(newDate.getMonth() + offset);
+                    this.calendar.date = newDate;
+                },
+
+                // --- Logika Pomodoro ---
+                startPomodoro() {
+                    if (this.pomodoro.isRunning) return;
+                    this.pomodoro.isRunning = true;
+                    this.pomodoro.timerId = setInterval(() => {
+                        if (this.pomodoro.time > 0) { this.pomodoro.time--; } 
+                        else { this.stopPomodoro(true); }
+                    }, 1000);
+                },
+                stopPomodoro(switchMode = false) {
+                    clearInterval(this.pomodoro.timerId);
+                    this.pomodoro.isRunning = false;
+                    this.pomodoro.timerId = null;
+                    if (switchMode) {
+                        this.pomodoro.mode = this.pomodoro.mode === 'work' ? 'break' : 'work';
+                        this.pomodoro.time = this.pomodoro.mode === 'work' ? 25 * 60 : 5 * 60;
+                    }
+                },
+
+                // --- Logika Pengaturan ---
+                setAccentColor(color) {
+                    this.accentColor = color;
+                    document.documentElement.style.setProperty('--accent-color', color);
+                    // Update warna tile default
+                    this.tiles.forEach(tile => {
+                        if (['todo', 'kanban', 'calendar'].includes(tile.view)) {
+                            tile.warna = 'bg-accent';
+                        }
+                    });
+                },
+                
+                // --- GEMINI API Methods ---
+                async callGemini(systemPrompt, userQuery, responseSchema) {
+                    const apiKey = "AIzaSyBenjmDRAgqo8D9T-H4U1qfN_oW2EdhMcw"; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: responseSchema }};
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+                    const result = await response.json();
+                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (jsonText) return JSON.parse(jsonText);
+                    else throw new Error("Invalid response structure from API.");
+                },
+                async requestNewFeature() {
+                    if (!this.newFeaturePrompt.trim()) return;
+                    this.isLoading['feature'] = true; this.apiError = null;
+                    const systemPrompt = "You are a software architect AI. A user wants to add a new feature. Analyze the request. If it matches a known functional feature (like 'pomodoro timer'), respond with the 'functionalFeature' schema. Otherwise, respond with the 'featurePlan' schema. Respond ONLY with a valid JSON object.";
+                    const userQuery = `I want a feature: "${this.newFeaturePrompt}".`;
+                    const responseSchema = {
+                        oneOf: [
+                            { type: "OBJECT", properties: { "featureType": { type: "STRING", const: "pomodoro" }, "nama": { type: "STRING" } } },
+                            { type: "OBJECT", properties: { "nama": { type: "STRING" }, "deskripsi": { type: "STRING" }, "komponen": { type: "ARRAY", items: { type: "STRING" } } } }
+                        ]
+                    };
+                    try {
+                        const result = await this.callGemini(systemPrompt, userQuery, responseSchema);
+                        if (result.featureType === 'pomodoro') {
+                            this.tiles.push({
+                                id: Date.now(), nama: result.nama, view: `pomodoro_${Date.now()}`, ukuran: 'sedang', warna: 'bg-orange-500', ikon: 'bi bi-clock-history', isFlipped: false, isGenerated: true, isFunctional: true
+                            });
+                        } else {
+                            this.tiles.push({
+                                id: Date.now(), nama: result.nama, view: `generated_${Date.now()}`, ukuran: 'sedang', warna: 'bg-gray-700', ikon: 'bi bi-lightbulb', isFlipped: false, isGenerated: true, isFunctional: false, plan: result
+                            });
+                        }
+                        this.newFeaturePrompt = '';
+                        this.goHome();
+                    } catch (error) { console.error("Error creating feature:", error); this.apiError = "Gagal membuat fitur. Coba lagi."; } finally { this.isLoading['feature'] = false; }
+                }
+            },
+            mounted() {
+                this.setAccentColor(this.accentColor); // Set warna aksen awal
+                setInterval(() => {
+                    if (this.tiles.length > 0) {
+                        const tile = this.tiles[Math.floor(Math.random() * this.tiles.length)];
+                        tile.isFlipped = !tile.isFlipped;
+                        setTimeout(() => { tile.isFlipped = false; }, 3000);
+                    }
+                }, 4000);
+            },
+            template: `
+            <div @touchstart="handleGlobalTouchStart" @touchmove="handleGlobalTouchMove" @touchend="handleGlobalTouchEnd" 
+                 class="w-screen h-screen bg-black relative overflow-hidden" 
+                 :style="{ backgroundImage: 'url(' + homeBackground + ')', backgroundSize: 'cover', backgroundPosition: 'center' }">
+                
+                <div v-if="homeBackground" class="absolute inset-0 bg-black/70"></div>
+
+                <div class="w-full h-full relative">
+                    
+                    <transition name="view">
+                    <div v-if="currentView === 'home'" class="absolute inset-0 overflow-y-auto custom-scrollbar p-4 sm:p-6">
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 auto-rows-[theme(spacing.16)] sm:auto-rows-[theme(spacing.24)] gap-2 sm:gap-4">
+                            <div v-for="tile in tiles" :key="tile.id"
+                               @touchstart.stop="handleTouchStart(tile)" @touchend.stop="handleTouchEnd" @touchmove.stop="handleTouchMove"
+                               :class="[getGridClasses(tile.ukuran), tile.warna === 'bg-accent' ? 'bg-accent' : tile.warna]"
+                               class="tile-container cursor-pointer" :class="{'is-flipped': tile.isFlipped}">
+                               <div class="tile-flipper">
+                                   <div @click="setView(tile.view, tile)" class="tile-front" :class="[tile.warna === 'bg-accent' ? 'bg-accent' : tile.warna]">
+                                       <i :class="tile.ikon" class="text-2xl sm:text-3xl mb-2"></i>
+                                       <span class="text-base sm:text-lg font-medium text-white truncate">{{ tile.nama }}</span>
+                                   </div>
+                                   <div class="tile-back flex-col" :class="[tile.warna === 'bg-accent' ? 'bg-accent' : tile.warna]" style="opacity: 0.9;">
+                                       <div v-if="tile.view === 'todo'" class="text-center text-white">
+                                           <p class="text-4xl font-bold">{{ pendingTodosCount }}</p><p>Tugas Aktif</p>
+                                       </div>
+                                       <i v-else :class="tile.ikon" class="text-4xl text-white"></i>
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                    </transition>
+                    
+                    <!-- App View Wrapper -->
+                    <transition name="view">
+                        <div v-if="currentView !== 'home'" class="absolute inset-0 bg-black z-20 flex flex-col">
+                            <!-- Header -->
+                            <div class="p-4 flex-shrink-0">
+                                <h1 class="text-5xl font-light lowercase tracking-wide" :class="{'text-accent': currentView !== 'ai_feature'}">{{ currentView.type ? currentView.plan.nama : currentView.replace('_', ' ') }}</h1>
+                            </div>
+                            
+                            <!-- Konten Spesifik per View -->
+                            <div class="flex-grow overflow-y-auto custom-scrollbar px-4">
+                                <!-- TODO VIEW -->
+                                <div v-if="currentView === 'todo'">
+                                    <div v-for="todo in todos" :key="todo.id" @click="toggleTodo(todo.id)" class="flex items-center p-3 mb-2 border-b-2 border-gray-800 transition-colors hover:bg-gray-900/50 cursor-pointer">
+                                        <i class="text-2xl mr-4" :class="todo.completed ? 'bi bi-check-circle-fill text-accent' : 'bi bi-circle'"></i>
+                                        <span class="text-lg" :class="{'line-through text-gray-500': todo.completed}">{{ todo.text }}</span>
+                                    </div>
+                                </div>
+                                <!-- KANBAN VIEW -->
+                                <div v-if="currentView === 'kanban'" class="flex gap-4 h-full pb-4">
+                                   <div v-for="(column, colIndex) in kanban.columns" :key="colIndex" class="w-72 sm:w-80 bg-gray-900/50 p-3 flex flex-col flex-shrink-0 h-full">
+                                        <h3 class="font-bold text-lg mb-3 text-center flex-shrink-0">{{ column.title }}</h3>
+                                        <div class="flex-grow overflow-y-auto custom-scrollbar pr-1 space-y-2">
+                                            <div v-for="task in column.tasks" :key="task.id" class="bg-gray-800 p-3 rounded-md">
+                                                <p>{{ task.text }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- CALENDAR VIEW -->
+                                <div v-if="currentView === 'calendar'">
+                                    <h2 class="text-2xl text-center mb-4">{{ calendarHeader }}</h2>
+                                    <div class="grid grid-cols-7 text-center gap-2">
+                                        <div v-for="day in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']" class="font-bold text-gray-500">{{ day }}</div>
+                                        <div v-for="day in calendarDays" class="h-12 flex items-center justify-center" :class="{'bg-accent rounded-full': day === new Date().getDate() && calendar.date.getMonth() === new Date().getMonth()}">{{ day }}</div>
+                                    </div>
+                                </div>
+                                <!-- SETTINGS VIEW -->
+                                <div v-if="currentView === 'settings'">
+                                    <h2 class="text-xl mb-4 font-bold">tampilan</h2>
+                                    <div class="mb-6">
+                                        <label class="block mb-2 font-medium">warna aksen</label>
+                                        <div class="flex gap-2">
+                                            <button @click="setAccentColor('#0ea5e9')" class="w-10 h-10 rounded-full bg-sky-500 ring-2 ring-offset-2 ring-offset-black" :class="{'ring-white': accentColor === '#0ea5e9'}"></button>
+                                            <button @click="setAccentColor('#8b5cf6')" class="w-10 h-10 rounded-full bg-violet-500 ring-2 ring-offset-2 ring-offset-black" :class="{'ring-white': accentColor === '#8b5cf6'}"></button>
+                                            <button @click="setAccentColor('#10b981')" class="w-10 h-10 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-black" :class="{'ring-white': accentColor === '#10b981'}"></button>
+                                            <button @click="setAccentColor('#f97316')" class="w-10 h-10 rounded-full bg-orange-500 ring-2 ring-offset-2 ring-offset-black" :class="{'ring-white': accentColor === '#f97316'}"></button>
+                                            <button @click="setAccentColor('#ef4444')" class="w-10 h-10 rounded-full bg-red-500 ring-2 ring-offset-2 ring-offset-black" :class="{'ring-white': accentColor === '#ef4444'}"></button>
+                                        </div>
+                                    </div>
+                                     <div>
+                                         <label class="block mb-2 font-medium">latar belakang</label>
+                                         <button @click="triggerBgUpload" class="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-700">
+                                           <i class="bi bi-image"></i> Pilih Gambar
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- AI FEATURE VIEW -->
+                                <div v-if="currentView === 'ai_feature'">
+                                     <p class="text-gray-400 mb-6">Minta fungsionalitas baru dan biarkan AI membangunnya untuk Anda.</p>
+                                     <div class="flex gap-2">
+                                        <input v-model="newFeaturePrompt" @keyup.enter="requestNewFeature" type="text" placeholder="Contoh: 'buatkan timer pomodoro'" class="flex-grow bg-gray-800 text-white rounded-md px-4 py-3 outline-none focus:ring-2 ring-accent">
+                                        <button @click="requestNewFeature" :disabled="isAnyLoading" class="bg-accent text-white px-5 py-3 rounded-md hover:opacity-80 disabled:bg-gray-500 font-semibold">Buat</button>
+                                     </div>
+                                </div>
+                                 <!-- POMODORO VIEW -->
+                                 <div v-if="typeof currentView === 'object' && currentView.type === 'pomodoro'" class="flex flex-col items-center justify-center h-full">
+                                    <p class="text-lg uppercase tracking-widest" :class="pomodoro.mode === 'work' ? 'text-orange-400' : 'text-green-400'">{{ pomodoro.mode === 'work' ? 'Waktu Kerja' : 'Istirahat' }}</p>
+                                    <p class="text-8xl font-bold my-4">{{ pomodoroFormattedTime }}</p>
+                                 </div>
+                            </div>
+
+                            <!-- Footer / App Bar -->
+                            <div class="p-2 flex-shrink-0 bg-black flex justify-center items-center gap-8">
+                                <button @click="goHome" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-800"><i class="bi bi-arrow-left text-2xl"></i></button>
+                                
+                                <button v-if="currentView === 'todo' || currentView === 'kanban'" @click="isAddingTask = !isAddingTask" class="w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:opacity-80"><i class="bi bi-plus text-4xl"></i></button>
+
+                                <button v-if="currentView === 'calendar'" @click="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-800"><i class="bi bi-chevron-left text-2xl"></i></button>
+                                <button v-if="currentView === 'calendar'" @click="changeMonth(1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-800"><i class="bi bi-chevron-right text-2xl"></i></button>
+
+                                <button v-if="typeof currentView === 'object' && currentView.type === 'pomodoro'" @click="startPomodoro" v-if="!pomodoro.isRunning" class="w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:opacity-80"><i class="bi bi-play-fill text-4xl"></i></button>
+                                <button v-if="typeof currentView === 'object' && currentView.type === 'pomodoro'" @click="stopPomodoro(false)" v-else class="w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:opacity-80"><i class="bi bi-stop-fill text-4xl"></i></button>
+                            </div>
+                            
+                            <!-- Panel Tambah Tugas (muncul di atas App Bar) -->
+                            <div v-if="isAddingTask && currentView === 'todo'" class="p-4 bg-gray-900 border-t border-gray-700">
+                                 <input v-model="newTodoText" @keyup.enter="addTodo" placeholder="Ketik tugas baru..." class="w-full bg-gray-800 p-3 rounded-md outline-none focus:ring-2 ring-accent">
+                            </div>
+                             <div v-if="isAddingTask && currentView === 'kanban'" class="p-4 bg-gray-900 border-t border-gray-700">
+                                 <select v-model="newKanbanColumnIndex" class="w-full bg-gray-800 p-3 rounded-md mb-2 focus:ring-2 ring-accent">
+                                     <option v-for="(col, index) in kanban.columns" :value="index">{{ col.title }}</option>
+                                 </select>
+                                 <input v-model="newKanbanTaskText" @keyup.enter="addKanbanTask" placeholder="Ketik tugas baru..." class="w-full bg-gray-800 p-3 rounded-md outline-none focus:ring-2 ring-accent">
+                            </div>
+                        </div>
+                    </transition>
+                    
+                    <!-- Panel Samping, Modal Kustomisasi, Overlay Loading/Error di sini -->
+                    <transition name="fade">
+                        <div v-if="editingTile" @click="closeEditModal" class="absolute inset-0 bg-black/70 z-40 flex items-center justify-center p-4">
+                            <div @click.stop class="bg-gray-800 text-white p-6 rounded-lg w-full max-w-sm">
+                                <h3 class="text-2xl mb-4">Kustomisasi '{{ editingTile.nama }}'</h3>
+                                <div class="mb-4">
+                                    <label class="block mb-2">Warna</label>
+                                    <input type="color" @input="updateTileColor" class="w-full h-10 p-1 bg-gray-700 rounded cursor-pointer">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block mb-2">Ukuran</label>
+                                    <button @click="cycleTileSize" class="w-full bg-gray-700 py-2 rounded capitalize">{{ editingTile.ukuran }}</button>
+                                </div>
+                                <button @click="closeEditModal" class="w-full bg-accent py-2 rounded">Selesai</button>
+                            </div>
+                        </div>
+                    </transition>
+                </div>
+            </div>
+            `
+        });
+        
+        app.mount('#app');
+    </script>
+
+</body>
+</html>
+
