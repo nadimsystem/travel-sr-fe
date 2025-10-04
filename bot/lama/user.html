@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chat dengan Sutan Raya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #app {
+            background-color: #E5DDD5;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAEADAAAAAAADl1lAAAAnklEQVR4nO3SQQ3AMAgDQeaf85M2QJiJNAIZ+w4A4F6ylgAAgAABAAQIECAAAQIECAgAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIECDgA04rD9i1kC1PAAAAAElFTkSuQmCC');
+        }
+        .chat-bubble {
+            position: relative;
+        }
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        .bubble-sent::after {
+            right: -10px;
+            border-left-color: #25D366;
+            border-right: 0;
+            border-top: 0;
+        }
+        .bubble-received::after {
+            left: -10px;
+            border-right-color: #FFFFFF;
+            border-left: 0;
+            border-top: 0;
+        }
+        .ticks {
+            color: #4FC3F7; /* Warna tick biru WhatsApp */
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+<div id="app" class="flex flex-col h-screen max-w-2xl mx-auto">
+    <header class="flex-shrink-0 bg-gray-100 p-3 text-gray-800 flex items-center justify-between shadow-sm border-b border-gray-200">
+        <div class="flex items-center">
+             <button @click="resetChat" class="text-blue-500 text-lg mr-4 hidden"><i class="bi bi-arrow-clockwise"></i></button>
+            <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <i class="bi bi-crown-fill text-yellow-400 text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-semibold">Sutan Raya Travel</h1>
+                <p class="text-xs text-gray-500">online</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-5 text-blue-500">
+            <i class="bi bi-camera-video-fill text-2xl"></i>
+            <i class="bi bi-telephone-fill text-xl"></i>
+        </div>
+    </header>
+
+    <main ref="chatArea" class="flex-grow p-4 overflow-y-auto">
+        <div v-for="message in messages" :key="message.id" class="flex mb-2" :class="message.sender === 'user' ? 'justify-end' : 'justify-start'">
+            <div class="chat-bubble max-w-[80%] px-3 py-2 rounded-lg shadow-sm" :class="message.sender === 'user' ? 'bg-[#25D366] text-white bubble-sent' : 'bg-white text-gray-800 bubble-received'">
+                <p class="text-sm" style="word-wrap: break-word;" v-html="message.text"></p>
+                <div class="text-xs mt-1 text-right" :class="message.sender === 'user' ? 'text-green-100' : 'text-gray-400'">
+                    <span>{{ message.timestamp }}</span>
+                    <span v-if="message.sender === 'user'" class="ml-1 ticks">✓✓</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="flex-shrink-0 p-5 bg-gray-100 border-t border-gray-200">
+        <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
+            <i class="bi bi-plus-circle-fill text-blue-500 text-2xl"></i>
+            <input v-model="newMessage" type="text" placeholder="Message" class="w-full px-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" autocomplete="off">
+            <i v-if="!newMessage" class="bi bi-camera-fill text-blue-500 text-2xl"></i>
+            <i v-if="!newMessage" class="bi bi-mic-fill text-blue-500 text-2xl"></i>
+            <button v-if="newMessage" type="submit" class="bg-blue-500 text-white rounded-full w-9 h-9 flex-shrink-0 flex items-center justify-center">
+                <i class="bi bi-arrow-up text-xl"></i>
+            </button>
+        </form>
+    </footer>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                messages: [],
+                newMessage: ''
+            };
+        },
+        methods: {
+            loadMessages() {
+                this.messages = JSON.parse(localStorage.getItem('sutanRayaChat') || '[]');
+                this.scrollToBottom();
+            },
+            saveMessages() {
+                localStorage.setItem('sutanRayaChat', JSON.stringify(this.messages));
+                this.scrollToBottom();
+            },
+            resetChat() {
+                if (confirm('Mulai ulang percakapan? Riwayat chat ini akan dihapus.')) {
+                    localStorage.removeItem('sutanRayaChat');
+                    localStorage.removeItem('sutanRayaState');
+                    this.loadMessages();
+                }
+            },
+            sendMessage() {
+                if (this.newMessage.trim() === '') return;
+                const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const userMessage = { id: Date.now(), text: this.newMessage, sender: 'user', timestamp };
+                this.messages.push(userMessage);
+                this.saveMessages();
+                this.newMessage = '';
+            },
+            scrollToBottom() {
+                this.$nextTick(() => { this.$refs.chatArea.scrollTop = this.$refs.chatArea.scrollHeight; });
+            }
+        },
+        mounted() {
+            this.loadMessages();
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'sutanRayaChat' || event.key === 'sutanRayaState') {
+                    this.loadMessages();
+                }
+            });
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>

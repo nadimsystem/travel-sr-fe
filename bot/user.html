@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chat dengan Sutan Raya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #app {
+            background-color: #E5DDD5;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAEADAAAAAAADl1lAAAAnklEQVR4nO3SQQ3AMAgDQeaf85M2QJiJNAIZ+w4A4F6ylgAAgAABAAQIECAAAQIECAgAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIEBAgQIAAAQIECEgAAQIECAgQIECAgAABAAQIECDgA04rD9i1kC1PAAAAAElFTkSuQmCC');
+        }
+        .chat-bubble {
+            position: relative;
+        }
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        .bubble-sent::after {
+            right: -10px;
+            border-left-color: #25D366;
+            border-right: 0;
+            border-top: 0;
+        }
+        .bubble-received::after {
+            left: -10px;
+            border-right-color: #FFFFFF;
+            border-left: 0;
+            border-top: 0;
+        }
+        .ticks {
+            color: #4FC3F7; /* Warna tick biru WhatsApp */
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+<div id="app" class="flex flex-col h-screen max-w-2xl mx-auto">
+    <div v-if="isInvoice" class="p-6 bg-white h-full overflow-y-auto">
+        <h1 class="text-2xl font-bold text-center mb-6">Invoice Pemesanan</h1>
+        <div class="space-y-3 text-gray-700 border-t border-b py-4">
+            <p class="flex justify-between"><strong>Nama:</strong> <span>{{ invoiceData.customerName }}</span></p>
+            <p class="flex justify-between"><strong>Layanan:</strong> <span>{{ invoiceData.service }}</span></p>
+            <p class="flex justify-between"><strong>Tanggal:</strong> <span>{{ invoiceData.startDate }}</span></p>
+            <p class="flex justify-between"><strong>Jumlah:</strong> <span>{{ invoiceData.pax }} orang</span></p>
+            <p class="flex justify-between"><strong>Durasi:</strong> <span>{{ invoiceData.duration }} hari</span></p>
+             <p v-if="invoiceData.route !== 'N/A'" class="flex justify-between"><strong>Rute:</strong> <span>{{ invoiceData.route }}</span></p>
+        </div>
+        <p class="text-xl font-bold pt-4 mt-4 flex justify-between"><strong>Total:</strong> <span>Rp {{ Number(invoiceData.total).toLocaleString('id-ID') }}</span></p>
+        <button @click="closeInvoice" class="mt-8 w-full bg-blue-500 text-white p-3 rounded-lg font-bold hover:bg-blue-600">Tutup & Kembali ke Chat</button>
+    </div>
+
+    <template v-else>
+        <header class="flex-shrink-0 bg-gray-100 p-3 text-gray-800 flex items-center justify-between shadow-sm border-b border-gray-200">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <i class="bi bi-crown-fill text-yellow-400 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-semibold">Sutan Raya Travel</h1>
+                    <p class="text-xs text-gray-500">online</p>
+                </div>
+            </div>
+             <div class="flex items-center space-x-4 text-blue-500">
+                <i class="bi bi-camera-video-fill text-2xl"></i>
+                <i class="bi bi-telephone-fill text-xl"></i>
+                <button @click="resetChat" title="Mulai Ulang Chat" class="text-blue-500 text-lg"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+        </header>
+
+        <main ref="chatArea" class="flex-grow p-4 overflow-y-auto">
+            <div v-for="message in messages" :key="message.id" class="flex mb-2" :class="message.sender === 'user' ? 'justify-end' : 'justify-start'">
+                <div class="relative chat-bubble max-w-[80%] px-3 py-2 rounded-lg shadow-sm" :class="message.sender === 'user' ? 'bg-[#25D366] text-white bubble-sent' : 'bg-white text-gray-800 bubble-received'">
+                    <p class="text-sm" style="word-wrap: break-word;" v-html="message.text"></p>
+                    <div class="text-xs mt-1 text-right" :class="message.sender === 'user' ? 'text-green-100' : 'text-gray-400'">
+                        <span>{{ message.timestamp }}</span>
+                        <span v-if="message.sender === 'user'" class="ml-1 ticks">✓✓</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="flex-shrink-0 p-5 bg-gray-100 border-t border-gray-200">
+            <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
+                <i class="bi bi-plus-circle-fill text-blue-500 text-2xl"></i>
+                <input v-model="newMessage" type="text" placeholder="Message" class="w-full px-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" autocomplete="off">
+                <i v-if="!newMessage" class="bi bi-camera-fill text-blue-500 text-2xl"></i>
+                <i v-if="!newMessage" class="bi bi-mic-fill text-blue-500 text-2xl"></i>
+                <button v-if="newMessage" type="submit" class="bg-blue-500 text-white rounded-full w-9 h-9 flex-shrink-0 flex items-center justify-center">
+                    <i class="bi bi-arrow-up text-xl"></i>
+                </button>
+            </form>
+        </footer>
+    </template>
+</div>
+
+<script>
+    const { createApp, ref, onMounted, nextTick, computed } = Vue;
+
+    createApp({
+        setup() {
+            const messages = ref([]);
+            const newMessage = ref('');
+            const userId = ref('1');
+            const chatArea = ref(null);
+            const isInvoice = ref(false);
+            const invoiceData = ref({});
+            
+            const storageKey = computed(() => `sutanRayaChat_${userId.value}`);
+
+            const scrollToBottom = () => nextTick(() => { if(chatArea.value) chatArea.value.scrollTop = chatArea.value.scrollHeight; });
+
+            const loadMessages = () => {
+                const convo = JSON.parse(localStorage.getItem(storageKey.value) || '{}');
+                messages.value = convo.messages || [];
+                scrollToBottom();
+            };
+
+            const sendMessage = () => {
+                if (newMessage.value.trim() === '') return;
+                
+                let convo = JSON.parse(localStorage.getItem(storageKey.value) || '{}');
+                if (!convo.messages) {
+                    convo = {
+                        userId: userId.value,
+                        messages: [],
+                        botActive: true, 
+                        state: { current: 'idle', data: {} },
+                        lastActivity: 0,
+                        isActive: false
+                    };
+                }
+
+                const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const userMessage = { id: Date.now(), text: newMessage.value, sender: 'user', timestamp };
+                
+                convo.messages.push(userMessage);
+                convo.lastActivity = Date.now();
+                convo.isActive = true;
+
+                localStorage.setItem(storageKey.value, JSON.stringify(convo));
+                
+                messages.value = convo.messages;
+                newMessage.value = '';
+                scrollToBottom();
+            };
+            
+            const resetChat = () => {
+                if (confirm('Mulai ulang percakapan? Riwayat chat ini akan dihapus.')) {
+                    localStorage.removeItem(storageKey.value);
+                    loadMessages();
+                }
+            };
+
+            const closeInvoice = () => {
+                isInvoice.value = false;
+                const url = new URL(window.location);
+                url.searchParams.delete('invoice');
+                // Hapus semua parameter invoice lainnya
+                for(const key of url.searchParams.keys()){
+                    if(key !== 'id') url.searchParams.delete(key);
+                }
+                window.history.replaceState({}, document.title, url.toString());
+            };
+
+            onMounted(() => {
+                const params = new URLSearchParams(window.location.search);
+                userId.value = params.get('id') || '1';
+
+                if(params.get('invoice') === 'true'){
+                    isInvoice.value = true;
+                    invoiceData.value = Object.fromEntries(params.entries());
+                } else {
+                    loadMessages();
+                    window.addEventListener('storage', (event) => {
+                        if (event.key === storageKey.value) {
+                            loadMessages();
+                        }
+                    });
+                }
+            });
+
+            return { messages, newMessage, userId, sendMessage, resetChat, chatArea, isInvoice, invoiceData, closeInvoice };
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>

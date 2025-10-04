@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bot Sutan Raya (Admin Panel)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { overflow: hidden; }
+        .panel-container { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+<div id="app" class="relative h-screen max-w-2xl mx-auto overflow-hidden">
+    <div class="panel-container w-[200vw] h-full flex" 
+         :style="{ transform: isSettingsVisible ? 'translateX(-50%)' : 'translateX(0)' }"
+         @touchstart="handleDragStart" @touchmove="handleDragMove" @touchend="handleDragEnd"
+         @mousedown="handleDragStart" @mousemove="handleDragMove" @mouseup="handleDragEnd" @mouseleave="handleDragEnd">
+
+        <div class="w-[100vw] h-full flex flex-col bg-gray-800">
+            <header class="flex-shrink-0 bg-gray-900 p-4 text-white flex justify-between items-center shadow-md">
+                <div class="text-left">
+                    <h1 class="text-xl font-bold">Admin Sutan Raya</h1>
+                    <p class="text-sm text-gray-400">Memantau chat dari pelanggan</p>
+                </div>
+                <button @click="resetChat" title="Reset Chat" class="p-2 rounded-full hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors">
+                    <i class="bi bi-arrow-clockwise text-xl"></i>
+                </button>
+            </header>
+            <main ref="chatArea" class="flex-grow p-4 overflow-y-auto">
+                <div v-for="message in messages" :key="message.id" class="flex mb-4" :class="message.sender === 'bot' ? 'justify-start' : 'justify-end'">
+                    <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-lg shadow" :class="message.sender === 'bot' ? 'bg-gray-700 text-white' : 'bg-sky-500 text-white'">
+                        <p class="text-sm whitespace-pre-line" v-html="message.text"></p>
+                        <div class="text-xs text-gray-400 mt-1 text-right">{{ message.timestamp }}</div>
+                    </div>
+                </div>
+                <div v-if="messages.length === 0" class="text-center text-gray-500 pt-10">
+                    <i class="bi bi-chat-dots text-4xl"></i>
+                    <p class="mt-2">Riwayat chat kosong.</p>
+                </div>
+            </main>
+        </div>
+        
+        <div class="w-[100vw] h-full flex flex-col bg-gray-900">
+            <header class="flex-shrink-0 p-4 text-white flex justify-between items-center border-b border-gray-700">
+                <button @click="isSettingsVisible = false" class="text-sky-400 font-semibold flex items-center">
+                    <i class="bi bi-chevron-left mr-2"></i> Kembali ke Chat
+                </button>
+                <h1 class="text-xl font-bold">Pengaturan Bot</h1>
+            </header>
+            <main class="flex-grow p-4 overflow-y-auto">
+                <p class="text-sm text-gray-400 mb-6">Ubah teks balasan otomatis untuk setiap menu di bawah ini. Perubahan akan disimpan secara otomatis.</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-sky-400 mb-1">Menu 1: Pesan Travel Hiace</label>
+                        <textarea v-model="botResponses['1']" rows="4" class="w-full bg-gray-800 text-white rounded-md p-2 text-sm border border-gray-700 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-sky-400 mb-1">Menu 2: Pesan Bus Pariwisata</label>
+                        <textarea v-model="botResponses['2']" rows="4" class="w-full bg-gray-800 text-white rounded-md p-2 text-sm border border-gray-700 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-sky-400 mb-1">Menu 3: Info Tour & Travel</label>
+                        <textarea v-model="botResponses['3']" rows="5" class="w-full bg-gray-800 text-white rounded-md p-2 text-sm border border-gray-700 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-sky-400 mb-1">Menu 4: Promo Shuttle</label>
+                        <textarea v-model="botResponses['4']" rows="5" class="w-full bg-gray-800 text-white rounded-md p-2 text-sm border border-gray-700 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-sky-400 mb-1">Menu 5: Promo Pelajar</label>
+                        <textarea v-model="botResponses['5']" rows="4" class="w-full bg-gray-800 text-white rounded-md p-2 text-sm border border-gray-700 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, reactive, watch, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            const messages = ref([]);
+            const userState = ref({ current: 'idle', data: {} });
+            const costs = {
+                driverMeal: 100000,
+                driverLodge: 100000,
+                vehicles: [
+                    { name: 'Hiace Premio / Commuter', pricePerDay: 1200000, pricePerSeat: 150000 },
+                    { name: 'Medium Bus', pricePerDay: 2500000 },
+                    { name: 'Big Bus', pricePerDay: 3500000 },
+                ]
+            };
+            
+            const isSettingsVisible = ref(false);
+            const isDragging = ref(false);
+            const dragStartX = ref(0);
+            const dragMoveX = ref(0);
+
+            const defaultResponses = {
+                '1': `Layanan Sewa Hiace Luxury Class kami sudah All-in (Mobil, Driver, BBM, Tol, Parkir).<br>Fasilitas: Captain Seat, Kursi Pijat, Karaoke, TV, AC, USB Charger, Coolbox.`,
+                '2': `Siap! Armada bus pariwisata kami (Medium & Big Bus) terbaru tahun 2025 siap melayani perjalanan wisata Anda.<br><br>Kapasitas 33-50 kursi, dilengkapi GPS & USB Port.`,
+                '3': `Kami menyediakan layanan Tour & Organizer yang lengkap:<br><br>• **Paket Kustom**: Anda tentukan destinasi, kami susunkan itinerary & biayanya.<br>• **Dokumentasi**: Tim profesional dengan Kamera, Drone, dan editor video.<br>• **Outbound**: Fun games untuk group/korporat.<br><br>Untuk membuat paket tur, silakan hubungi tim kami langsung melalui website atau ketik 'menu' untuk kembali.`,
+                '4': `Layanan shuttle antar jemput alamat rute Padang ⇄ Payakumbuh.<br><br>Harga: Rp 150.000.<br><br>Jadwal:<br>• PYK - Padang: 05.00, 10.00, 14.00, 17.00<br>• Padang - PYK: 08.00, 10.00, 14.00, 18.00`,
+                '5': `Promo spesial untuk Pelajar & Mahasiswa!<br><br>Harga khusus rute Padang-Payakumbuh (PP) hanya Rp 130.000. Wajib menunjukkan Kartu Tanda Mahasiswa / Pelajar aktif.`,
+            };
+
+            const botResponses = reactive({ ...defaultResponses });
+            const conversationTree = ref({});
+
+            const chatArea = ref(null);
+            const scrollToBottom = () => { Vue.nextTick(() => { if(chatArea.value) chatArea.value.scrollTop = chatArea.value.scrollHeight; }); };
+
+            const loadSession = () => {
+                messages.value = JSON.parse(localStorage.getItem('sutanRayaChat') || '[]');
+                userState.value = JSON.parse(localStorage.getItem('sutanRayaState') || JSON.stringify({ current: 'idle', data: {} }));
+                const savedResponses = JSON.parse(localStorage.getItem('sutanRayaBotResponses'));
+                if (savedResponses) { Object.assign(botResponses, savedResponses); }
+                scrollToBottom();
+            };
+
+            const saveSession = () => {
+                localStorage.setItem('sutanRayaChat', JSON.stringify(messages.value));
+                localStorage.setItem('sutanRayaState', JSON.stringify(userState.value));
+                scrollToBottom();
+            };
+            
+            watch(botResponses, (newResponses) => { localStorage.setItem('sutanRayaBotResponses', JSON.stringify(newResponses)); }, { deep: true });
+
+            const resetChat = () => {
+                if (confirm('Yakin ingin menghapus semua riwayat chat?')) {
+                    localStorage.removeItem('sutanRayaChat');
+                    localStorage.removeItem('sutanRayaState');
+                    loadSession();
+                }
+            };
+            
+            const sendMessage = (text, delay = 0) => {
+                const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                setTimeout(() => {
+                    messages.value.push({ id: Date.now() + Math.random(), text, sender: 'bot', timestamp });
+                    saveSession();
+                }, delay);
+            };
+
+            const calculatePrice = (service, duration) => {
+                let total = 0;
+                let breakdown = [];
+                const nights = duration > 1 ? duration - 1 : 0;
+                const vehicle = costs.vehicles.find(v => service.toLowerCase().includes(v.name.split(' ')[0].toLowerCase()));
+                if (vehicle) {
+                    const vehicleCost = vehicle.pricePerDay * duration;
+                    breakdown.push(`• Sewa ${vehicle.name} (${duration} hari): Rp ${vehicleCost.toLocaleString('id-ID')}`);
+                    total += vehicleCost;
+                    if(duration > 0){
+                        const crewCost = (costs.driverMeal * duration) + (costs.driverLodge * nights);
+                        breakdown.push(`• Operasional Kru (Makan & Inap): Rp ${crewCost.toLocaleString('id-ID')}`);
+                        total += crewCost;
+                    }
+                }
+                const finalPrice = `Baik, Kak. Berikut estimasi biayanya:<br><br>${breakdown.join('<br>')}<br><br><b>Total Estimasi: Rp ${total.toLocaleString('id-ID')}</b><br><br>Ini hanya estimasi sewa unit & kru. Biaya lain (tiket wisata, makan, dll) tidak termasuk.`;
+                userState.value.data.estimatedPrice = total;
+                return finalPrice;
+            };
+
+            const handleBotReply = () => {
+                const lastMessage = messages.value[messages.value.length - 1];
+                if (!lastMessage || lastMessage.sender !== 'user') return;
+
+                const userText = lastMessage.text.toLowerCase().trim();
+                const currentStateHandler = conversationTree.value.states[userState.value.current];
+
+                if (currentStateHandler && currentStateHandler(userText)) { /* Handled */ } 
+                else if (conversationTree.value.keywords[userText]) { conversationTree.value.keywords[userText](); }
+                else { sendMessage(botResponses.default || "Maaf, saya tidak mengerti.", 500); }
+            };
+
+            const initializeConversationTree = () => {
+                const menuText = `Ada lagi yang bisa dibantu?<br><br>• Ketik 1 untuk Pesan Travel Hiace<br>• Ketik 2 untuk Pesan Bus Pariwisata<br>• Ketik 3 untuk Info Tour & Travel<br>• Ketik 4 untuk Promo Shuttle<br>• Ketik 5 untuk Promo Pelajar`;
+                
+                conversationTree.value = {
+                    keywords: {
+                        'halo': () => {
+                            userState.value = { current: 'idle', data: {} };
+                            sendMessage(`Halo, Kak! 😃 Selamat datang di Sutan Raya.<br><br>Saya asisten virtual yang siap membantu Anda. Silakan pilih layanan dengan mengetik nomornya:<br><br>• Ketik 1 untuk Pesan Travel Hiace<br>• Ketik 2 untuk Pesan Bus Pariwisata<br>• Ketik 3 untuk Info Tour & Travel<br>• Ketik 4 untuk Promo Shuttle<br>• Ketik 5 untuk Promo Pelajar`);
+                        },
+                         '1': () => {
+                            sendMessage(botResponses['1'] + `<br><br>Silakan pilih:<br>• Ketik 'A' untuk Pesan Per Bangku.<br>• Ketik 'B' untuk Sewa Harian (Carter).`);
+                            userState.value.current = 'state_hiace_options'; saveSession();
+                         },
+                         '2': () => {
+                             sendMessage(botResponses['2'] + `<br><br>Ketik 'pesan' untuk memulai proses booking dan mendapatkan estimasi harga.`);
+                             userState.value.current = 'state_bus'; saveSession();
+                         },
+                         '3': () => { sendMessage(botResponses['3']); userState.value.current = 'idle'; saveSession(); },
+                         '4': () => {
+                             sendMessage(botResponses['4'] + `<br><br>Ketik 'pesan' untuk booking shuttle.`);
+                             userState.value.current = 'state_shuttle'; saveSession();
+                         },
+                         '5': () => {
+                             sendMessage(botResponses['5'] + `<br><br>Ketik 'pesan' untuk booking promo ini.`);
+                             userState.value.current = 'state_promo'; saveSession();
+                         },
+                         'menu': () => { userState.value.current = 'idle'; sendMessage(menuText); }
+                    },
+                    // ... (rest of the states logic is the same)
+                    states: {
+                        'idle': (input) => conversationTree.value.keywords[input] ? (conversationTree.value.keywords[input](), true) : false,
+                        'state_hiace_options': (input) => {
+                            if(input === 'a') {
+                                userState.value.data = { service: 'Travel Hiace (Per Bangku)', price: costs.vehicles[0].pricePerSeat };
+                                userState.value.current = 'booking_ask_route';
+                                sendMessage(`Baik, pemesanan per bangku (Rp ${userState.value.data.price.toLocaleString('id-ID')}/orang).<br><br>Kami melayani rute Padang, Bukittinggi, Payakumbuh, dan seluruh Sumbar. Mau berangkat dari mana ke mana, Kak?`);
+                            } else if (input === 'b') {
+                                userState.value.data = { service: 'Sewa Harian Hiace' };
+                                userState.value.current = 'booking_ask_duration';
+                                sendMessage(`Siap! Untuk sewa harian (carter), perjalanannya direncanakan untuk berapa hari?`);
+                            } else { sendMessage("Pilihan tidak valid. Silakan ketik 'A' atau 'B'."); }
+                            saveSession(); return true;
+                        },
+                        'state_bus': (input) => {
+                            if (input === 'pesan') {
+                                sendMessage("Tentu. Untuk bus, ada 2 jenis:<br><br>• Ketik 'A' untuk Medium Bus (33 seat)<br>• Ketik 'B' untuk Big Bus (50 seat)");
+                                userState.value.current = 'booking_ask_bus_type';
+                            } else { conversationTree.value.keywords['menu'](); }
+                             saveSession(); return true;
+                        },
+                         'state_shuttle': (input) => {
+                             if (input === 'pesan') {
+                                userState.value.data = { service: 'Shuttle Padang-Payakumbuh', price: 150000 };
+                                userState.value.current = 'booking_ask_name';
+                                sendMessage(`Baik, untuk booking "${userState.value.data.service}", atas nama siapa?`);
+                            } else { conversationTree.value.keywords['menu'](); }
+                            saveSession(); return true;
+                        },
+                        'state_promo': (input) => {
+                             if (input === 'pesan') {
+                                userState.value.data = { service: 'Promo Pelajar', price: 130000 };
+                                userState.value.current = 'booking_ask_name';
+                                sendMessage(`Siap! Untuk booking "${userState.value.data.service}". Atas nama siapa? (Jangan lupa bawa kartu identitas pelajar/mahasiswa ya)`);
+                            } else { conversationTree.value.keywords['menu'](); }
+                            saveSession(); return true;
+                        },
+                        'booking_ask_route': (input) => {
+                            userState.value.data.route = input;
+                            userState.value.current = 'booking_ask_name';
+                            sendMessage(`Oke, rute ${userState.value.data.route}. Selanjutnya, pemesanan atas nama siapa?`);
+                            saveSession(); return true;
+                        },
+                        'booking_ask_bus_type': (input) => {
+                            if (input === 'a') userState.value.data = { service: 'Sewa Medium Bus' };
+                            else if (input === 'b') userState.value.data = { service: 'Sewa Big Bus' };
+                            else { sendMessage("Pilihan tidak valid, silakan ketik 'A' atau 'B'."); return true; }
+                            userState.value.current = 'booking_ask_duration';
+                            sendMessage(`OK, ${userState.value.data.service}. Perjalanannya untuk berapa hari?`);
+                            saveSession(); return true;
+                        },
+                        'booking_ask_duration': (input) => {
+                            const duration = parseInt(input);
+                            if (isNaN(duration) || duration <= 0) { sendMessage("Mohon masukkan jumlah hari yang valid (contoh: 3)."); return true; }
+                            userState.value.data.duration = duration;
+                            const priceInfo = calculatePrice(userState.value.data.service, userState.value.data.duration);
+                            sendMessage(priceInfo, 500);
+                            sendMessage("Jika setuju dengan estimasi ini, silakan ketik nama Anda untuk membuat invoice.", 1500);
+                            userState.value.current = 'booking_ask_name';
+                            saveSession(); return true;
+                        },
+                        'booking_ask_name': (input) => {
+                            userState.value.data.name = input.charAt(0).toUpperCase() + input.slice(1);
+                            if (!userState.value.data.duration) {
+                                userState.value.current = 'booking_shuttle_ask_pax';
+                                sendMessage(`Oke, Kak ${userState.value.data.name}. Untuk berapa orang?`);
+                            } else {
+                                userState.value.current = 'booking_ask_pax_rental';
+                                sendMessage(`Siap, Kak ${userState.value.data.name}. Rombongan berjumlah berapa orang?`);
+                            }
+                            saveSession(); return true;
+                        },
+                         'booking_ask_pax_rental': (input) => {
+                            userState.value.data.pax = input;
+                            userState.value.current = 'booking_ask_date';
+                            sendMessage(`Dicatat, ${userState.value.data.pax} orang. Untuk tanggal berapa, Kak?`);
+                            saveSession(); return true;
+                        },
+                        'booking_shuttle_ask_pax': (input) => {
+                            const pax = parseInt(input);
+                             if (isNaN(pax) || pax <= 0) { sendMessage("Mohon masukkan jumlah orang yang valid (angka saja)."); return true; }
+                            userState.value.data.pax = pax;
+                            userState.value.data.estimatedPrice = userState.value.data.price * userState.value.data.pax;
+                            userState.value.current = 'booking_ask_date';
+                            sendMessage(`Total biaya untuk ${userState.value.data.pax} orang adalah Rp ${userState.value.data.estimatedPrice.toLocaleString('id-ID')}. Perjalanan untuk tanggal berapa, Kak?`);
+                            saveSession(); return true;
+                        },
+                        'booking_ask_date': (input) => {
+                            userState.value.data.date = input;
+                            const { name, service, pax, date, duration, estimatedPrice, route } = userState.value.data;
+                            const invoiceParams = new URLSearchParams({ customerName: name, service, pax: pax || 'N/A', duration: duration || 'N/A', startDate: date, total: estimatedPrice, route: route || 'N/A' }).toString();
+                            const invoiceURL = `tour/index.html?${invoiceParams}`;
+                            const summary = `Terima kasih, Kak ${name}! Booking Anda sudah kami catat.<br><br>Silakan selesaikan pembayaran dan lihat detail invoice Anda dengan mengklik link di bawah ini:<br><br><a href="${invoiceURL}" target="_blank" class="text-sky-400 underline font-bold">Buka Invoice Pembayaran</a>`;
+                            sendMessage(summary);
+                            setTimeout(() => {
+                                sendMessage("Ada lagi yang bisa saya bantu? Ketik 'menu' untuk melihat pilihan lagi.");
+                                userState.value = { current: 'idle', data: {} };
+                                saveSession();
+                            }, 2000);
+                            return true;
+                        }
+                    }
+                };
+            };
+            
+            const handleDragStart = (e) => {
+                if (messages.value.length > 0) return;
+                isDragging.value = true;
+                dragStartX.value = e.touches ? e.touches[0].clientX : e.clientX;
+            };
+            const handleDragMove = (e) => {
+                if (!isDragging.value) return;
+                dragMoveX.value = e.touches ? e.touches[0].clientX : e.clientX;
+            };
+            const handleDragEnd = () => {
+                if (!isDragging.value) return;
+                isDragging.value = false;
+                const deltaX = dragStartX.value - dragMoveX.value;
+                if (deltaX > 50) isSettingsVisible.value = true; // Swipe left to open
+                if (deltaX < -50) isSettingsVisible.value = false; // Swipe right to close
+                dragStartX.value = 0;
+                dragMoveX.value = 0;
+            };
+
+            onMounted(() => {
+                initializeConversationTree();
+                loadSession();
+                window.addEventListener('storage', (event) => {
+                    if (['sutanRayaChat', 'sutanRayaState', 'sutanRayaBotResponses'].includes(event.key)) {
+                        const oldMessageCount = messages.value.length;
+                        loadSession();
+                        initializeConversationTree();
+                        if (messages.value.length > oldMessageCount) {
+                            setTimeout(() => handleBotReply(), 1000);
+                        }
+                    }
+                });
+            });
+            
+            return { messages, resetChat, botResponses, isSettingsVisible, handleDragStart, handleDragMove, handleDragEnd, chatArea };
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>
