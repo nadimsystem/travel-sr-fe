@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Tour Organizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Anda bisa menyalin style dari ai.html jika ingin tampilan yang konsisten */
+        :root {
+            --sutan-dark: #121212;
+            --sutan-gold: #D4AF37;
+            --sutan-light: #f8f9fa;
+            --sutan-dark-2: #1e1e1e;
+            --sutan-border: #444;
+        }
+        .report-container {
+            background-color: var(--sutan-dark-2);
+            border: 1px solid var(--sutan-border);
+            border-radius: .75rem;
+            padding: 1.5rem;
+        }
+        .table {
+            color: var(--sutan-light);
+        }
+        .table th {
+            color: var(--sutan-gold);
+        }
+    </style>
+</head>
+<body>
+    <div id="reportApp" class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="step-title mb-0">
+                <i class="bi bi-graph-up-arrow me-2"></i>Laporan Tour Organizer
+            </h3>
+            </div>
+
+        <div class="report-container mb-4">
+            <h5 class="text-gold mb-3">Laporan Bulanan (September 2025)</h5>
+            <table class="table table-sm table-borderless">
+                <thead>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <th class="text-end">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Paket Tur Terjual</td>
+                        <td class="text-end fw-bold">{{ monthlyReport.totalTours }} Paket</td>
+                    </tr>
+                    <tr>
+                        <td>Total Peserta</td>
+                        <td class="text-end fw-bold">{{ monthlyReport.totalPax }} Orang</td>
+                    </tr>
+                    <tr>
+                        <td>Estimasi Pendapatan</td>
+                        <td class="text-end fw-bold text-success">Rp {{ monthlyReport.totalRevenue.toLocaleString('id-ID') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="report-container mb-4">
+            <h5 class="text-gold mb-3">Laporan Mingguan</h5>
+            <div v-for="week in weeklyReport" :key="week.week" class="mb-3">
+                <h6>{{ week.week }}</h6>
+                <table class="table table-sm table-bordered">
+                     <thead class="table-dark">
+                        <tr>
+                            <th>Paket</th>
+                            <th>Peserta</th>
+                            <th class="text-end">Pendapatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="tour in week.tours" :key="tour.id">
+                            <td>{{ tour.customerName }}</td>
+                            <td>{{ tour.pax }}</td>
+                            <td class="text-end">Rp {{ tour.price.toLocaleString('id-ID') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-container">
+            <h5 class="text-gold mb-3">Grafik Pertumbuhan Pendapatan Mingguan</h5>
+            <canvas id="growthChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted, computed } = Vue;
+
+        createApp({
+            setup() {
+                const savedTours = ref([]);
+
+                // --- DATA DUMMY (Sama seperti di index.html) ---
+                // Data ini akan diambil dari localStorage
+                const dummyTours = [
+                    // Minggu 1
+                    { id: 1, customerName: 'Keluarga Bpk. Ahmad', pax: 4, startDate: '2025-09-01', endDate: '2025-09-03', price: 8500000 },
+                    { id: 2, customerName: 'PT. Maju Jaya', pax: 15, startDate: '2025-09-04', endDate: '2025-09-05', price: 25000000 },
+                    // Minggu 2
+                    { id: 3, customerName: 'Studi Tur SMA 1', pax: 40, startDate: '2025-09-08', endDate: '2025-09-10', price: 75000000 },
+                    // Minggu 3
+                    { id: 4, customerName: 'Grup Arisan Ibu Ceria', pax: 8, startDate: '2025-09-18', endDate: '2025-09-19', price: 12000000 },
+                    // Minggu 4
+                    { id: 5, customerName: 'Backpacker Jakarta', pax: 6, startDate: '2025-09-25', endDate: '2025-09-28', price: 15000000 },
+                    { id: 6, customerName: 'Kunjungan Dinas Pemda', pax: 10, startDate: '2025-09-29', endDate: '2025-09-30', price: 18000000 },
+                ];
+
+                const monthlyReport = computed(() => {
+                    const totalTours = savedTours.value.length;
+                    const totalPax = savedTours.value.reduce((sum, tour) => sum + tour.pax, 0);
+                    const totalRevenue = savedTours.value.reduce((sum, tour) => sum + tour.price, 0);
+                    return { totalTours, totalPax, totalRevenue };
+                });
+                
+                const getWeekNumber = (d) => {
+                    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+                    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+                    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+                    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+                    return weekNo;
+                }
+
+                const weeklyReport = computed(() => {
+                    const weeks = {};
+                    savedTours.value.forEach(tour => {
+                        const week = `Minggu ${getWeekNumber(new Date(tour.startDate))}`;
+                        if (!weeks[week]) {
+                            weeks[week] = { week, tours: [], totalRevenue: 0 };
+                        }
+                        weeks[week].tours.push(tour);
+                        weeks[week].totalRevenue += tour.price;
+                    });
+                    return Object.values(weeks);
+                });
+
+                onMounted(() => {
+                    // Coba ambil data dari localStorage
+                    const toursFromStorage = localStorage.getItem('sutanRayaTours');
+                    if (toursFromStorage && JSON.parse(toursFromStorage).length > 0) {
+                        // Mengkalkulasi harga dummy karena data asli tidak punya harga
+                        savedTours.value = JSON.parse(toursFromStorage).map(t => ({
+                            ...t,
+                            price: (t.pax * (t.duration || 1) * 500000) + (t.addons.outbound ? 1000000 : 0) + (t.addons.documentation ? 2500000 : 0)
+                        }));
+                    } else {
+                        // Jika tidak ada, gunakan data dummy
+                        savedTours.value = dummyTours;
+                    }
+                    
+                    // Render Grafik
+                    const ctx = document.getElementById('growthChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: weeklyReport.value.map(w => w.week),
+                            datasets: [{
+                                label: 'Pendapatan Mingguan',
+                                data: weeklyReport.value.map(w => w.totalRevenue),
+                                backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                                borderColor: 'rgba(212, 175, 55, 1)',
+                                borderWidth: 2,
+                                tension: 0.3
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: true } } }
+                    });
+                });
+
+                return { monthlyReport, weeklyReport };
+            }
+        }).mount('#reportApp');
+    </script>
+</body>
+</html>
