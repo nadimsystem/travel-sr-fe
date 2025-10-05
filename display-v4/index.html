@@ -23,17 +23,18 @@
 
     <div id="app" class="flex h-screen bg-sutan-blue-900 text-gray-800">
         
-        <nav class="w-64 bg-white flex-shrink-0 border-r border-gray-200 flex flex-col" :class="{ 'hidden': isFullscreen }">
-            <div class="h-24 flex items-center justify-center border-b border-gray-200"><div class="brand text-4xl text-sutan-blue-900">SutanRaya</div></div>
-            <ul class="flex-grow p-4">
-                <li @click="view = 'dashboard'" :class="view === 'dashboard' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-window-split w-6 text-xl"></i><span class="ml-4 font-semibold">Dashboard</span></li>
-                <li @click="view = 'inventaris'" :class="view === 'inventaris' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-truck-front-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Inventaris</span></li>
-                <li @click="view = 'drivers'" :class="view === 'drivers' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-person-badge-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Kelola Supir</span></li>
-                <li @click="view = 'history'" :class="view === 'history' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-clock-history w-6 text-xl"></i><span class="ml-4 font-semibold">Riwayat</span></li>
-                <li @click="view = 'display'" :class="view === 'display' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-display-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Layar Display</span></li>
-                <li @click="view = 'admin'" :class="view === 'admin' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2 mt-8 border-t pt-4"><i class="bi bi-sliders w-6 text-xl"></i><span class="ml-4 font-semibold">Panel Admin</span></li>
-            </ul>
-        </nav>
+      <nav class="w-64 bg-white flex-shrink-0 border-r border-gray-200 flex flex-col" :class="{ 'hidden': isFullscreen }">
+        <div class="h-24 flex items-center justify-center border-b border-gray-200"><div class="brand text-4xl text-sutan-blue-900">SutanRaya</div></div>
+        <ul class="flex-grow p-4">
+            <li @click="view = 'dashboard'" :class="view === 'dashboard' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-window-split w-6 text-xl"></i><span class="ml-4 font-semibold">Dashboard</span></li>
+            <li @click="view = 'process'" :class="view === 'process' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-plus-circle-dotted w-6 text-xl"></i><span class="ml-4 font-semibold">Proses Jadwal</span></li>
+            <li @click="view = 'inventaris'" :class="view === 'inventaris' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-truck-front-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Inventaris</span></li>
+            <li @click="view = 'drivers'" :class="view === 'drivers' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-person-badge-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Kelola Supir</span></li>
+            <li @click="view = 'history'" :class="view === 'history' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-clock-history w-6 text-xl"></i><span class="ml-4 font-semibold">Riwayat</span></li>
+            <li @click="view = 'display'" :class="view === 'display' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2"><i class="bi bi-display-fill w-6 text-xl"></i><span class="ml-4 font-semibold">Layar Display</span></li>
+            <li @click="view = 'admin'" :class="view === 'admin' ? 'bg-sutan-blue-800 text-white' : 'hover:bg-gray-100'" class="flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 mb-2 mt-8 border-t pt-4"><i class="bi bi-sliders w-6 text-xl"></i><span class="ml-4 font-semibold">Panel Admin</span></li>
+        </ul>
+    </nav>
 
         <main class="flex-1 flex flex-col" :class="{ 'w-full h-full': isFullscreen }">
             <header class="h-24 bg-white border-b border-gray-200 flex-shrink-0 flex items-center justify-between px-8" :class="{ 'hidden': isFullscreen }">
@@ -68,6 +69,55 @@
                             </div>
                         </div>
                         
+                        <div v-if="view === 'process'">
+                            <div class="space-y-8">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-sutan-blue-900 flex items-center mb-4">
+                                        <i class="bi bi-truck-front-fill mr-3 text-yellow-500"></i> HIACE STANDBY
+                                        <span class="ml-4 text-base font-medium bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">{{ standbyHiace.length }}</span>
+                                    </h2>
+                                    <div v-if="standbyHiace.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                        <div v-for="armada in standbyHiace" @click="openTripWizard(armada.id)" class="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-200">
+                                            <i :class="armada.icon" class="text-6xl text-yellow-500"></i>
+                                            <div class="mt-4 font-bold text-lg text-gray-800">{{ armada.name }}</div>
+                                            <div class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded-md mt-1">{{ armada.plate }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center py-8 text-gray-500 bg-white rounded-xl shadow-lg">Tidak ada Hiace yang tersedia.</div>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-2xl font-bold text-sutan-blue-900 flex items-center mb-4">
+                                        <i class="bi bi-bus-front-fill mr-3 text-blue-500"></i> MEDIUM BUS STANDBY
+                                        <span class="ml-4 text-base font-medium bg-blue-100 text-blue-800 px-3 py-1 rounded-full">{{ standbyMediumBus.length }}</span>
+                                    </h2>
+                                    <div v-if="standbyMediumBus.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                        <div v-for="armada in standbyMediumBus" @click="openTripWizard(armada.id)" class="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-200">
+                                            <i :class="armada.icon" class="text-6xl text-blue-500"></i>
+                                            <div class="mt-4 font-bold text-lg text-gray-800">{{ armada.name }}</div>
+                                            <div class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded-md mt-1">{{ armada.plate }}</div>
+                                        </div>
+                                    </div>
+                                     <div v-else class="text-center py-8 text-gray-500 bg-white rounded-xl shadow-lg">Tidak ada Medium Bus yang tersedia.</div>
+                                </div>
+
+                                <div>
+                                     <h2 class="text-2xl font-bold text-sutan-blue-900 flex items-center mb-4">
+                                        <i class="bi bi-bus-front-fill mr-3 text-indigo-500"></i> BIG BUS STANDBY
+                                        <span class="ml-4 text-base font-medium bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">{{ standbyBigBus.length }}</span>
+                                    </h2>
+                                    <div v-if="standbyBigBus.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                        <div v-for="armada in standbyBigBus" @click="openTripWizard(armada.id)" class="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-200">
+                                            <i :class="armada.icon" class="text-6xl text-indigo-500"></i>
+                                            <div class="mt-4 font-bold text-lg text-gray-800">{{ armada.name }}</div>
+                                            <div class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded-md mt-1">{{ armada.plate }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center py-8 text-gray-500 bg-white rounded-xl shadow-lg">Tidak ada Big Bus yang tersedia.</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div v-if="view === 'inventaris'"><div class="bg-white p-6 rounded-xl shadow-lg"><div class="flex justify-between items-center mb-6"><div class="relative w-1/3"><i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" v-model="armadaSearchTerm" placeholder="Cari armada, plat, atau status..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></div><button @click="openVehicleModal(null)" class="bg-sutan-blue-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-sutan-blue-900 transition-all duration-200 flex items-center active:scale-95"><i class="bi bi-plus-circle-fill mr-2"></i> Tambah Kendaraan</button></div><table class="w-full text-left"><thead class="bg-gray-100 text-gray-700 uppercase text-sm"><tr><th class="p-4">Nama Armada</th><th class="p-4">Jenis</th><th class="p-4">Servis Berikutnya</th><th class="p-4">Harga</th><th class="p-4">Status</th><th class="p-4">Aksi</th></tr></thead><tbody><tr v-for="vehicle in filteredFleet" :key="vehicle.id" class="border-b hover:bg-gray-50"><td class="p-4 font-semibold">{{ vehicle.name }}<br><span class="bg-gray-700 text-white px-2 py-0.5 rounded-md font-mono text-xs">{{ vehicle.plate }}</span></td><td class="p-4">{{ vehicle.type }}</td><td class="p-4" :class="{'text-red-500 font-bold': isServiceDue(vehicle.nextService)}"><i class="bi bi-wrench-adjustable-circle-fill mr-2" :class="isServiceDue(vehicle.nextService) ? 'text-red-500 animate-pulse' : 'text-gray-400'"></i>{{ formatFullDate(vehicle.nextService) }}</td><td class="p-4 font-semibold text-green-700"><div v-if="vehicle.hargaSewa">{{ formatRupiah(vehicle.hargaSewa) }} / hari</div><div v-if="vehicle.hargaPerOrang" class="text-sm text-blue-700">{{ formatRupiah(vehicle.hargaPerOrang) }} / orang</div></td><td class="p-4"><span class="px-3 py-1 text-xs font-bold rounded-full" :class="getVehicleStatusClass(vehicle.status)">{{ vehicle.status }}</span></td><td class="p-4"><button @click="openVehicleModal(vehicle)" class="text-blue-600 hover:text-blue-800 active:text-blue-900 transition-all"><i class="bi bi-pencil-fill"></i> Edit</button></td></tr></tbody></table></div></div>
                         <div v-if="view === 'drivers'"><div class="bg-white p-6 rounded-xl shadow-lg"><div class="flex justify-between items-center mb-6"><div class="relative w-1/3"><i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" v-model="driverSearchTerm" placeholder="Cari nama supir..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></div><button @click="openDriverModal(null)" class="bg-sutan-blue-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-sutan-blue-900 transition-all duration-200 flex items-center active:scale-95"><i class="bi bi-plus-circle-fill mr-2"></i> Tambah Supir</button></div><table class="w-full text-left"><thead class="bg-gray-100 text-gray-700 uppercase text-sm"><tr><th class="p-4">Nama Supir</th><th class="p-4">Jenis SIM</th><th class="p-4">No. Telepon</th><th class="p-4">Status</th><th class="p-4">Aksi</th></tr></thead><tbody><tr v-for="driver in filteredDrivers" :key="driver.id" class="border-b hover:bg-gray-50"><td class="p-4 font-semibold">{{ driver.name }}</td><td class="p-4"><span class="font-mono text-sm bg-gray-200 px-2 py-1 rounded">{{ driver.licenseType }}</span></td><td class="p-4">{{ driver.phone }}</td><td class="p-4"><span class="px-3 py-1 text-xs font-bold rounded-full" :class="getDriverStatusClass(driver.status)">{{ driver.status }}</span></td><td class="p-4"><button @click="openDriverModal(driver)" class="text-blue-600 hover:text-blue-800 active:text-blue-900 transition-all"><i class="bi bi-pencil-fill"></i> Edit</button></td></tr></tbody></table></div></div>
                         <div v-if="view === 'history'"><div class="bg-white p-6 rounded-xl shadow-lg"><h2 class="text-xl font-bold text-sutan-blue-900 flex items-center mb-4"><i class="bi bi-check2-circle mr-3"></i> RIWAYAT PERJALANAN SELESAI <span class="ml-4 text-sm font-medium bg-gray-200 text-gray-700 px-3 py-1 rounded-full">{{ filteredHistory.length }}</span></h2><div class="relative w-1/3 mb-6"><i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" v-model="historySearchTerm" placeholder="Cari riwayat..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="space-y-4"><div v-if="filteredHistory.length === 0" class="text-center py-8 text-gray-500">Tidak ada riwayat yang cocok.</div><div v-else v-for="trip in filteredHistory" @click="openTripModal(trip)" class="p-4 bg-gray-50 rounded-lg border cursor-pointer hover:border-blue-400"><div class="grid grid-cols-12 items-center"><div class="col-span-4"><span class="font-bold text-lg">{{ trip.originCode }} <span v-if="!trip.destinationCode" class="text-gray-500">({{trip.notes}})</span></span><i v-if="trip.destinationCode" class="bi bi-arrow-right-short mx-2"></i><span v-if="trip.destinationCode" class="font-bold text-lg">{{ trip.destinationCode }}</span></div><div class="col-span-3 text-gray-600"><i class="bi bi-calendar3 mr-2"></i> {{ formatFullDate(trip.departureTime) }}</div><div class="col-span-3 text-gray-600"><i :class="trip.fleet.icon" class="mr-2"></i> {{ trip.fleet.name }}</div><div class="col-span-2 text-right"><span class="px-4 py-1.5 text-sm font-bold rounded-full" :class="statusClasses[trip.status]">{{ trip.status }}</span></div></div><div v-if="trip.tripRevenue > 0" class="mt-3 pt-3 border-t grid grid-cols-3 gap-4 text-center"><div><div class="text-xs text-gray-500">Total Pendapatan</div><div class="font-bold text-blue-600">{{ formatRupiah(trip.tripRevenue) }}</div></div><div><div class="text-xs text-gray-500">Biaya Operasional</div><div class="font-bold text-red-600">{{ formatRupiah(trip.tripCost) }}</div></div><div><div class="text-xs text-gray-500">Keuntungan</div><div class="font-bold text-lg" :class="trip.tripProfit >= 0 ? 'text-green-600' : 'text-red-600'">{{ formatRupiah(trip.tripProfit) }}</div></div></div></div></div></div></div>

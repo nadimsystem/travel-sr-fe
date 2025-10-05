@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proses Keberangkatan - Sutan Raya</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div class="container" id="process-app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Sutan Raya</h2>
+                <p>Operational Flight Deck</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html"><i class="icon-dashboard"></i> Dashboard</a>
+                <a href="#"><i class="icon-inventory"></i> Inventaris</a>
+                <a href="#"><i class="icon-driver"></i> Kelola Supir</a>
+                <a href="#"><i class="icon-history"></i> Riwayat</a>
+                <a href="#"><i class="icon-display"></i> Layar Display</a>
+                <a href="process.html" class="active"><i class="icon-pos"></i> Proses</a>
+                <a href="#"><i class="icon-admin"></i> Panel Admin</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Proses Keberangkatan (POS)</h1>
+                <div class="current-time">
+                    {{ currentTime }}
+                </div>
+            </header>
+            <div class="process-layout">
+                <div class="process-column">
+                    <h2>Siap Berangkat</h2>
+                    <div class="bus-list">
+                        <div v-for="bus in siapBerangkat" :key="bus.id" class="bus-card">
+                            <h3>{{ bus.tujuan }}</h3>
+                            <p><strong>Supir:</strong> {{ bus.supir }}</p>
+                            <p><strong>Waktu:</strong> {{ bus.waktu }}</p>
+                            <p><strong>Plat:</strong> {{ bus.plat }}</p>
+                            <button class="btn-berangkat" @click="berangkatkanBus(bus)">Berangkatkan</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="process-column">
+                    <h2>Sedang Berangkat</h2>
+                    <div class="bus-list">
+                        <div v-for="bus in sedangBerangkat" :key="bus.id" class="bus-card on-trip">
+                            <h3>{{ bus.tujuan }}</h3>
+                            <p><strong>Supir:</strong> {{ bus.supir }}</p>
+                            <p><strong>Waktu:</strong> {{ bus.waktu }}</p>
+                            <p><strong>Plat:</strong> {{ bus.plat }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="process.js"></script>
+</body>
+</html>
