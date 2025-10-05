@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutan Raya - Proses Keberangkatan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sutan-blue': { '900': '#0A2342', '800': '#123458', '700': '#2C3E50' },
+                        'sutan-gold': '#D4AF37'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sutan-blue-900 font-sans">
+
+    <div id="app" class="flex h-screen text-gray-800" v-cloak>
+        <main class="flex-1 flex flex-col bg-gray-100">
+            <header class="h-24 bg-white flex-shrink-0 flex items-center justify-between px-8 shadow-md z-10">
+                <a href="index.html" class="text-sutan-blue-900 hover:text-sutan-gold transition-colors tile rounded-full p-2">
+                    <i class="bi bi-arrow-left-circle-fill text-3xl"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-sutan-blue-900">Proses Keberangkatan Cepat</h1>
+                <div class="text-right">
+                    <div class="font-semibold text-gray-600">{{ currentDate }}</div>
+                    <div class="text-2xl font-bold text-sutan-blue-900">{{ currentTime }}</div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+                <div class="lg:col-span-1 bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                    <h2 class="text-xl font-bold text-sutan-blue-900 mb-4">1. Pilih Kategori</h2>
+                    <div class="space-y-4">
+                        <button @click="selectCategory('Hiace')" class="w-full text-left flex items-center p-4 rounded-lg transition-all tile" :class="selectedCategory === 'Hiace' ? 'bg-sutan-blue-800 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200'">
+                            <i class="bi bi-truck-front-fill text-3xl mr-4" :class="selectedCategory === 'Hiace' ? 'text-sutan-gold' : 'text-sutan-blue-800'"></i>
+                            <div>
+                                <span class="font-bold text-lg">Hiace</span>
+                                <p class="text-sm">{{ standbyHiace.length }} unit tersedia</p>
+                            </div>
+                        </button>
+                        <button @click="selectCategory('Medium Bus')" class="w-full text-left flex items-center p-4 rounded-lg transition-all tile" :class="selectedCategory === 'Medium Bus' ? 'bg-sutan-blue-800 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200'">
+                            <i class="bi bi-bus-front-fill text-3xl mr-4" :class="selectedCategory === 'Medium Bus' ? 'text-sutan-gold' : 'text-sutan-blue-800'"></i>
+                            <div>
+                                <span class="font-bold text-lg">Medium Bus</span>
+                                <p class="text-sm">{{ standbyMediumBus.length }} unit tersedia</p>
+                            </div>
+                        </button>
+                        <button @click="selectCategory('Big Bus')" class="w-full text-left flex items-center p-4 rounded-lg transition-all tile" :class="selectedCategory === 'Big Bus' ? 'bg-sutan-blue-800 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200'">
+                            <i class="bi bi-bus-front-fill text-3xl mr-4" :class="selectedCategory === 'Big Bus' ? 'text-sutan-gold' : 'text-sutan-blue-800'"></i>
+                            <div>
+                                <span class="font-bold text-lg">Big Bus</span>
+                                <p class="text-sm">{{ standbyBigBus.length }} unit tersedia</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                    <h2 class="text-xl font-bold text-sutan-blue-900 mb-4">2. Pilih Armada dari Kategori "{{ selectedCategory }}"</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto flex-1">
+                        <transition-group name="list">
+                            <div v-for="armada in availableArmada" :key="armada.id" @click="selectArmada(armada)" class="p-4 border-2 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 tile h-32" :class="selectedArmada && selectedArmada.id === armada.id ? 'bg-sutan-gold text-sutan-blue-900 border-sutan-blue-900 shadow-lg scale-105' : 'border-gray-200 hover:border-sutan-blue-800 hover:shadow-md'">
+                                <i :class="armada.icon" class="text-4xl mb-2"></i>
+                                <span class="font-bold text-sm">{{ armada.name }}</span>
+                                <span class="text-xs text-gray-500">{{ armada.plate }}</span>
+                            </div>
+                        </transition-group>
+                        <div v-if="availableArmada.length === 0" class="col-span-full flex items-center justify-center text-center text-gray-400 h-full">
+                            <p>Pilih kategori terlebih dahulu atau tidak ada armada tersedia.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="w-full max-w-md bg-gray-50 flex-shrink-0 flex flex-col h-full shadow-2xl border-l-2 border-gray-200">
+            <div class="h-24 flex items-center justify-center border-b bg-white">
+                <h2 class="text-2xl font-bold text-sutan-blue-900">3. Detail Pesanan</h2>
+            </div>
+            <div class="flex-grow p-6 overflow-y-auto">
+                <transition name="view" mode="out-in">
+                    <div v-if="!selectedArmada" class="text-center text-gray-400 pt-32 h-full flex flex-col justify-center items-center">
+                        <i class="bi bi-upc-scan text-6xl"></i>
+                        <p class="mt-4">Pilih armada untuk memulai</p>
+                    </div>
+                    <div v-else class="space-y-4 fade-slide-up">
+                        <div>
+                            <label class="font-semibold block mb-1 text-gray-500 text-sm">Armada</label>
+                            <div class="w-full p-3 bg-gray-200 rounded-md font-bold text-sutan-blue-900 flex items-center">
+                                <i :class="selectedArmada.icon + ' mr-3'"></i> {{ selectedArmada.name }}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-semibold block mb-1 text-gray-500 text-sm">Jenis Perjalanan</label>
+                            <select v-model="tripDetails.type" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold">
+                                <option>Rute</option>
+                                <option>Rental</option>
+                            </select>
+                        </div>
+                        <transition name="view" mode="out-in">
+                            <div v-if="tripDetails.type === 'Rute'" class="space-y-4">
+                                <div>
+                                    <label class="font-semibold block mb-1 text-gray-500 text-sm">Asal</label>
+                                    <select v-model="tripDetails.origin" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold">
+                                        <option v-for="loc in locations" :value="loc.name">{{ loc.name }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="font-semibold block mb-1 text-gray-500 text-sm">Tujuan</label>
+                                    <select v-model="tripDetails.destination" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold">
+                                        <option v-for="loc in locations" :value="loc.name">{{ loc.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div v-else class="space-y-4">
+                                <div>
+                                    <label class="font-semibold block mb-1 text-gray-500 text-sm">Keterangan Rental</label>
+                                    <input type="text" v-model="tripDetails.notes" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold" placeholder="Contoh: Antar Jemput Bandara">
+                                </div>
+                            </div>
+                        </transition>
+                        <div>
+                            <label class="font-semibold block mb-1 text-gray-500 text-sm">Penumpang/Tipe</label>
+                            <input type="text" v-model="tripDetails.pax" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold" placeholder="Contoh: 7/7, Carter, Penuh">
+                        </div>
+                         <div>
+                            <label class="font-semibold block mb-1 text-gray-500 text-sm">Supir</label>
+                            <select v-model="tripDetails.driverId" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold" :disabled="!selectedArmada">
+                                <option :value="null" disabled>Pilih supir...</option>
+                                <option v-for="driver in availableDriversForTrip" :value="driver.id">{{ driver.name }} ({{ driver.licenseType }})</option>
+                                <option v-if="availableDriversForTrip.length === 0" disabled>Tidak ada supir standby dengan SIM yang sesuai</option>
+                            </select>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            <div class="p-6 border-t bg-white space-y-4">
+                <button @click="processTrip" :disabled="!isTripReady" class="w-full bg-sutan-gold text-sutan-blue-900 font-bold py-4 rounded-lg text-lg hover:opacity-90 transition-opacity disabled:bg-gray-400 disabled:cursor-not-allowed disabled:text-gray-600 tile flex items-center justify-center">
+                    <i class="bi bi-send-fill mr-2"></i> Proses & Berangkatkan
+                </button>
+                 <button v-if="selectedArmada" @click="clearSelection" class="w-full bg-red-500 text-white font-bold py-2 rounded-lg hover:bg-red-600 transition-colors tile">
+                    Batalkan Pilihan
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/process.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #0A2342;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #D4AF37;
+}
+
+/* Animasi Tile ala Windows Phone */
+.tile {
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.tile:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.08);
+}
+.tile:active {
+    transform: scale(0.97);
+    transition-duration: 0.05s;
+}
+
+/* Animasi untuk Konten yang Muncul */
+@keyframes fade-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.fade-slide-up {
+    animation: fade-slide-up 0.5s ease-out forwards;
+}
+
+/* Transisi Halaman (View) dengan Vue.js */
+.view-enter-active,
+.view-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: absolute; /* Mencegah layout berantakan saat transisi */
+    width: 100%;
+}
+.view-enter-from {
+    opacity: 0;
+    transform: translateX(30px);
+}
+.view-leave-to {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+/* Transisi Daftar (List) dengan Vue.js */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-move {
+  transition: transform 0.5s ease;
+}
+
+/* Transisi untuk Modal */
+.modal-backdrop-enter-active, .modal-backdrop-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-backdrop-enter-from, .modal-backdrop-leave-to {
+  opacity: 0;
+}
+
+.modal-content-enter-active, .modal-content-leave-active {
+  transition: all 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+}
+.modal-content-enter-from, .modal-content-leave-to {
+  transform: scale(0.8) translateY(-20px);
+  opacity: 0;
+}
