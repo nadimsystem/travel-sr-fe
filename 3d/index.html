@@ -4,17 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sutan Raya - 360 Viewer (React Version)</title>
+    <title>Sutan Raya - 360 Viewer (Gyro Enabled)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
-
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
     <style>
@@ -28,10 +24,6 @@
             color: white;
             font-family: "Plus Jakarta Sans", sans-serif;
         }
-        
-        .pnlm-load-box {
-            /* border-color: var(--sutan-gold) !important; */
-        }
     </style>
 </head>
 
@@ -39,7 +31,8 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        function Viewer360() { React.useEffect(() => { pannellum.viewer("panorama-container", { type: "equirectangular", panorama: "image2.jpg", autoLoad: true, autoRotate: -2, showControls: true, }); }, []); return (
+        function Viewer360() { React.useEffect(() => { pannellum.viewer("panorama-container", { "type": "equirectangular", "panorama": "image2.jpg", "autoLoad": true, "autoRotate": -2, "showControls": true, "compass": true, "orientationOnByDefault": true });
+        }, []); return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <header className="text-center mb-8">
                 <img src="../image/logo.png" alt="Sutan Raya Logo" className="h-16 mx-auto mb-2" />
@@ -52,7 +45,6 @@
             </header>
 
             <div className="w-full max-w-5xl h-[60vh] rounded-lg shadow-2xl overflow-hidden border-2 border-[var(--sutan-gold)]">
-                {/* ID 'panorama-container' digunakan oleh Pannellum untuk menempatkan viewer */}
                 <div id="panorama-container" className="h-full w-full"></div>
             </div>
 
