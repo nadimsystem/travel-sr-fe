@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sutan Raya - 360 Viewer (Gyro Enabled)</title>
+    <title>Sutan Raya - 360 Viewer (Gyro Toggle)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
@@ -31,8 +31,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        function Viewer360() { React.useEffect(() => { pannellum.viewer("panorama-container", { "type": "equirectangular", "panorama": "image2.jpg", "autoLoad": true, "autoRotate": -2, "showControls": true, "compass": true, "orientationOnByDefault": true });
-        }, []); return (
+
+        const { useState, useEffect, useRef } = React; function Viewer360() { const [isGyroOn, setIsGyroOn] = useState(false); const [isGyroSupported, setIsGyroSupported] = useState(false); const viewerRef = useRef(null); useEffect(() => { viewerRef.current =
+        pannellum.viewer("panorama-container", { "type": "equirectangular", "panorama": "image2.jpg", "autoLoad": true, "autoRotate": -2, "showControls": true, "compass": true, }); viewerRef.current.on('load', () => { setIsGyroSupported(viewerRef.current.isOrientationSupported());
+        }); return () => { viewerRef.current.destroy(); }; }, []); const handleGyroToggle = () => { if (!viewerRef.current) return; if (isGyroOn) { viewerRef.current.stopOrientation(); setIsGyroOn(false); } else { viewerRef.current.startOrientation();
+        setIsGyroOn(true); } }; return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <header className="text-center mb-8">
                 <img src="../image/logo.png" alt="Sutan Raya Logo" className="h-16 mx-auto mb-2" />
@@ -47,6 +50,16 @@
             <div className="w-full max-w-5xl h-[60vh] rounded-lg shadow-2xl overflow-hidden border-2 border-[var(--sutan-gold)]">
                 <div id="panorama-container" className="h-full w-full"></div>
             </div>
+
+
+            {isGyroSupported && (
+            <div className="mt-6 text-center">
+                <button onClick={handleGyroToggle} className="bg-[var(--sutan-gold)] text-black font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-yellow-300 transition-colors duration-300">
+                                {isGyroOn ? 'Matikan Giroskop' : 'Aktifkan Giroskop'}
+                            </button>
+            </div>
+            )}
+
 
             <footer className="text-center mt-8 text-gray-500 text-sm">
                 <p>&copy; 2025 PO. Sutan Raya. All rights reserved.</p>
