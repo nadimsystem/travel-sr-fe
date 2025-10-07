@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sutan Raya - 360 Viewer (Gyro Toggle)</title>
+    <title>Sutan Raya - 360 Viewer (Advanced Gyro)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
@@ -31,11 +31,14 @@
     <div id="root"></div>
 
     <script type="text/babel">
-
-        const { useState, useEffect, useRef } = React; function Viewer360() { const [isGyroOn, setIsGyroOn] = useState(false); const [isGyroSupported, setIsGyroSupported] = useState(false); const viewerRef = useRef(null); useEffect(() => { viewerRef.current =
-        pannellum.viewer("panorama-container", { "type": "equirectangular", "panorama": "image2.jpg", "autoLoad": true, "autoRotate": -2, "showControls": true, "compass": true, }); viewerRef.current.on('load', () => { setIsGyroSupported(viewerRef.current.isOrientationSupported());
-        }); return () => { viewerRef.current.destroy(); }; }, []); const handleGyroToggle = () => { if (!viewerRef.current) return; if (isGyroOn) { viewerRef.current.stopOrientation(); setIsGyroOn(false); } else { viewerRef.current.startOrientation();
-        setIsGyroOn(true); } }; return (
+        const { useState, useEffect, useRef } = React; function Viewer360() { const [isGyroSupported, setIsGyroSupported] = useState(false); const [isPermanentlyOff, setIsPermanentlyOff] = useState(false); const [deactivationClicks, setDeactivationClicks] = useState(0);
+        const isTemporarilyPaused = useRef(false); const viewerRef = useRef(null); useEffect(() => { viewerRef.current = pannellum.viewer("panorama-container", { type: "equirectangular", panorama: "image2.jpg", autoLoad: true, autoRotate: -2, showControls:
+        true, compass: true, orientationOnByDefault: true, }); const viewer = viewerRef.current; const handleManualInteraction = () => { if (!isPermanentlyOff) { isTemporarilyPaused.current = true; viewer.stopOrientation(); } }; const handleDeviceMove
+        = () => { if (!isPermanentlyOff && isTemporarilyPaused.current) { isTemporarilyPaused.current = false; viewer.startOrientation(); } }; viewer.on('load', () => { const supported = viewer.isOrientationSupported(); setIsGyroSupported(supported);
+        if(supported) { viewer.getContainer().addEventListener('mousedown', handleManualInteraction, true); viewer.getContainer().addEventListener('touchstart', handleManualInteraction, true); window.addEventListener('deviceorientation', handleDeviceMove,
+        true); } }); return () => { if (viewer.isOrientationSupported()) { viewer.getContainer().removeEventListener('mousedown', handleManualInteraction, true); viewer.getContainer().removeEventListener('touchstart', handleManualInteraction, true); window.removeEventListener('deviceorientation',
+        handleDeviceMove, true); } viewer.destroy(); }; }, [isPermanentlyOff]); const handleGyroToggle = () => { if (isPermanentlyOff) return; const newClickCount = deactivationClicks + 1; setDeactivationClicks(newClickCount); viewerRef.current.stopOrientation();
+        if (newClickCount > 2) { setIsPermanentlyOff(true); } }; return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <header className="text-center mb-8">
                 <img src="../image/logo.png" alt="Sutan Raya Logo" className="h-16 mx-auto mb-2" />
@@ -54,15 +57,14 @@
                 <div id="panorama-container" className="h-full w-full"></div>
             </div>
 
-
             {isGyroSupported && (
             <div className="mt-6 text-center">
-                <button onClick={handleGyroToggle} className="bg-[var(--sutan-gold)] text-black font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-yellow-300 transition-colors duration-300">
-                                {isGyroOn ? 'Matikan Giroskop' : 'Aktifkan Giroskop'}
+                <button onClick={handleGyroToggle} disabled={isPermanentlyOff} className={`font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ${isPermanentlyOff ? 'bg-gray-600 text-gray-400 cursor-not-allowed' :
+                    'bg-[var(--sutan-gold)] text-black hover:bg-yellow-300'}`}>
+                                {isPermanentlyOff ? 'Giroskop Dimatikan' : `Matikan Giroskop (${deactivationClicks}/3)`}
                             </button>
             </div>
             )}
-
 
             <footer className="text-center mt-8 text-gray-500 text-sm">
                 <p>&copy; 2025 PO. Sutan Raya. All rights reserved.</p>
