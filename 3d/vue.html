@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sutan Raya - 360 Viewer (Tanpa Smoothing)</title>
+    <title>Sutan Raya - 360 Viewer (Advanced Gyro)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
     <meta property="og:image" content="https://i.pinimg.com/736x/d4/c0/2a/d4c02ab6ea1144040cd0cb1174f39b94.jpg" />
     <meta property="og:description"
         content="Rasakan pengalaman mewah armada Sutan Raya dengan tur virtual 360 derajat. Jelajahi interior kendaraan kami yang nyaman dan modern." />
@@ -37,55 +38,40 @@
             createApp,
             ref,
             onMounted,
-            onUnmounted,
-            watch
+            onUnmounted
         } = Vue;
 
         createApp({
             setup() {
                 const isGyroSupported = ref(false);
-                const isGyroActive = ref(true);
+                const isPermanentlyOff = ref(false);
+                const deactivationClicks = ref(0);
+                const isTemporarilyPaused = ref(false);
                 const viewer = ref(null);
-                const initialYaw = ref(null);
 
-                const handleDeviceOrientation = (event) => {
-                    if (!viewer.value) return;
-
-                    if (initialYaw.value === null) {
-                        initialYaw.value = event.alpha;
-                    }
-
-                    // Tanpa smoothing - langsung gunakan nilai dari sensor
-                    const yaw = event.alpha - initialYaw.value;
-                    const pitch = event.beta - 90;
-
-                    viewer.value.setYaw(yaw, false);
-                    viewer.value.setPitch(pitch, false);
-                };
-
-                const checkSupportAndActivate = async () => {
-                    if (typeof DeviceOrientationEvent !== 'undefined' &&
-                        typeof DeviceOrientationEvent.requestPermission === 'function') {
-                        try {
-                            const permission = await DeviceOrientationEvent.requestPermission();
-                            if (permission === 'granted') {
-                                isGyroSupported.value = true;
-                            }
-                        } catch (error) {
-                            console.error('Error requesting gyro permission:', error);
-                        }
-                    } else if ('DeviceOrientationEvent' in window) {
-                        isGyroSupported.value = true;
+                const handleManualInteraction = () => {
+                    if (!isPermanentlyOff.value) {
+                        isTemporarilyPaused.value = true;
+                        viewer.value.stopOrientation();
                     }
                 };
 
-                const activateGyro = () => {
-                    isGyroActive.value = true;
-                    initialYaw.value = null; // Reset initial yaw saat mengaktifkan gyro
+                const handleDeviceMove = () => {
+                    if (!isPermanentlyOff.value && isTemporarilyPaused.value) {
+                        isTemporarilyPaused.value = false;
+                        viewer.value.startOrientation();
+                    }
                 };
 
-                const deactivateGyro = () => {
-                    isGyroActive.value = false;
+                const handleGyroToggle = () => {
+                    if (isPermanentlyOff.value) return;
+
+                    deactivationClicks.value += 1;
+                    viewer.value.stopOrientation();
+
+                    if (deactivationClicks.value > 2) {
+                        isPermanentlyOff.value = true;
+                    }
                 };
 
                 onMounted(() => {
@@ -97,34 +83,38 @@
                         autoRotate: -2,
                         showControls: true,
                         compass: true,
-                        orientationOnByDefault: false
+                        orientationOnByDefault: true,
                     });
 
-                    checkSupportAndActivate();
+                    viewer.value.on('load', () => {
+                        const supported = viewer.value.isOrientationSupported();
+                        isGyroSupported.value = supported;
+
+                        if (supported) {
+                            viewer.value.getContainer().addEventListener('mousedown', handleManualInteraction, true);
+                            viewer.value.getContainer().addEventListener('touchstart', handleManualInteraction, true);
+                            window.addEventListener('deviceorientation', handleDeviceMove, true);
+                        }
+                    });
                 });
 
                 onUnmounted(() => {
+                    if (viewer.value && viewer.value.isOrientationSupported()) {
+                        viewer.value.getContainer().removeEventListener('mousedown', handleManualInteraction, true);
+                        viewer.value.getContainer().removeEventListener('touchstart', handleManualInteraction, true);
+                        window.removeEventListener('deviceorientation', handleDeviceMove, true);
+                    }
+
                     if (viewer.value) {
                         viewer.value.destroy();
                     }
                 });
 
-                // Watch for changes in gyro support and activation
-                watch([isGyroSupported, isGyroActive], ([supported, active]) => {
-                    if (supported && active) {
-                        window.addEventListener('deviceorientation', handleDeviceOrientation);
-                    } else {
-                        window.removeEventListener('deviceorientation', handleDeviceOrientation);
-                    }
-                }, {
-                    immediate: true
-                });
-
                 return {
                     isGyroSupported,
-                    isGyroActive,
-                    activateGyro,
-                    deactivateGyro
+                    isPermanentlyOff,
+                    deactivationClicks,
+                    handleGyroToggle
                 };
             },
             template: `
@@ -143,28 +133,17 @@
                         <div id="panorama-container" class="h-full w-full"></div>
                     </div>
 
-                    <div v-if="isGyroSupported" class="mt-6 flex justify-center space-x-4">
+                    <div v-if="isGyroSupported" class="mt-6 text-center">
                         <button 
-                            @click="activateGyro" 
-                            :disabled="isGyroActive" 
+                            @click="handleGyroToggle" 
+                            :disabled="isPermanentlyOff" 
                             :class="{
                                 'font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300': true,
-                                'bg-gray-600 text-gray-400 cursor-not-allowed': isGyroActive,
-                                'bg-green-600 text-white hover:bg-green-500': !isGyroActive
+                                'bg-gray-600 text-gray-400 cursor-not-allowed': isPermanentlyOff,
+                                'bg-[var(--sutan-gold)] text-black hover:bg-yellow-300': !isPermanentlyOff
                             }"
                         >
-                            Aktifkan Giroskop
-                        </button>
-                        <button 
-                            @click="deactivateGyro" 
-                            :disabled="!isGyroActive" 
-                            :class="{
-                                'font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300': true,
-                                'bg-gray-600 text-gray-400 cursor-not-allowed': !isGyroActive,
-                                'bg-red-600 text-white hover:bg-red-500': isGyroActive
-                            }"
-                        >
-                            Matikan Giroskop
+                            {{ isPermanentlyOff ? 'Giroskop Dimatikan' : \`Matikan Giroskop (\${deactivationClicks}/3)\` }}
                         </button>
                     </div>
 
