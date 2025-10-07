@@ -12,6 +12,10 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <meta property="og:image" content="https://i.pinimg.com/736x/d4/c0/2a/d4c02ab6ea1144040cd0cb1174f39b94.jpg" />
+    <meta property="og:image" content="https://i.pinimg.com/736x/d4/c0/2a/d4c02ab6ea1144040cd0cb1174f39b94.jpg" />
+    <meta property="og:description" content="Rasakan pengalaman mewah armada Sutan Raya dengan tur virtual 360 derajat. Jelajahi interior kendaraan kami yang nyaman dan modern." />
+    <meta property="og:title" content="Sutan Raya - Tur Virtual Armada Mewah" />
 
     <style>
          :root {
@@ -34,11 +38,11 @@
         const { useState, useEffect, useRef } = React; function Viewer360() { const [isGyroSupported, setIsGyroSupported] = useState(false); const [isPermanentlyOff, setIsPermanentlyOff] = useState(false); const [deactivationClicks, setDeactivationClicks] = useState(0);
         const isTemporarilyPaused = useRef(false); const viewerRef = useRef(null); useEffect(() => { viewerRef.current = pannellum.viewer("panorama-container", { type: "equirectangular", panorama: "image2.jpg", autoLoad: true, autoRotate: -2, showControls:
         true, compass: true, orientationOnByDefault: true, }); const viewer = viewerRef.current; const handleManualInteraction = () => { if (!isPermanentlyOff) { isTemporarilyPaused.current = true; viewer.stopOrientation(); } }; const handleDeviceMove
-        = () => { if (!isPermanentlyOff && isTemporarilyPaused.current) { isTemporarilyPaused.current = false; viewer.startOrientation(); } }; viewer.on('load', () => { const supported = viewer.isOrientationSupported(); setIsGyroSupported(supported);
-        if(supported) { viewer.getContainer().addEventListener('mousedown', handleManualInteraction, true); viewer.getContainer().addEventListener('touchstart', handleManualInteraction, true); window.addEventListener('deviceorientation', handleDeviceMove,
-        true); } }); return () => { if (viewer.isOrientationSupported()) { viewer.getContainer().removeEventListener('mousedown', handleManualInteraction, true); viewer.getContainer().removeEventListener('touchstart', handleManualInteraction, true); window.removeEventListener('deviceorientation',
-        handleDeviceMove, true); } viewer.destroy(); }; }, [isPermanentlyOff]); const handleGyroToggle = () => { if (isPermanentlyOff) return; const newClickCount = deactivationClicks + 1; setDeactivationClicks(newClickCount); viewerRef.current.stopOrientation();
-        if (newClickCount > 2) { setIsPermanentlyOff(true); } }; return (
+        = () => { if (!isPermanentlyOff && isTemporarilyPaused.current) { isTemporarilyPaused.current = false; viewer.startOrientation(); } }; viewer.on("load", () => { const supported = viewer.isOrientationSupported(); setIsGyroSupported(supported);
+        if (supported) { viewer .getContainer() .addEventListener("mousedown", handleManualInteraction, true); viewer .getContainer() .addEventListener("touchstart", handleManualInteraction, true); window.addEventListener( "deviceorientation", handleDeviceMove,
+        true ); } }); return () => { if (viewer.isOrientationSupported()) { viewer .getContainer() .removeEventListener( "mousedown", handleManualInteraction, true ); viewer .getContainer() .removeEventListener( "touchstart", handleManualInteraction,
+        true ); window.removeEventListener( "deviceorientation", handleDeviceMove, true ); } viewer.destroy(); }; }, [isPermanentlyOff]); const handleGyroToggle = () => { if (isPermanentlyOff) return; const newClickCount = deactivationClicks + 1; setDeactivationClicks(newClickCount);
+        viewerRef.current.stopOrientation(); if (newClickCount > 2) { setIsPermanentlyOff(true); } }; return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <header className="text-center mb-8">
                 <img src="../image/logo.png" alt="Sutan Raya Logo" className="h-16 mx-auto mb-2" />
@@ -59,10 +63,12 @@
 
             {isGyroSupported && (
             <div className="mt-6 text-center">
-                <button onClick={handleGyroToggle} disabled={isPermanentlyOff} className={`font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ${isPermanentlyOff ? 'bg-gray-600 text-gray-400 cursor-not-allowed' :
-                    'bg-[var(--sutan-gold)] text-black hover:bg-yellow-300'}`}>
-                                {isPermanentlyOff ? 'Giroskop Dimatikan' : `Matikan Giroskop (${deactivationClicks}/3)`}
-                            </button>
+                <button onClick={handleGyroToggle} disabled={isPermanentlyOff} className={`font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ${ isPermanentlyOff ? "bg-gray-600 text-gray-400 cursor-not-allowed" :
+                    "bg-[var(--sutan-gold)] text-black hover:bg-yellow-300" }`}>
+                  {isPermanentlyOff
+                    ? "Giroskop Dimatikan"
+                    : `Matikan Giroskop (${deactivationClicks}/3)`}
+                </button>
             </div>
             )}
 
