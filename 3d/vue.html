@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sutan Raya - 360 Viewer (Smooth Gyro)</title>
+    <title>Sutan Raya - 360 Viewer (Tanpa Smoothing)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
@@ -46,10 +46,6 @@
                 const isGyroSupported = ref(false);
                 const isGyroActive = ref(true);
                 const viewer = ref(null);
-                const smoothedAngles = ref({
-                    yaw: 0,
-                    pitch: 0
-                });
                 const initialYaw = ref(null);
 
                 const handleDeviceOrientation = (event) => {
@@ -59,20 +55,12 @@
                         initialYaw.value = event.alpha;
                     }
 
+                    // Tanpa smoothing - langsung gunakan nilai dari sensor
                     const yaw = event.alpha - initialYaw.value;
                     const pitch = event.beta - 90;
-                    const smoothingFactor = 0.08;
 
-                    let smoothedYaw = (yaw * smoothingFactor) + ((1 - smoothingFactor) * smoothedAngles.value.yaw);
-                    let smoothedPitch = (pitch * smoothingFactor) + ((1 - smoothingFactor) * smoothedAngles.value.pitch);
-
-                    smoothedAngles.value = {
-                        yaw: smoothedYaw,
-                        pitch: smoothedPitch
-                    };
-
-                    viewer.value.setYaw(smoothedYaw, false);
-                    viewer.value.setPitch(smoothedPitch, false);
+                    viewer.value.setYaw(yaw, false);
+                    viewer.value.setPitch(pitch, false);
                 };
 
                 const checkSupportAndActivate = async () => {
@@ -93,6 +81,7 @@
 
                 const activateGyro = () => {
                     isGyroActive.value = true;
+                    initialYaw.value = null; // Reset initial yaw saat mengaktifkan gyro
                 };
 
                 const deactivateGyro = () => {
