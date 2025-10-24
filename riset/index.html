@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutan Raya Tour - Data Prioritas Sekolah (Padang)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Palet Sutan Raya - Energetic & Professional */
+            --color-primary: #FFC300;
+            --color-secondary: #FF5733;
+            --color-dark: #202020;
+            /* Lebih dekat ke Dark Mode Apple */
+            --color-light-gray: #F0F0F0;
+            /* Background App */
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--color-light-gray);
+            color: #1c1c1e;
+            /* Warna teks gelap ala Apple */
+        }
+
+        .header-bg {
+            background-color: var(--color-dark);
+            /* Gradient yang lebih halus, kontras tinggi */
+            background-image: linear-gradient(135deg, var(--color-dark) 0%, #4a4a4a 100%);
+            /* Efek 'Glass' minimalis */
+            backdrop-filter: blur(8px);
+        }
+
+        /* Kartu dengan bayangan dan border-radius ala Apple */
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tag Prioritas */
+        .tag-high {
+            background-color: #F94144;
+            color: white;
+            font-weight: 700;
+        }
+
+        .tag-medium {
+            background-color: #FFC300;
+            color: #202020;
+            font-weight: 700;
+        }
+
+        .tag-low {
+            background-color: #E5E7EB;
+            color: #6B7280;
+        }
+
+        /* Warna Akses (Kontras Tinggi) */
+        .akses-green {
+            color: #34C759;
+        }
+
+        /* Hijau iOS */
+        .akses-yellow {
+            color: #FF9500;
+        }
+
+        /* Kuning iOS */
+        .akses-red {
+            color: #FF3B30;
+        }
+
+        /* Merah iOS */
+
+        /* Tombol Mengambang (Floating Action Button - FAB) */
+        #openModalBtn {
+            position: fixed;
+            bottom: 20px;
+            /* Sedikit lebih ke atas di mobile */
+            right: 20px;
+            z-index: 100;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            background-color: var(--color-secondary);
+            /* Oranye khas */
+        }
+
+        /* Modal Style (Clean & Centered) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90%;
+            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Animasi Elastis */
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsiveness: Mobile Table (Stacked Card View) */
+        @media (max-width: 768px) {
+            .p-4.md\:p-10 {
+                padding: 1rem;
+            }
+
+            /* Padding lebih ketat di mobile */
+            .header-bg {
+                border-radius: 12px;
+            }
+
+            /* Header ikut rounded */
+            .header-bg h1 {
+                font-size: 1.8rem;
+            }
+
+            .header-bg p {
+                font-size: 1rem;
+            }
+
+            .table-responsive thead {
+                display: none;
+            }
+
+            .table-responsive tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #dcdcdc;
+                /* Garis pemisah antar kartu */
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .table-responsive td {
+                display: block;
+                text-align: right;
+                padding: 0.4rem 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .table-responsive td:last-child {
+                border-bottom: none;
+            }
+
+            .table-responsive td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+                color: #6B7280;
+                text-align: left;
+            }
+
+            /* Tata letak KPI di mobile */
+            #kpi-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .kpi-card-label {
+                font-size: 0.7rem;
+            }
+
+            .kpi-card-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-10">
+    <header class="header-bg p-6 md:p-10 card mb-8">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">
+            Sutan Raya - Dashboard Prioritas Sekolah
+        </h1>
+        <p class="text-white text-opacity-80 text-lg md:text-xl">
+            Aplikasi Data Kunjungan Lapangan untuk Tour Organizer
+        </p>
+    </header>
+
+    <div id="kpi-dashboard" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="card p-4 data-card bg-white border-l-4 border-[#577590]">
+            <p class="text-sm text-gray-500 font-medium kpi-card-label">Total Sekolah Data</p>
+            <p id="kpi-total" class="text-3xl font-bold text-gray-800 mt-1 kpi-card-value">0</p>
+        </div>
+        <div class="card p-4 data-card bg-white border-l-4 border-[#FF5733]">
+            <p class="text-sm text-gray-500 font-medium kpi-card-label">High Priority Targets</p>
+            <p id="kpi-high" class="text-3xl font-bold text-[#FF5733] mt-1 kpi-card-value">0</p>
+        </div>
+        <div class="card p-4 data-card bg-white border-l-4 border-[#FFC300]">
+            <p class="text-sm text-gray-500 font-medium kpi-card-label">Medium Priority</p>
+            <p id="kpi-medium" class="text-3xl font-bold text-[#FFC300] mt-1 kpi-card-value">0</p>
+        </div>
+        <div class="card p-4 data-card bg-white border-l-4 border-[#34C759]">
+            <p class="text-sm text-gray-500 font-medium kpi-card-label">Akses Bus Terbaik</p>
+            <p id="kpi-akses" class="text-3xl font-bold text-[#34C759] mt-1 kpi-card-value">0</p>
+        </div>
+    </div>
+
+    <div id="table-container" class="card overflow-x-auto p-2 md:p-4 mb-20">
+        <p class="text-center text-gray-500 p-8">Memuat data...</p>
+    </div>
+
+    <button id="openModalBtn" onclick="openModal()"
+        class="bg-[#FF5733] hover:bg-[#C70039] text-white py-3 px-6 rounded-full transition duration-200">
+        <span class="text-xl">&#x270E;</span> Edit Data JSON
+    </button>
+
+    <div id="jsonModal" class="modal-overlay">
+        <div class="modal-content p-6 md:p-8">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800">Editor Data JSON Sekolah</h2>
+                <button onclick="closeModal()"
+                    class="text-gray-500 hover:text-gray-900 text-3xl font-light leading-none transition duration-200">&times;</button>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-3">Salin dan tempel (Copy and Paste) data JSON terbaru. Pastikan
+                formatnya valid.</p>
+            <textarea id="jsonInput"
+                class="w-full p-4 h-[50vh] md:h-[65vh] border border-gray-300 rounded-lg font-mono text-xs md:text-sm resize-none"></textarea>
+            <div id="error-message" class="text-red-500 mt-2 hidden font-semibold"></div>
+
+            <button onclick="saveAndLoadData()"
+                class="mt-4 bg-[#577590] hover:bg-[#4a5f70] text-white font-bold py-3 px-6 rounded-lg transition duration-200 text-lg w-full">
+                Muat & Perbarui Data
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const tableContainer = document.getElementById('table-container');
+        const jsonInput = document.getElementById('jsonInput');
+        const errorMessage = document.getElementById('error-message');
+        const jsonModal = document.getElementById('jsonModal');
+
+        // Data Awal: Hanya dua entri untuk demo. User diharapkan menempel data lengkap.
+        const initialData = [
+
+                {
+                    "nama_sekolah": "SMA Swasta Adzkia",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "> 2.0 Juta",
+                    "skor_total": 97.1,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (ppdb.adzkiasumbar.com)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour Luar Prov. (Premium)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "MAS Swasta Ar Risalah",
+                    "jenjang": "MA",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "> 2.0 Juta",
+                    "skor_total": 96.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Resmi (arrisalah.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour Luar Prov. (Premium, Boarding)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Swasta Don Bosco",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "1.5 - 2.0 Juta",
+                    "skor_total": 92.8,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website (donbosco-pdg.sch.id) / Telp: (0751) 22667",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan Akhir Tahun (Elite)",
+                    "sumber_info": "Data LTMPT & Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SD Islam Al Azhar 32 Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "1.0 - 1.5 Juta",
+                    "skor_total": 90.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "WA: +62 822-8758-4856 / Web: sdia32padang.sch.id",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class Premium (Volume Tinggi)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta Global Mandiri",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "1.0 - 1.5 Juta",
+                    "skor_total": 89.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Tidak Ada (Cari Nomor Marketing PPDB)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class Tahunan & Field Trip (Volume Tinggi)",
+                    "sumber_info": "Analisis Reputasi Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 1 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 88.4,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (smansa-padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour (High Volume & Value)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK Perhotelan Indah",
+                    "jenjang": "SMK",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 87.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Tidak Ada Info Kontak Spesifik",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Analisis Kegiatan Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 10 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 87.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "WA (Humas): 0813-7484-6677 / Web: sma10pdg.sch.id",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour (High Volume & Value)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 2 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 86.1,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (sman2-padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Paket Wisata Edukasi (Rutin)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SDIT Arafah Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 85.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "WA/Telp: 0813-7854-3328 / Web: sditarafahpadang.sch.id",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class & Field Trip (Volume Tinggi)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SDIT Padang Islamic School",
+                    "jenjang": "SD",
+                    "wilayah": "Kuranji",
+                    "status": "Swasta",
+                    "spp": "1.0 - 1.5 Juta",
+                    "skor_total": 85.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "WA/Telp: 0813-6454-6703 / Web: padangislamicschool.sch.id",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class Tahunan (Premium)",
+                    "sumber_info": "sekolahsunnah.com (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Islam Al Azhar 32",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "1.0 - 1.5 Juta",
+                    "skor_total": 84.8,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Web: sdia32padang.sch.id (Kontak Terpusat SD/SMP)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Field Trip & Study Tour (Premium)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 2 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 84.3,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (smkn2padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Volume Tinggi)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta IT Insan Mulia",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "1.0 - 1.5 Juta",
+                    "skor_total": 84.1,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Admin Sekolah (Hubungi PPDB)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Paket Religi/Edukasi (Eksklusif)",
+                    "sumber_info": "Media Sosial & Website (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 3 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 83.6,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (sman3padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan/Study Tour Regional (Value Tinggi)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Katolik Xaverius",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Selatan",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 83.1,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Web: smakxaverius-pdg.sch.id / Telp: (0751) 25211",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Trip Kesiswaan (Unik)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta Frater",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 82.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Nomor Kantor (Satu area dgn Don Bosco)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Trip Kesiswaan (Unik, VFM)",
+                    "sumber_info": "daftarsekolah.net & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta Semen Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Lubuk Kilangan",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 82.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Humas Yayasan Semen Padang",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour Regional (Value Tinggi)",
+                    "sumber_info": "daftarsekolah.net & Analisis Reputasi"
+                },
+                {
+                    "nama_sekolah": "SMA Swasta Adabiah",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 81.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Yayasan (adabiahpadang.or.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour Lokal/Regional (Sering)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 1 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 81.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Waka Kesiswaan (Hubungi via Kantor)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Volume Besar)",
+                    "sumber_info": "Analisis Volume Siswa (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 7 Padang (Bisnis)",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 80.5,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website Sekolah (smkn7padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Bisnis & Transportasi Reguler",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 1 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 80.2,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website (smkn1padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Volume Tinggi)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMK SMTI Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri (Kemenperin)",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 80.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website (smtipadang.sch.id) / Telp: (0751) 7053522",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Volume Tinggi, Luar Kota)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Pembangunan Laboratorium UNP",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 80.0,
+                    "kategori_prioritas": "HIGH",
+                    "kontak_kunci": "Website (smalab-unp.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour (High Volume & Value)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMK N 5 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 79.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn5padang.sch.id)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Kunjungan Industri & Kebutuhan Transportasi",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 3 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 78.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn3padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMA N 4 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 78.2,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (sman4padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan Lokal/Regional (Sensitif Harga)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 7 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 78.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (sman7padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan Lokal/Regional (Sensitif Harga)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Agnes",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 77.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Tidak Ada Info Kontak Spesifik",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class SD (Bus/Hiace)",
+                    "sumber_info": "Observasi Daya Beli (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 4 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 77.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn4padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMA Swasta Pertiwi 1",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Selatan",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 77.1,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Nomor Kantor (Verifikasi via Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Study Tour Standar (Biasa Rutin)",
+                    "sumber_info": "Analisis Kegiatan Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "MA N 1 Padang",
+                    "jenjang": "MA",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 76.9,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (man1kotapadang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Religi/Edukasi (Medium Volume)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK N 6 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 76.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn6padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Adabiah",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 76.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Yayasan (adabiahpadang.or.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class (Volume Tinggi)",
+                    "sumber_info": "Validasi Google & Website"
+                },
+                {
+                    "nama_sekolah": "SDIT Ar-Royyan",
+                    "jenjang": "SD",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 76.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "WA (TU): 0823-8748-8047 / Web: sekolahalam-arroyaan.sch.id",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class (Sekolah Alam)",
+                    "sumber_info": "theAsianparent (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SDIT Permata Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 75.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Web: sditpermatapadang.sch.id / Telp: (0751) 32298",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Field Trip (Volume Tinggi)",
+                    "sumber_info": "theAsianparent (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Swasta Murni Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Selatan",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 75.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 23211 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Akhir Tahun (Sedang)",
+                    "sumber_info": "Media Sosial & Observasi (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Don Bosco",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 75.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (donbosco-pdg.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class (Volume Tinggi)",
+                    "sumber_info": "Validasi Google & Website"
+                },
+                {
+                    "nama_sekolah": "SDIK Makkah Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 75.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: +62 853-7471-1699 / Web: sdikmakkah.sch.id",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Outing Class (Premium, Hiace/Bus)",
+                    "sumber_info": "theAsianparent (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Yos Sudarso",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 74.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class SD (Bus/Hiace)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP N 3 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 74.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Hubungi via Kantor/Sekretaris Sekolah",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Volume Besar (Budget Rendah)",
+                    "sumber_info": "Analisis Volume Siswa (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Kartika I-10",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 74.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class SD (Bus/Hiace)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMK N 8 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 74.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn8padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMA N 5 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Selatan",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 73.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (sman5pdg.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan Sekolah (Standar)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Z Cerdas Elite",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 73.1,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Admin Sekolah (Hubungi PPDB)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class SD (Premium, Hiace/Bus)",
+                    "sumber_info": "Observasi Daya Beli (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Xaverius",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Selatan",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 73.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class (Volume Tinggi)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMK Nusatama Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 72.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smknusatamapadang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Perhotelan/Boga)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 8 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 72.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (sman8padang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Liburan Sekolah (Standar)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 2 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 71.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telepon Kantor (Verifikasi via Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Analisis Kegiatan Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Tamansiswa Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Utara",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 71.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 7057082 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus)",
+                    "sumber_info": "Data Referensi Kemendikbud (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMKS Muhammadiyah 1 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Kuranji",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 71.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Web: smkmuhammadiyah1padang.sch.id / Telp: (0751) 777663",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri / Tour (Volume)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 5 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 70.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "MAN 3 Padang",
+                    "jenjang": "MA",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 70.1,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website Sekolah (man3kotapadang.sch.id)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Trip Religi/Budaya (Prioritaskan Hiace)",
+                    "sumber_info": "Website Resmi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 8 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 70.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telepon Kantor (Verifikasi via Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Analisis Reputasi (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMK Swasta DEK Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 70.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkdekpadang.sch.id)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Rutin)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMP Baiturrahmah Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 70.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 4 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 69.8,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMK Pelayaran Samudera",
+                    "jenjang": "SMK",
+                    "wilayah": "Bungus Teluk Kabung",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 69.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Tidak Ada Info Kontak Spesifik",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Kunjungan/Transport (Hiace Lebih Fleksibel)",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 11 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 69.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMK Swasta Farmasi Imam Bonjol",
+                    "jenjang": "SMK",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 69.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Farmasi)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMP Angkasa Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 69.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Cari Kontak (Area Lanud Tabing)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA N 12 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Kuranji",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 68.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 497724 (Verifikasi Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Coba Tawarkan Hiace)",
+                    "sumber_info": "Data Referensi Kemendikbud (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 7 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Kuranji",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 68.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Guru BK (Hubungi Kantor/Cek Jadwal Piket)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Trip Edukasi Murah (Budget Terbatas)",
+                    "sumber_info": "Observasi Kegiatan Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 12 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Nanggalo",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 68.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smp12padang.sch.id)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Sekolah (Medium Volume)",
+                    "sumber_info": "Validasi Google & Website"
+                },
+                {
+                    "nama_sekolah": "SMA N 11 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Kuranji",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 67.4,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 751160 (Verifikasi Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Trip Olahraga/Rekreasi (Fokus Hiace)",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 6 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Selatan",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 67.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP N 9 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 66.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMA N 15 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 66.1,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 8219115 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Wisata Lokal (Bus, Budget Rendah)",
+                    "sumber_info": "Data Referensi Kemendikbud (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 13 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 65.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMA PGRI 1 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 65.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 34311 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus)",
+                    "sumber_info": "Disdik Padang (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta Baiturrosyid Boarding School",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "500rb - 1.0 Juta",
+                    "skor_total": 65.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour (Boarding School)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 15 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Selatan",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 64.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMK Swasta Ganesha Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 64.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Kunjungan Industri (Teknik)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMK N 9 Padang",
+                    "jenjang": "SMK",
+                    "wilayah": "Pauh",
+                    "status": "Negeri",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 64.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Website (smkn9padang.sch.id)",
+                    "akses_armada": "Limited Access (Jalan Berbukit)",
+                    "akses_warna": "red",
+                    "potensi_paket": "Kunjungan Industri (Hiace/Transit)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMP N 18 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 63.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMA N 14 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Pauh",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 63.2,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp: (0751) 71128 (Verifikasi Google)",
+                    "akses_armada": "Limited Access (Jalan Berbukit)",
+                    "akses_warna": "red",
+                    "potensi_paket": "Paket Hiace (Hindari Bus Besar)",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD Swasta Muhammadiyah XI",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 62.9,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Admin Sekolah (Hubungi PPDB)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing Class (Bus)",
+                    "sumber_info": "Observasi Kegiatan Sekolah (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 17 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Lubuk Kilangan",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 62.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Coba Tawarkan Hiace)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP N 19 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Kuranji",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 61.5,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Coba Tawarkan Hiace)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP N 16 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 61.3,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telepon Kantor (Verifikasi via Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Sewa Bus Reguler (Low Budget)",
+                    "sumber_info": "Analisis Volume Siswa (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Swasta YAPI Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 61.0,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus)",
+                    "sumber_info": "Validasi Google & daftarsekolah.net"
+                },
+                {
+                    "nama_sekolah": "SMP N 23 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Lubuk Kilangan",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 60.9,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Kepala Sekolah (Hubungi Kantor)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Coba Tawarkan Hiace)",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 25 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Utara",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 60.2,
+                    "kategori_prioritas": "MEDIUM",
+                    "kontak_kunci": "Telepon Kantor (Verifikasi via Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Sewa Bus Reguler",
+                    "sumber_info": "Analisis Volume Siswa (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 20 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Pauh",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 59.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Limited Access (Jalan Sempit)",
+                    "akses_warna": "red",
+                    "potensi_paket": "Paket Hiace (Hindari Bus Besar)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP Muhammadiyah 8",
+                    "jenjang": "SMP",
+                    "wilayah": "Pauh",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 59.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Budget Rendah)",
+                    "sumber_info": "Scribd (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Islam Terpadu Sabbihisma",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 58.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Religi/Edukasi (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 14 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Bungus Teluk Kabung",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 58.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp Kantor (Verifikasi Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Lokal (Coba Tawarkan Hiace)",
+                    "sumber_info": "Validasi Google & Reputasi Lokal"
+                },
+                {
+                    "nama_sekolah": "SMP Islam Darul Quran",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 58.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Religi/Edukasi (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Islam Khaira Ummah",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 57.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Tour Religi/Edukasi (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP PGRI 1 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Kuranji",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 57.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Sewa Bus Reguler (Low Budget)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Islam Terpadu Bakti 2",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 57.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Religi/Edukasi (Medium Volume)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA PGRI 2 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Lubuk Begalung",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 56.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp: (0751) 72293 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Sewa Bus Reguler (Low Budget)",
+                    "sumber_info": "Disdik Padang (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP N 10 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Nanggalo",
+                    "status": "Negeri",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 55.4,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telepon Kantor (Verifikasi via Google)",
+                    "akses_armada": "Hiace/Mini Bus Access",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Fokus pada Hiace/Paket Sangat Murah",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "MAS Taufiq Wal Hidayah",
+                    "jenjang": "MA",
+                    "wilayah": "Pauh",
+                    "status": "Swasta",
+                    "spp": "< 150rb",
+                    "skor_total": 54.2,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Tidak Ada (Cari Nomor Kontak Yayasan)",
+                    "akses_armada": "Limited Access",
+                    "akses_warna": "red",
+                    "potensi_paket": "Hanya untuk Charter Hiace",
+                    "sumber_info": "Observasi Lapangan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD N 14 Olo",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Barat",
+                    "status": "Negeri",
+                    "spp": "< 150rb",
+                    "skor_total": 53.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Kepala Sekolah (Hubungi Kantor)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Outing (Budget Rendah, Volume Kecil)",
+                    "sumber_info": "Analisis Daya Beli (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Muhammadiyah 1 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Kuranji",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 52.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp: (0751) 23304 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus)",
+                    "sumber_info": "Disdik Padang (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Kartika I-5 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Timur",
+                    "status": "Swasta",
+                    "spp": "300rb - 500rb",
+                    "skor_total": 51.5,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp: (0751) 23756 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus)",
+                    "sumber_info": "Disdik Padang (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMA Muhammadiyah 2 Padang",
+                    "jenjang": "SMA",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 50.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Telp: (0751) 26217 (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Tour Sekolah (Bus, Budget Rendah)",
+                    "sumber_info": "Disdik Padang (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SD N 6 Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Padang Timur",
+                    "status": "Negeri",
+                    "spp": "< 150rb",
+                    "skor_total": 48.8,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Guru Kelas/Piket (Hubungi Kantor)",
+                    "akses_armada": "Cukup (Hiace)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Fokus pada paket Hiace sangat murah",
+                    "sumber_info": "Observasi Akses Jalan (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SD N 35 Padang",
+                    "jenjang": "SD",
+                    "wilayah": "Nanggalo",
+                    "status": "Negeri",
+                    "spp": "< 150rb",
+                    "skor_total": 45.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Kepala Sekolah (Hubungi Kantor)",
+                    "akses_armada": "Cukup (Hiace)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Fokus pada paket Hiace sangat murah",
+                    "sumber_info": "Analisis Daya Beli (Simulasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Muhammadiyah 3 Padang",
+                    "jenjang": "SMP",
+                    "wilayah": "Padang Barat",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 44.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Good Bus Access",
+                    "akses_warna": "green",
+                    "potensi_paket": "Sewa Bus Reguler (Low Budget)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                },
+                {
+                    "nama_sekolah": "SMP Swasta Islam Jhons Febby",
+                    "jenjang": "SMP",
+                    "wilayah": "Koto Tangah",
+                    "status": "Swasta",
+                    "spp": "150rb - 300rb",
+                    "skor_total": 43.0,
+                    "kategori_prioritas": "LOW",
+                    "kontak_kunci": "Hubungi Kantor (Verifikasi Google)",
+                    "akses_armada": "Cukup (Bus)",
+                    "akses_warna": "yellow",
+                    "potensi_paket": "Sewa Bus Reguler (Low Budget)",
+                    "sumber_info": "Kemendikbud (Validasi)"
+                }
+
+        ];
+
+        function getAksesIcon(aksesWarna) {
+            switch (aksesWarna) {
+                case 'green': return '<span class="akses-green">&#x2705;</span>';
+                case 'yellow': return '<span class="akses-yellow">&#x26A0;</span>';
+                case 'red': return '<span class="akses-red">&#x274C;</span>';
+                default: return '';
+            }
+        }
+
+        function updateKPIs(data) {
+            const total = data.length;
+            const highPriority = data.filter(d => d.kategori_prioritas === 'HIGH').length;
+            const mediumPriority = data.filter(d => d.kategori_prioritas === 'MEDIUM').length;
+            const goodAkses = data.filter(d => d.akses_warna === 'green').length;
+
+            document.getElementById('kpi-total').textContent = total;
+            document.getElementById('kpi-high').textContent = highPriority;
+            document.getElementById('kpi-medium').textContent = mediumPriority;
+            document.getElementById('kpi-akses').textContent = goodAkses;
+        }
+
+        function openModal() {
+            let currentData;
+            try {
+                // Mencoba mem-parse input saat ini untuk diedit
+                currentData = JSON.parse(jsonInput.value);
+            } catch (e) {
+                // Jika input invalid atau kosong, gunakan data awal (fallback)
+                currentData = initialData;
+            }
+            jsonInput.value = JSON.stringify(currentData, null, 2);
+            jsonModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            jsonModal.style.display = 'none';
+        }
+
+        function saveAndLoadData() {
+            closeModal();
+            loadData();
+        }
+
+        function loadData() {
+            errorMessage.classList.add('hidden');
+            tableContainer.innerHTML = '<p class="text-center text-gray-500 p-8">Memuat dan memproses data...</p>';
+            let data;
+            try {
+                const jsonString = jsonInput.value;
+                data = JSON.parse(jsonString);
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error("Data harus berupa Array JSON yang tidak kosong.");
+                }
+
+                // Sorting data berdasarkan skor_total (descending)
+                data.sort((a, b) => b.skor_total - a.skor_total);
+
+                renderTable(data);
+                updateKPIs(data);
+
+            } catch (e) {
+                errorMessage.textContent = 'ERROR JSON: ' + e.message;
+                errorMessage.classList.remove('hidden');
+                openModal();
+                tableContainer.innerHTML = `<p class="text-center text-red-500 p-8">Gagal memuat data. Perbaiki kesalahan format JSON di editor.</p>`;
+            }
+        }
+
+        function renderTable(data) {
+            let tableHTML = `
+                <table class="min-w-full divide-y divide-gray-200 table-auto table-responsive">
+                    <thead class="bg-gray-50 hidden md:table-header-group">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[5%]">NO.</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[20%]">SEKOLAH & DEMOGRAFI</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[10%]">PRIORITAS</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[25%]">KONTAK KUNCI (WAJIB CEK)</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[15%]">AKSES ARMADA</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-[25%]">SUMBER INFO & POTENSI PAKET</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            let currentPriority = '';
+            data.forEach((item, index) => {
+                const no = index + 1;
+                const newPriority = item.kategori_prioritas;
+
+                if (newPriority !== currentPriority) {
+                    const tagClass = newPriority === 'HIGH' ? 'tag-high' : (newPriority === 'MEDIUM' ? 'tag-medium' : 'tag-low');
+                    const textContent = newPriority === 'HIGH' ? 'HIGH PRIORITY TARGETS' : (newPriority === 'MEDIUM' ? 'MEDIUM PRIORITY TARGETS' : 'LOW PRIORITY TARGETS');
+                    tableHTML += `
+                        <tr>
+                            <td colspan="6" class="text-center py-3 font-bold text-sm md:text-lg ${tagClass} bg-opacity-10">${textContent} (Skor Rata-Rata ${newPriority === 'HIGH' ? '> 80' : (newPriority === 'MEDIUM' ? '60-79' : '< 60')})</td>
+                        </tr>
+                    `;
+                    currentPriority = newPriority;
+                }
+
+                const tagClass = newPriority === 'HIGH' ? 'tag-high' : (newPriority === 'MEDIUM' ? 'tag-medium' : 'tag-low');
+                const aksesIcon = getAksesIcon(item.akses_warna);
+
+                const kontak = item.kontak_kunci || 'Tidak Ada Informasi Kontak Langsung';
+                const sumber = item.sumber_info || 'Tidak Diketahui';
+                const potensi = item.potensi_paket || 'Analisis Potensi';
+
+                tableHTML += `
+                    <tr class="table-row">
+                        <td data-label="No." class="px-4 py-3 text-sm font-semibold text-gray-900 md:font-normal">${no}.</td>
+                        <td data-label="Sekolah & Demografi" class="px-4 py-3 text-sm font-semibold text-gray-900">
+                            ${item.nama_sekolah} <span class="text-xs text-gray-500 font-normal block">${item.jenjang}, ${item.wilayah} | ${item.status} | SPP: ${item.spp}</span>
+                        </td>
+                        <td data-label="Prioritas" class="px-4 py-3 text-sm">
+                            <span class="${tagClass} px-2 inline-flex text-xs leading-5 rounded-full whitespace-nowrap">${newPriority} (${item.skor_total})</span>
+                        </td>
+                        <td data-label="Kontak Kunci (WAJIB CEK)" class="px-4 py-3 text-sm text-gray-700">
+                            ${kontak}
+                        </td>
+                        <td data-label="Akses Armada" class="px-4 py-3 text-sm font-semibold text-gray-900">
+                            ${aksesIcon} ${item.akses_armada}
+                        </td>
+                        <td data-label="Sumber Info & Potensi Paket" class="px-4 py-3 text-sm text-gray-700">
+                            **Sumber:** ${sumber}. **Potensi:** ${potensi}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        window.onload = function () {
+            // Set data awal ke textarea
+            jsonInput.value = JSON.stringify(initialData, null, 2);
+            // Muat data awal secara otomatis
+            loadData();
+
+            // Setup listener untuk menutup modal saat klik di luar
+            jsonModal.addEventListener('click', (e) => {
+                if (e.target === jsonModal) {
+                    closeModal();
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>
