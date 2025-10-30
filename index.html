@@ -18,7 +18,7 @@
     <meta property="og:title" content="Sewa Hiace & Bus Pariwisata Luxury Padang | PO Sutan Raya" />
     <meta property="og:description"
         content="Layanan transportasi premium: Hiace Luxury, Bus Pariwisata terbaru, Shuttle Reguler, dan Tour Organizer di Sumatera Barat." />
-    <meta property="og:image" content="image/thumbnail.jpg" />
+    <meta property="og:image" content="image/thumbnail.webp" />
     <meta property="og:image:alt" content="Armada Bus Pariwisata PO Sutan Raya" />
     <meta property="og:url" content="https://www.sutanraya.com/" />
     <meta property="og:type" content="website" />
@@ -40,7 +40,7 @@
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
-        @import "tailwindcss";
+
         /* CSS Kustom Minimal untuk Google Translate */
         body {
             top: 0px !important;
@@ -226,7 +226,7 @@
 
         <main id="home"
             class="lg:min-h-[90vh] min-h-[80vh] jkt-font  bg-cover bg-center relative shadow-xl  flex items-center rounded-b-[2.5rem] relative"
-            style="background-image: url('image/bg.jpg');">
+            style="background-image: url('image/bg.webp');">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-b-[2.5rem]"></div>
             <img loading="lazy" src="image/logo.webp" width="700px" class="absolute right-[200px] max-md:hidden" style="opacity: 40%;"
                 alt="">
@@ -250,7 +250,7 @@
                     </h1>
                     <!-- <h1
                         class="mt-2 text-4xl sm:text-5xl pf-font lg:block max-md:hidden lg:text-[65px] font-bold text-white leading-tight ">
-                        Kenyamanan, kemewahan, dan rasa aman itu adalah milik <span class="bt-font font-normal ">Kita
+                        Kenyamanan, kemewahan, dan rasa aman itu adalah milik <span class=" font-normal ">Kita
                             semua</span>.
                     </h1> -->
                     <div class="my-[40px] text-lg lg:text-xl font-light lg:block max-md:hidden   text-gray-200 lg:w-3/4"
@@ -932,7 +932,7 @@
         <section id="team" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="tim-kami">
             <div class="container mx-auto max-w-6xl px-0 sm:px-4">
                 <div class="text-center mb-12 scroll-animate px-4 sm:px-0">
-                    <h2 id="tim-kami" class="section-title text-7xl lg:text-5xl mt-3 bt-font">Salam Hangat
+                    <h2 id="tim-kami" class="section-title text-7xl lg:text-5xl mt-3 pf-font">Salam Hangat
                     </h2>
                 </div>
                 
@@ -946,7 +946,7 @@
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-workspace"
                                 aria-hidden="true"></i></div>
                         <h3 class="text-xl font-bold">Wedinof Akhnel, B.B.A</h3>
-                        <p class="text-gray-600 bt-font text-[20px]">Direktur Utama</p>
+                        <p class="text-gray-600  text-[12px]">Direktur Utama</p>
                     </div>
                     <div
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-1
@@ -954,7 +954,7 @@
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-gear" aria-hidden="true"></i>
                         </div>
                         <h3 class="text-xl font-bold">Agung Rauf, S.Kom</h3>
-                        <p class="text-gray-600 bt-font text-[20px]">Direktur Operasional</p>
+                        <p class="text-gray-600  text-[12px]">Direktur Operasional</p>
                     </div>
                     <div
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-2
@@ -962,14 +962,14 @@
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-check" aria-hidden="true"></i>
                         </div>
                         <h3 class="text-xl font-bold">Satrio, S.M</h3>
-                        <p class="text-gray-600 bt-font text-[20px]">Direktur Keuangan</p>
+                        <p class="text-gray-600  text-[12px]">Direktur Keuangan</p>
                     </div>
                     <div
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-3
                                w-72 flex-shrink-0 snap-center sm:w-auto">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person" aria-hidden="true"></i></div>
                         <h3 class="text-xl font-bold">Nagmah Putri Dinda Toni, S.Si</h3>
-                        <p class="text-gray-600 bt-font text-[20px]">Komisaris</p>
+                        <p class="text-gray-600  text-[12px]">Komisaris</p>
                     </div>
                 </div>
             </div>
@@ -1185,7 +1185,230 @@
 
     <div id="google_translate_element" style="display:none;"></div>
 
-    <script src="app2.js"> </script>
+    <script src="">
+    const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    isMobileMenuOpen: false,
+                    isWaSelectorOpen: false,
+                    isWaSelector2Open: false, // For mobile bottom bar
+                    isLangSelectorOpen: false,
+                    activeTab: 'padang', // For contact tabs
+                    form: { // For contact form
+                        name: '',
+                        phone: '',
+                        message: ''
+                    },
+                    // [PERUBAHAN] Properti untuk scroller baru
+                    scrollAnimationId: null,
+                    originalScrollWidth: 0,
+                    scrollSpeed: 1, // Kecepatan scroll (1px per frame)
+                    isScrollingPaused: false, // Status untuk mouse hover
+                    observer: null // For scroll animations
+                };
+            },
+            methods: {
+                // --- Navigasi & Popup ---
+                toggleMobileMenu() {
+                    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+                    this.isWaSelectorOpen = false;
+                    this.isWaSelector2Open = false;
+                    this.isLangSelectorOpen = false;
+                },
+                closeMobileMenu() {
+                    this.isMobileMenuOpen = false;
+                },
+                toggleWaSelector(event) {
+                    if (event) event.preventDefault();
+                    this.isWaSelectorOpen = !this.isWaSelectorOpen;
+                    this.isMobileMenuOpen = false;
+                    this.isWaSelector2Open = false;
+                    this.isLangSelectorOpen = false;
+                },
+                toggleWaSelector2(event) { // For mobile
+                    if (event) event.preventDefault();
+                    this.isWaSelector2Open = !this.isWaSelector2Open;
+                    this.isMobileMenuOpen = false;
+                    this.isWaSelectorOpen = false;
+                    this.isLangSelectorOpen = false;
+                },
+                toggleLangSelector() {
+                    this.isLangSelectorOpen = !this.isLangSelectorOpen;
+                    this.isMobileMenuOpen = false;
+                    this.isWaSelectorOpen = false;
+                    this.isWaSelector2Open = false;
+                },
+                closeAllPopups() {
+                    this.isMobileMenuOpen = false;
+                    this.isWaSelectorOpen = false;
+                    this.isWaSelector2Open = false;
+                    this.isLangSelectorOpen = false;
+                },
+
+                // --- Tab Kontak ---
+                showTab(tabName) {
+                    this.activeTab = tabName;
+                },
+
+                // --- Form Kontak ---
+                handleFormSubmit() {
+                    const waNumber = "6282199996500"; // Nomor Admin untuk form (sesuaikan jika perlu)
+                    let message = `Halo Admin Sutan Raya,\n\n`;
+                    message += `Nama: ${this.form.name}\n`;
+                    message += `No. WA: ${this.form.phone}\n`;
+                    message += `Pesan: ${this.form.message}\n\n`;
+                    message += `Saya menghubungi dari form di website.`;
+
+                    const encodedMessage = encodeURIComponent(message);
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+                    
+                    window.open(waUrl, '_blank');
+                    
+                    // Reset form
+                    this.form.name = '';
+                    this.form.phone = '';
+                    this.form.message = '';
+                },
+
+                // --- Pengganti Bahasa ---
+                changeLanguage(lang) {
+                    const cookieName = 'googtrans';
+                    const cookieValue = '/auto/' + lang;
+                    const domain = '.' + window.location.hostname.split('.').slice(-2).join('.'); // Get root domain
+                    
+                    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
+                    document.cookie = `${cookieName}=${cookieValue}; path=/; domain=${domain}`;
+                    
+                    this.isLangSelectorOpen = false;
+                    location.reload();
+                },
+
+                // --- [PERUBAHAN] Scroller Galeri Armada (Continuous) ---
+                initContinuousScroller() {
+                    const scroller = document.getElementById('imageScroller');
+                    if (!scroller) return;
+
+                    // 1. Simpan lebar original
+                    this.originalScrollWidth = scroller.scrollWidth;
+                    
+                    // 2. Duplikasi gambar untuk efek loop tak terbatas
+                    const images = Array.from(scroller.children);
+                    images.forEach(img => {
+                        scroller.appendChild(img.cloneNode(true));
+                    });
+                    
+                    // 3. Mulai scroll
+                    this.startScroll();
+                },
+
+                startScroll() { // Dipanggil oleh @mouseleave
+                    this.isScrollingPaused = false;
+                    const scroller = document.getElementById('imageScroller');
+                    if (!scroller) return;
+
+                    const step = () => {
+                        // Berhenti jika di-pause (saat mouse hover)
+                        if (this.isScrollingPaused) return; 
+
+                        scroller.scrollLeft += this.scrollSpeed;
+                        
+                        // Cek jika sudah scroll melewati set gambar pertama
+                        if (scroller.scrollLeft >= this.originalScrollWidth) {
+                            // Lompat kembali ke awal tanpa animasi
+                            scroller.scrollLeft = 0;
+                        }
+                        
+                        // Minta frame animasi berikutnya
+                        this.scrollAnimationId = requestAnimationFrame(step);
+                    };
+
+                    // Batalkan frame sebelumnya (jika ada) dan mulai yang baru
+                    if (this.scrollAnimationId) {
+                        cancelAnimationFrame(this.scrollAnimationId);
+                    }
+                    this.scrollAnimationId = requestAnimationFrame(step);
+                },
+
+                stopScroll() { // Dipanggil oleh @mouseenter
+                    this.isScrollingPaused = true;
+                    // Batalkan frame animasi saat di-pause
+                    if (this.scrollAnimationId) {
+                        cancelAnimationFrame(this.scrollAnimationId);
+                        this.scrollAnimationId = null;
+                    }
+                },
+                // --- End [PERUBAHAN] ---
+
+                // --- Animasi Scroll ---
+                initScrollAnimation() {
+                    const elements = document.querySelectorAll('.scroll-animate');
+                    if (!('IntersectionObserver' in window)) {
+                        // Fallback untuk browser lama: langsung tampilkan semua
+                        elements.forEach(el => el.classList.add('visible'));
+                        return;
+                    }
+                    
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            // [PERUBAHAN DI SINI]
+                            if (entry.isIntersecting) {
+                                // Saat elemen masuk ke layar, tambahkan kelas .visible
+                                entry.target.classList.add('visible');
+                            } else {
+                                // Saat elemen keluar dari layar, hapus kelas .visible
+                                entry.target.classList.remove('visible');
+                            }
+                        });
+                    }, {
+                        threshold: 0.1 // 10% elemen terlihat
+                    });
+
+                    elements.forEach(el => this.observer.observe(el));
+                }
+            },
+            mounted() {
+                this.initScrollAnimation();
+                this.initContinuousScroller(); // [PERUBAHAN] Panggil inisiasi scroller baru
+
+                // Listener untuk menutup popup saat klik di luar
+                document.addEventListener('click', (event) => {
+                    const clickedOutside = 
+                        !event.target.closest('#mobile-menu-dropdown') &&
+                        !event.target.closest('button[aria-controls="mobile-menu-dropdown"]') &&
+                        !event.target.closest('#wa-selector') &&
+                        !event.target.closest('a[href="#"][@click.prevent="toggleWaSelector"]') && 
+                        !event.target.closest('#wa-selector-2') &&
+                        !event.target.closest('a[href="#"][@click.prevent="toggleWaSelector2"]') && 
+                        !event.target.closest('#language-selector') &&
+                        !event.target.closest('.language-toggle');
+
+                    if (clickedOutside) {
+                        this.closeAllPopups();
+                    }
+                });
+            },
+            beforeUnmount() {
+                // Bersihkan observer dan interval saat komponen dihancurkan
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
+                this.stopScroll(); // [PERUBAHAN] Panggil stopScroll untuk membersihkan requestAnimationFrame
+            }
+        }).mount('#app');
+
+        /**
+         * Fungsi init Google Translate
+         * HARUS berada di scope global (window) agar bisa dipanggil oleh script Googlee
+         */
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'id',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        } </script>
 </body>
 
 </html>
