@@ -18,6 +18,12 @@
     font-family: 'Poppins', sans-serif;
 }
 
+.tm-font{
+    font-family: 'Times New Roman', Times, serif;
+    letter-spacing: -1px;
+}
+
+
 .playwrite-font{
     font-family: "Playwrite US Trad", serif;
 }
@@ -55,7 +61,7 @@
     font-size: 12px;
 }
 
-
+/* 
 .hidden {
     opacity: 0;
     transition: all 1.3s;
@@ -67,7 +73,7 @@
     opacity: 1;
     filter: blur(0);
     transform: translateY(0);
-}
+} */
 
 a{
     text-decoration: none;

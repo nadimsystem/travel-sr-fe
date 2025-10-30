@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutan Raya - Deck Operasional</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app" class="app-container">
+        
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand bt-font">SutanRaya</div>
+            </div>
+            <ul class="nav-menu">
+                <li :class="{ 'active': view === 'dashboard' }" @click="view = 'dashboard'"><i class="bi bi-window-split"></i><span>Dashboard</span></li>
+                <li :class="{ 'active': view === 'inventaris' }" @click="view = 'inventaris'"><i class="bi bi-truck-front-fill"></i><span>Inventaris</span></li>
+                <li :class="{ 'active': view === 'history' }" @click="view = 'history'"><i class="bi bi-clock-history"></i><span>Riwayat</span></li>
+                <li :class="{ 'active': view === 'display' }" @click="view = 'display'"><i class="bi bi-display-fill"></i><span class="">Layar Display</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>{{ currentViewTitle }}</h1>
+                <div class="time-display">
+                    <span id="date"></span>
+                    <span id="clock"></span>
+                </div>
+            </header>
+
+            <div v-if="view === 'dashboard'" class="content-body dashboard-grid">
+                <div class="dashboard-col"><h2 class="section-title"><i class="bi bi-box-arrow-up"></i> KEBERANGKATAN (DARI PDG) <span>{{ departures.length }}</span></h2><div class="trip-list-condensed"><div v-for="trip in departures" class="trip-card-condensed" :class="getCardColorClass(trip.status)" @click="openTripModal(trip)"><div class="time-col">{{ formatTime(trip.departureTime) }}</div><div class="details-col"><div class="dest-code">{{ trip.destinationCode }}</div><div class="fleet-name">{{ trip.fleet.name }}</div></div><div class="pax-col"><i class="bi bi-people-fill"></i>{{ trip.pax }}</div><div class="status-col"><span class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</span></div></div></div></div>
+                <div class="dashboard-col"><h2 class="section-title"><i class="bi bi-box-arrow-down"></i> KEDATANGAN (DI PDG) <span>{{ arrivals.length }}</span></h2><div class="trip-list-condensed"><div v-for="trip in arrivals" class="trip-card-condensed" :class="getCardColorClass(trip.status)" @click="openTripModal(trip)"><div class="time-col">{{ formatTime(trip.arrivalTime) }}</div><div class="details-col"><div class="dest-code">{{ trip.originCode }}</div><div class="fleet-name">{{ trip.fleet.name }}</div></div><div class="pax-col"><i class="bi bi-people-fill"></i>{{ trip.pax }}</div><div class="status-col"><span class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</span></div></div></div></div>
+                <div class="dashboard-col full-width"><h2 class="section-title"><i class="bi bi-camera-reels-fill"></i> RENTAL AKTIF <span>{{ rental.length }}</span></h2><div class="trip-list-condensed rental"><div v-for="trip in rental" class="trip-card-condensed" :class="getCardColorClass(trip.status)" @click="openTripModal(trip)"><div class="time-col">{{ formatTime(trip.departureTime) }}</div><div class="details-col"><div class="dest-code">{{ trip.notes }}</div><div class="fleet-name">{{ trip.fleet.name }}</div></div><div class="pax-col"><i class="bi bi-person-workspace"></i>{{ trip.pax }}</div><div class="status-col"><span class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</span></div></div></div></div>
+                <div class="dashboard-col"><h2 class="section-title"><i class="bi bi-p-circle-fill"></i> ARMADA STANDBY <span>{{ armadaStandby.length }}</span></h2><div class="armada-grid standby"><div v-for="armada in armadaStandby" class="armada-card standby" @click="openTripModal(null, armada.id)"><div class="armada-card-header"><div class="armada-icon-container" :class="armada.type.toLowerCase().includes('bus') ? 'bus' : 'hiace'"><i :class="armada.icon"></i><span class="capacity-badge">{{ armada.capacity }}</span></div><div><div class="armada-name">{{ armada.name }}</div><div class="armada-plate">{{ armada.plate }}</div></div><span class="armada-status-dot"></span></div></div></div></div>
+                <div class="dashboard-col"><h2 class="section-title"><i class="bi bi-tools"></i> ARMADA BERKENDALA <span>{{ armadaKendala.length }}</span></h2><div class="armada-grid kendala"><div v-for="armada in armadaKendala" class="armada-card in-operation"><div class="armada-card-header"><div class="armada-icon-container" :class="armada.type.toLowerCase().includes('bus') ? 'bus' : 'hiace'"><i :class="armada.icon"></i><span class="capacity-badge">{{ armada.capacity }}</span></div><div><div class="armada-name">{{ armada.name }}</div><div class="armada-plate">{{ armada.plate }}</div></div><span class="armada-status-dot kendala"></span></div></div></div></div>
+            </div>
+
+            <div v-if="view === 'inventaris'" class="content-body">
+                <div class="controls"><div class="search-box"><i class="bi bi-search"></i><input type="text" v-model="armadaSearchTerm" placeholder="Cari armada, plat, atau status..."></div><button class="add-button" @click="openVehicleModal(null)"><i class="bi bi-plus-circle-fill"></i> Tambah Kendaraan</button></div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark"><tr><th>Nama Armada</th><th>Jenis</th><th>Plat Nomor</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                            <tr v-for="vehicle in filteredFleet" :key="vehicle.id">
+                                <td><strong>{{ vehicle.name }}</strong></td>
+                                <td>{{ vehicle.type }}</td>
+                                <td><span class="badge bg-secondary">{{ vehicle.plate }}</span></td>
+                                <td>{{ vehicle.capacity }} Kursi</td>
+                                <td><span class="badge" :class="getVehicleStatusClass(vehicle.status)">{{ vehicle.status }}</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary" @click="openVehicleModal(vehicle)"><i class="bi bi-pencil-fill"></i> Edit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div v-if="view === 'history'" class="content-body">
+                <div class="controls"><div class="search-box"><i class="bi bi-search"></i><input type="text" v-model="historySearchTerm" placeholder="Cari riwayat perjalanan..."></div></div>
+                <div class="trip-section">
+                    <h2 class="section-title"><i class="bi bi-check2-circle"></i> Riwayat Perjalanan Selesai <span>{{ filteredHistory.length }}</span></h2>
+                    <div class="trip-list">
+                        <div v-if="filteredHistory.length === 0" class="empty-state">Tidak ada riwayat yang cocok.</div>
+                        <div v-else class="trip-card color-grey" v-for="trip in filteredHistory" @click="openTripModal(trip)">
+                           <div class="trip-details">
+                                <div class="trip-route"><span class="location-code">{{ trip.originCode }}</span><i class="bi bi-arrow-right-circle-fill"></i><span class="location-code">{{ trip.destinationCode }}</span></div>
+                                <div class="trip-time"><i class="bi bi-calendar3"></i> {{ formatFullDate(trip.departureTime) }}</div>
+                                <div class="trip-fleet"><i :class="trip.fleet.type === 'Hiace' ? 'bi bi-truck-front-fill' : 'bi bi-bus-front-fill'"></i> {{ trip.fleet.name }}</div>
+                            </div>
+                            <div class="trip-status-container">
+                                <div class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</div>
+                                <div class="trip-assignee">{{ trip.assignee }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div v-if="view === 'display'" class="content-body display-view">
+                 <div class="trip-section">
+                    <h2 class="section-title text-dark"><i class="bi bi-box-arrow-right"></i> Keberangkatan / Departures</h2>
+                    <div class="display-list">
+                         <div class="display-header-row"><div class="col-time">JAM</div><div class="col-dest">TUJUAN</div><div class="col-armada">ARMADA</div><div class="col-status">STATUS</div></div>
+                        <div class="display-card" v-for="trip in upcomingTripsForDisplay">
+                            <div class="col-time">{{ formatTime(trip.departureTime) }}</div><div class="col-dest">{{ trip.destinationCode || 'RENTAL' }}</div><div class="col-armada">{{ trip.fleet.name }}</div><div class="col-status"><span class="trip-status" :class="getStatusClass(trip.status)">{{ trip.status }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div v-if="isTripModalVisible" class="modal-overlay" @click.self="closeTripModal">
+            <div class="modal-content" v-if="modal.trip">
+                <div class="modal-header"><h3>{{ modal.mode === 'add' ? 'Buat Jadwal Baru' : 'Edit Jadwal Perjalanan' }}</h3><button @click="closeTripModal" class="close-button">&times;</button></div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3"><label class="form-label">Armada</label><select class="form-select" v-model="modal.trip.fleetId" :disabled="modal.mode === 'edit'"><option disabled value="">Pilih armada...</option><option v-for="f in fleet" :value="f.id" :disabled="isFleetOnTrip(f.id, modal.trip.id)">{{ f.name }} ({{ f.type }})</option></select></div>
+                        <div class="col-12 mb-3"><label class="form-label">Jenis Perjalanan</label><select class="form-select" v-model="modal.trip.type"><option>Rute</option><option>Rental</option></select></div>
+                        <template v-if="modal.trip.type === 'Rute'">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Asal</label>
+                                <select class="form-select" v-model="modal.trip.origin">
+                                    <option v-for="loc in locations" :value="loc">{{ loc }}</option>
+                                    <option value="custom">Lainnya...</option>
+                                </select>
+                                <input v-if="modal.trip.origin === 'custom'" type="text" class="form-control mt-2" placeholder="Masukkan lokasi asal" v-model="customOrigin">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Tujuan</label>
+                                <select class="form-select" v-model="modal.trip.destination">
+                                    <option v-for="loc in locations" :value="loc">{{ loc }}</option>
+                                    <option value="custom">Lainnya...</option>
+                                </select>
+                                <input v-if="modal.trip.destination === 'custom'" type="text" class="form-control mt-2" placeholder="Masukkan lokasi tujuan" v-model="customDestination">
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="col-12 mb-3"><label class="form-label">Keterangan Rental</label><input type="text" class="form-control" v-model="modal.trip.notes" placeholder="e.g., Sewa Harian - PT. ABC"></div>
+                        </template>
+                        <div class="col-6 mb-3"><label class="form-label">Waktu Berangkat</label><input type="datetime-local" class="form-control" v-model="modal.trip.departureTime"></div>
+                        <div class="col-6 mb-3"><label class="form-label">Waktu Tiba (Estimasi)</label><input type="datetime-local" class="form-control" v-model="modal.trip.arrivalTime"></div>
+                        <div class="col-6 mb-3"><label class="form-label">Penumpang/Tipe</label><input type="text" class="form-control" v-model="modal.trip.pax" placeholder="e.g., 7/7, Carter"></div>
+                        <div class="col-6 mb-3"><label class="form-label">Driver</label><input type="text" class="form-control" v-model="modal.trip.assignee" placeholder="Nama driver"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                     <div><button class="btn-save" @click="saveTrip">Simpan Perubahan</button><button v-if="modal.mode === 'edit'" class="btn-delete" @click="deleteTrip(modal.trip.id)">Hapus Jadwal</button></div>
+                     <div v-if="modal.mode === 'edit'" class="status-updater">
+                        <p>Ubah Status Cepat:</p>
+                        <button v-for="s in statuses" class="status-button" :class="'btn-' + s.toLowerCase().replace(' ', '-')" @click="updateTripStatus(modal.trip.id, s)">{{ s }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="isVehicleModalVisible" class="modal-overlay" @click.self="closeVehicleModal">
+            <div class="modal-content">
+                <div class="modal-header"><h3>{{ vehicleModal.mode === 'add' ? 'Tambah Kendaraan Baru' : 'Edit Kendaraan' }}</h3><button @click="closeVehicleModal" class="close-button">&times;</button></div>
+                <div class="modal-body">
+                     <div class="row">
+                        <div class="col-6 mb-3"><label class="form-label">Nama Armada</label><input type="text" class="form-control" v-model="vehicleModal.data.name" placeholder="Contoh: Hiace SR-31"></div>
+                        <div class="col-6 mb-3"><label class="form-label">Plat Nomor</label><input type="text" class="form-control" v-model="vehicleModal.data.plate" placeholder="Contoh: BA 8031 XX"></div>
+                        <div class="col-6 mb-3"><label class="form-label">Jenis Kendaraan</label><select class="form-select" v-model="vehicleModal.data.type"><option>Hiace</option><option>Medium Bus</option><option>Big Bus</option></select></div>
+                        <div class="col-6 mb-3"><label class="form-label">Kapasitas Kursi</label><input type="number" class="form-control" v-model.number="vehicleModal.data.capacity"></div>
+                        <div class="col-12 mb-3"><label class="form-label">Status Kendaraan</label><select class="form-select" v-model="vehicleModal.data.status"><option>Tersedia</option><option>Perbaikan</option></select></div>
+                     </div>
+                </div>
+                <div class="modal-footer justify-content-end"><button class="btn-save" @click="saveVehicle">Simpan Kendaraan</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

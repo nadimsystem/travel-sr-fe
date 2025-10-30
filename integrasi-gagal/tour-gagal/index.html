@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tour Planner - Sutan Raya</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        .planner-container { max-width: 1200px; margin: auto; }
+        .card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .form-label { font-weight: 600; }
+        .day-card { background-color: #fff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .destination-tag, .accommodation-tag { cursor: pointer; transition: all 0.2s ease-in-out; }
+        .destination-tag:hover, .accommodation-tag:hover { transform: scale(1.05); }
+        .summary-card { position: sticky; top: 20px; }
+        .price-final { font-size: 1.8rem; font-weight: bold; color: #28a745; }
+    </style>
+</head>
+<body>
+
+<div id="tourApp" class="container-fluid p-4 planner-container">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold">AI Tour Package Planner</h1>
+        <p class="text-muted">Buat dan kalkulasi paket wisata Sumatera Barat dengan mudah.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">1. Pengaturan Dasar</h4>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="tourName" class="form-label">Nama Paket / Klien</label>
+                            <input type-="text" class="form-control" id="tourName" v-model="tour.name" placeholder="Contoh: Trip Keluarga Bpk. Andi">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pax" class="form-label">Jumlah Pax</label>
+                            <input type="number" class="form-control" id="pax" v-model.number="tour.pax" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="duration" class="form-label">Durasi (hari)</label>
+                            <input type="number" class="form-control" id="duration" v-model.number="tour.duration" min="1" max="10">
+                        </div>
+                         <div class="col-md-6">
+                            <label for="startDate" class="form-label">Tanggal Mulai</label>
+                            <input type="date" class="form-control" id="startDate" v-model="tour.startDate">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h4 class="card-title mb-4">2. Pilih Armada & Akomodasi</h4>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Pilih Kendaraan</label>
+                            <select class="form-select" v-model.number="tour.fleetId">
+                                <option disabled value="">-- Pilih Armada --</option>
+                                <option v-for="vehicle in availableFleet" :value="vehicle.id">
+                                    {{ vehicle.name }} ({{ vehicle.capacity }} seats)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label">Pilih Driver</label>
+                             <select class="form-select" v-model.number="tour.driverId">
+                                <option disabled value="">-- Pilih Driver --</option>
+                                <option v-for="driver in availableDrivers" :value="driver.id">
+                                    {{ driver.name }} - {{ driver.licenseType }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label class="form-label">Opsi Tambahan</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="includeMeals" v-model="tour.includeMeals">
+                            <label class="form-check-label" for="includeMeals">Termasuk Makan ({{ formatCurrency(costs.driverMeal) }}/hari)</label>
+                        </div>
+                         <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="includeLodge" v-model="tour.includeLodge">
+                            <label class="form-check-label" for="includeLodge">Termasuk Penginapan Driver ({{ formatCurrency(costs.driverLodge) }}/malam)</label>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    <h4 class="card-title mb-3">3. Rancang Itinerary Per Hari</h4>
+
+                    <div v-for="(day, index) in tour.itinerary" :key="index" class="day-card">
+                        <h5>Hari ke-{{ index + 1 }}</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Kota & Destinasi</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span v-for="dest in availableDestinations" @click="addDestination(index, dest)" 
+                                      class="badge destination-tag fs-6" :class="dest.category_class">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ dest.name }} ({{ dest.city }})
+                                </span>
+                            </div>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">Destinasi Terpilih</label>
+                             <ul class="list-group">
+                                <li v-for="(dest, destIndex) in day.destinations" class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ dest.name }}
+                                    <button class="btn btn-sm btn-outline-danger" @click="removeDestination(index, destIndex)"><i class="bi bi-trash"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                             <label class="form-label">Akomodasi Malam Ini</label>
+                             <div class="d-flex flex-wrap gap-2">
+                                <span v-for="acc in availableAccommodations(day)" @click="setAccommodation(index, acc)" 
+                                    class="badge accommodation-tag fs-6" 
+                                    :class="day.accommodation && day.accommodation.name === acc.name ? 'bg-success' : 'bg-secondary'">
+                                    <i class="bi bi-building"></i> {{ acc.name }} ({{ formatCurrency(acc.pricePerNight) }})
+                                </span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card summary-card">
+                <div class="card-body">
+                    <h4 class="card-title">Ringkasan Paket Wisata</h4>
+                    <p><strong>{{ tour.name || 'Nama Paket' }}</strong></p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-calendar-check me-2"></i> Durasi: {{ tour.duration }} hari</li>
+                        <li><i class="bi bi-people-fill me-2"></i> Peserta: {{ tour.pax }} orang</li>
+                        <li><i class="bi bi-truck me-2"></i> Armada: {{ selectedFleetName }}</li>
+                        <li><i class="bi bi-person-steering me-2"></i> Driver: {{ selectedDriverName }}</li>
+                    </ul>
+
+                    <hr>
+                    <h5 class="mb-3">Rincian Biaya</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">Sewa Armada <span>{{ formatCurrency(totalFleetCost) }}</span></li>
+                        <li class="list-group-item d-flex justify-content-between">Akomodasi <span>{{ formatCurrency(totalAccommodationCost) }}</span></li>
+                        <li class="list-group-item d-flex justify-content-between">Biaya Driver <span>{{ formatCurrency(totalDriverCost) }}</span></li>
+                    </ul>
+                    
+                    <hr>
+                    <h5 class="mb-3">Markup & Harga Jual</h5>
+                     <div class="input-group mb-3">
+                        <input type="number" class="form-control" v-model.number="markupPercentage" placeholder="Markup %">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">Total Modal (HPP) <span>{{ formatCurrency(totalCost) }}</span></li>
+                        <li class="list-group-item d-flex justify-content-between">Markup ({{ markupPercentage }}%) <span>{{ formatCurrency(markupAmount) }}</span></li>
+                    </ul>
+                    
+                    <div class="text-center bg-light p-3 rounded mt-3">
+                        <h6 class="text-muted">HARGA JUAL PAKET</h6>
+                        <div class="price-final">{{ formatCurrency(finalPrice) }}</div>
+                        <small class="text-muted">({{ formatCurrency(pricePerPax) }}/pax)</small>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-success btn-lg" @click="saveTourPackage" :disabled="!isReadyToSave">
+                            <i class="bi bi-save me-2"></i> Simpan & Jadwalkan
+                        </button>
+                    </div>
+                     <div v-if="saveStatus" class="alert mt-3" :class="saveStatus.success ? 'alert-success' : 'alert-danger'">
+                        {{ saveStatus.message }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="../data-manager.js"></script> 
+<script src="app.js"></script>
+
+</body>
+</html>

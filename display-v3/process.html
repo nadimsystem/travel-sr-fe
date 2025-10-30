@@ -136,7 +136,7 @@
                             <select v-model="tripDetails.driverId" class="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-sutan-gold focus:border-sutan-gold" :disabled="!selectedArmada">
                                 <option :value="null" disabled>Pilih supir...</option>
                                 <option v-for="driver in availableDriversForTrip" :value="driver.id">{{ driver.name }} ({{ driver.licenseType }})</option>
-                                <option v-if="availableDriversForTrip.length === 0" disabled>Tidak ada supir standby dengan SIM yang sesuai</option>
+                                <option v-if="selectedArmada && availableDriversForTrip.length === 0" disabled>Tidak ada supir standby dengan SIM yang sesuai</option>
                             </select>
                         </div>
                     </div>
@@ -155,8 +155,6 @@
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
-    <script src="js/data.js"></script>
-    <script src="js/utils.js"></script>
     <script src="js/process.js"></script>
 </body>
 </html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- META TAGS -->
+    <title>Sutan Raya - Tour Management v2 (Integrated)</title>
+    <meta name="author" content="PO. Sutan Raya" />
+    <meta name="description"
+        content="Panel manajemen tur untuk PO. Sutan Raya. Buat dan kelola paket tur dengan mudah." />
+    <meta name="keywords"
+        content="sewa hiace padang, bus pariwisata sumatera barat, travel luxury padang, po sutan raya, tour organizer sumbar, paket outbound padang" />
+    <link rel="icon" type="image/svg+xml" href="https://img.icons8.com/ios-filled/50/D4AF37/crown.png" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Sutan Raya - Tour Management" />
+    <meta property="og:description"
+        content="Panel manajemen tur untuk PO. Sutan Raya. Buat dan kelola paket tur dengan mudah." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i.imgur.com/8pS13q9.jpg" />
+
+    <!-- CDN LENGKAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+        :root {
+            --sutan-dark: #121212;
+            --sutan-gold: #D4AF37;
+            --sutan-light: #f8f9fa;
+            --bs-body-font-family: 'Plus Jakarta Sans', sans-serif;
+            --bs-body-bg: var(--sutan-dark);
+            --bs-body-color: var(--sutan-light);
+        }
+        body { font-family: var(--bs-body-font-family); background-color: var(--sutan-dark); color: var(--sutan-light); }
+        #app { transition: all 0.3s ease-in-out; }
+        .planner-container { max-width: 500px; margin: auto; min-height: 100vh; display: flex; flex-direction: column; background-color: var(--sutan-dark); }
+        .planner-header { padding: 1.5rem 1rem; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.2); position: sticky; top: 0; background-color: var(--sutan-dark); z-index: 10; }
+        .planner-header .logo { font-weight: 800; font-size: 1.5rem; color: var(--sutan-gold); text-decoration: none; }
+        .planner-step { flex-grow: 1; padding: 1.5rem; }
+        .step-title { font-weight: 700; color: var(--sutan-gold); margin-bottom: 0.5rem; }
+        .step-subtitle { font-size: 0.9rem; opacity: 0.8; margin-bottom: 2rem; }
+        .btn-gold { background-color: var(--sutan-gold); border-color: var(--sutan-gold); color: var(--sutan-dark); font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 0.5rem; }
+        .btn-gold:disabled { background-color: #555; border-color: #555; color: #999; }
+        .btn-gold:hover, .btn-gold:focus { background-color: #c8a432; border-color: #c8a432; color: var(--sutan-dark); }
+        .btn-outline-gold { border-color: var(--sutan-gold); color: var(--sutan-gold); font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; }
+        .btn-outline-gold:hover, .btn-outline-gold.active { background-color: var(--sutan-gold); color: var(--sutan-dark); }
+        .form-control, .form-select { background-color: #222; border: 1px solid #444; color: var(--sutan-light); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+        .form-control:focus, .form-select:focus { background-color: #222; border-color: var(--sutan-gold); color: var(--sutan-light); box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25); }
+        .form-control::placeholder { color: #888; }
+        .input-group-text { background-color: #333; border-color: #444; color: var(--sutan-gold); }
+        .form-check-input:checked { background-color: var(--sutan-gold); border-color: var(--sutan-gold); }
+        .choice-card { border: 1px solid #444; border-radius: 0.5rem; padding: 1rem; cursor: pointer; transition: all 0.2s ease-in-out; }
+        .choice-card.active { border-color: var(--sutan-gold); background-color: rgba(212, 175, 55, 0.1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        .choice-card .icon { font-size: 2rem; color: var(--sutan-gold); }
+        .route-item { background-color: #222; border-left: 3px solid var(--sutan-gold); }
+        .summary-item { border-bottom: 1px solid #333; padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .summary-item:last-child { border-bottom: none; }
+        .tour-card { background-color: #1a1a1a; border: 1px solid #444; border-radius: .5rem; transition: all .2s ease; cursor: pointer; }
+        .tour-card:hover { border-color: var(--sutan-gold); transform: translateY(-3px); }
+        .tour-card .badge { font-size: .7rem; }
+        .rundown-day { margin-bottom: 1.5rem; }
+        .rundown-day h6 { color: var(--sutan-gold); padding-bottom: 0.5rem; border-bottom: 1px solid #444; margin-bottom: 0.75rem; }
+        .rundown-activity-item { background-color: #2a2a2a; font-size: 0.9rem; list-style-type: none; padding: 0.5rem 0.75rem; }
+        .rundown-activity-item li { padding-bottom: 0.25rem; }
+        .rundown-manual-editor .row { align-items: center; }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="planner-container">
+            <header class="planner-header">
+                <div class="d-flex w-100 justify-content-center">
+                    <img src="../image/logo.png" width="50px" alt="">
+                </div>
+                <a href="#" @click.prevent="returnToDashboard" class="logo">SUTAN RAYA</a>
+                <p class="mb-0 small opacity-75">Tour Management Panel v2</p>
+            </header>
+
+            <!-- DASHBOARD VIEW -->
+            <main class="planner-step" v-if="currentStep === 'dashboard'">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="step-title mb-0">Dashboard Paket Tur</h3>
+                    <button @click="startPlanner" class="btn btn-sm btn-gold"><i class="bi bi-plus-lg"></i> Buat Paket</button>
+                </div>
+                <div v-if="savedTours.length === 0" class="text-center py-5 opacity-50">
+                    <i class="bi bi-journal-x" style="font-size: 4rem;"></i>
+                    <p class="mt-3">Belum ada paket tur yang dibuat.</p>
+                </div>
+                <div v-else class="d-grid gap-3">
+                    <div v-for="(tour, index) in savedTours" :key="tour.id" class="tour-card p-3" @click="viewDetails(tour)">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ tour.customerName || 'Paket Tanpa Nama' }}</h6>
+                                <p class="small opacity-75 mb-2"><i class="bi bi-people-fill"></i> {{ tour.pax }} Orang</p>
+                            </div>
+                            <span class="badge" :class="tour.type === 'Bermalam' ? 'text-bg-primary' : 'text-bg-success'">{{ tour.type }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2 border-top border-secondary pt-2">
+                             <div>
+                                 <span class="opacity-75 d-block"><i class="bi bi-calendar-event me-1"></i> {{ calculatedDuration(tour) }} Hari</span>
+                                 <span v-if="tour.budget > 0" class="opacity-75 d-block mt-1"><i class="bi bi-wallet2 me-1"></i> Rp {{ tour.budget.toLocaleString('id-ID') }}/pax</span>
+                            </div>
+                            <div class="text-end">
+                                 <span class="fw-bold text-gold d-block"><i class="bi bi-tags-fill me-1"></i> Rp {{ calculateTotalPrice(tour).toLocaleString('id-ID') }}</span>
+                                 <div class="actions mt-1">
+                                    <button @click.stop="deleteTour(index)" class="btn btn-sm btn-outline-danger py-0 px-1 ms-1"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- DETAIL VIEW -->
+            <main class="planner-step" v-if="currentStep === 'details' && selectedTour">
+                <h3 class="step-title">Detail Paket Tur</h3>
+                <p class="step-subtitle">Ringkasan lengkap untuk paket <strong class="text-gold">{{ selectedTour.customerName }}</strong>.</p>
+                <div class="p-3 rounded" style="background-color: #222;">
+                    <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ selectedTour.customerName }} ({{ selectedTour.pax }} Orang)</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Tanggal & Tipe</small><p class="fw-bold mb-0">{{ formatDate(selectedTour.startDate) }} - {{ formatDate(selectedTour.endDate) }} ({{ selectedTour.type }})</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ selectedTour.pickupPoint }}</p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in selectedTour.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < selectedTour.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Transportasi</small><p class="fw-bold mb-0">{{ getVehicleNameById(selectedTour.vehicleId) }}</p></div>
+                    <div class="summary-item" v-if="selectedTour.type === 'Bermalam' && selectedTour.accommodations.length > 0"><small class="opacity-75 d-block">Akomodasi</small><p class="fw-bold mb-0"><span v-for="(a, i) in selectedTour.accommodations" :key="i" class="badge bg-secondary me-1 mb-1">{{ a.name }}</span></p></div>
+                    <div class="summary-item" v-if="selectedTour.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in selectedTour.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
+                    <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="selectedTour.addons.outbound ? 'text-success' : 'text-danger'">{{ selectedTour.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="selectedTour.addons.documentation ? 'text-success' : 'text-danger'">{{ selectedTour.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5 class="step-subtitle fw-bold text-light">Rincian Estimasi Biaya</h5>
+                    <div class="p-3 rounded mb-4" style="background-color: #222;">
+                        <template v-for="(value, key) in getPriceBreakdown(selectedTour)"><div v-if="value > 0" class="summary-item d-flex justify-content-between"><span class="opacity-75">{{ key }}</span><span class="fw-bold">Rp {{ value.toLocaleString('id-ID') }}</span></div></template>
+                        <div class="summary-item d-flex justify-content-between align-items-center bg-dark mt-2"><h5 class="text-gold fw-bolder mb-0">Total Estimasi</h5><h5 class="text-gold fw-bolder mb-0">Rp {{ calculateTotalPrice(selectedTour).toLocaleString('id-ID') }}</h5></div>
+                    </div>
+                    
+                    <h5 class="step-subtitle fw-bold text-light">Rundown Acara</h5>
+                     <div class="p-3 rounded" style="background-color: #222;">
+                        <div v-if="isLoadingRundown" class="text-center p-4">
+                            <div class="spinner-border text-warning" role="status"></div>
+                            <p class="mt-2 small">AI sedang menyusun rundown...</p>
+                        </div>
+                        <div v-else-if="!hasRundown(selectedTour) && !isEditingRundown" class="text-center p-4">
+                            <p class="opacity-75">Rundown belum dibuat.</p>
+                             <div class="btn-group">
+                                <button @click="generateRundownAI(selectedTour)" class="btn btn-sm btn-outline-gold">✨ Generate AI</button>
+                                <button @click="startManualRundown(selectedTour)" class="btn btn-sm btn-outline-gold"><i class="bi bi-pencil"></i> Buat Manual</button>
+                            </div>
+                        </div>
+                        <div v-else-if="hasRundown(selectedTour) && !isEditingRundown">
+                            <div class="text-end mb-2">
+                                <button @click="startManualRundown(selectedTour)" class="btn btn-sm btn-outline-light py-0 px-2"><i class="bi bi-pencil"></i></button>
+                            </div>
+                            <div v-for="day in selectedTour.rundown" :key="day.day" class="rundown-day">
+                                <h6>{{ day.day }}</h6>
+                                <ul class="list-unstyled p-0">
+                                    <li v-for="activity in day.activities" class="p-2 mb-2 rounded rundown-activity-item">
+                                        <b>{{ activity.startTime }} - {{ activity.endTime }}:</b> {{ activity.description }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div v-if="isEditingRundown" class="rundown-manual-editor">
+                             <div v-for="(dayData, dayIndex) in manualRundownInput" :key="dayIndex" class="mb-3">
+                                <label class="form-label fw-bold">Hari {{ dayIndex + 1 }}</label>
+                                <div v-for="(activity, actIndex) in dayData.activities" :key="activity.id" class="row g-2 mb-2">
+                                    <div class="col-5"><select class="form-select form-select-sm" v-model="activity.startTime"><option v-for="time in availableStartTimes(dayIndex, actIndex)" :key="time" :value="time">{{ time }}</option></select></div>
+                                    <div class="col-5"><select class="form-select form-select-sm" v-model="activity.endTime"><option v-for="time in availableEndTimes(dayIndex, actIndex)" :key="time" :value="time">{{ time }}</option></select></div>
+                                    <div class="col-2 text-end"><button @click="removeActivity(dayIndex, actIndex)" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></div>
+                                    <div class="col-12"><input type="text" class="form-control form-control-sm" placeholder="Deskripsi kegiatan" v-model="activity.description"></div>
+                                </div>
+                                <button @click="addActivity(dayIndex)" class="btn btn-sm btn-outline-success w-100"><i class="bi bi-plus"></i> Tambah Aktivitas</button>
+                             </div>
+                             <div class="d-flex justify-content-end gap-2 mt-3">
+                                 <button @click="cancelEditRundown" class="btn btn-sm btn-secondary">Batal</button>
+                                 <button @click="saveManualRundown(selectedTour)" class="btn btn-sm btn-gold">Simpan Rundown</button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-5">
+                    <button @click="editTour(selectedTour)" class="btn btn-gold"><i class="bi bi-pencil-square"></i> Edit Detail Paket</button>
+                    <button @click="returnToDashboard" class="btn btn-outline-gold">Kembali ke Dashboard</button>
+                </div>
+            </main>
+
+            <!-- WIZARD STEPS -->
+            <template v-if="currentStep.startsWith('step')">
+                <main class="planner-step" v-if="currentStep === 'step1'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Info Klien' : 'Langkah 1: Info Klien' }}</h3>
+                    <p class="step-subtitle">Masukkan data pelanggan, jumlah peserta, dan anggaran jika ada.</p>
+                    <div class="mb-4"><label for="customerName" class="form-label">Nama Pelanggan / Grup</label><input type="text" class="form-control" id="customerName" placeholder="Contoh: Keluarga Bpk. Ahmad" v-model="trip.customerName"></div>
+                    <div class="mb-4"><label for="pax" class="form-label">Jumlah Orang</label><div class="input-group"><input type="number" class="form-control" id="pax" placeholder="10" min="1" v-model.number="trip.pax"><span class="input-group-text">Orang</span></div></div>
+                    <div class="mb-4"><label for="budget" class="form-label">Anggaran per Orang (Opsional)</label><div class="input-group"><span class="input-group-text">Rp</span><input type="number" class="form-control" id="budget" placeholder="Boleh dikosongkan" min="1" v-model.number="trip.budget"></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.customerName || !trip.pax || trip.pax <= 0">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="returnToDashboard" class="btn btn-link text-light mt-2">Batal</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step2'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Tanggal & Tipe' : 'Langkah 2: Tanggal & Tipe' }}</h3>
+                    <p class="step-subtitle">Pilih tanggal, tipe perjalanan, dan durasi akan terhitung otomatis.</p>
+                    <div class="row g-3 mb-4"><div class="col-6"><label for="startDate" class="form-label">Tanggal Mulai</label><input type="date" class="form-control" id="startDate" v-model="trip.startDate"></div><div class="col-6"><label for="endDate" class="form-label">Tanggal Selesai</label><input type="date" class="form-control" id="endDate" v-model="trip.endDate"></div></div>
+                    <label class="form-label">Tipe Perjalanan</label>
+                    <div class="btn-group w-100 mb-4" role="group"><input type="radio" class="btn-check" name="tripType" id="typeBermalam" value="Bermalam" v-model="trip.type" autocomplete="off"><label class="btn btn-outline-gold" for="typeBermalam"><i class="bi bi-moon-stars-fill"></i> Bermalam</label><input type="radio" class="btn-check" name="tripType" id="typeHarian" value="Harian" v-model="trip.type" autocomplete="off"><label class="btn btn-outline-gold" for="typeHarian"><i class="bi bi-sun-fill"></i> Harian</label></div>
+                    <div class="alert alert-info" v-if="calculatedDuration(trip) > 0">Durasi: {{ calculatedDuration(trip) }} hari</div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.type || !trip.startDate || !trip.endDate || calculatedDuration(trip) <= 0">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step3'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Rute' : 'Langkah 3: Tentukan Rute' }}</h3>
+                    <p class="step-subtitle">Pilih kota asal dan tujuan. Anda bisa menambahkan beberapa rute.</p>
+                    <div v-if="trip.route.length > 0" class="mb-4"><p class="fw-bold">Rute Anda:</p><div v-for="(r, index) in trip.route" :key="index" class="p-2 mb-2 rounded route-item d-flex justify-content-between align-items-center"><span>{{ index + 1 }}. {{ r.from }} <i class="bi bi-arrow-right mx-2"></i> {{ r.to }}</span><button @click="removeRoute(index)" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button></div></div>
+                    <div class="border rounded p-3" style="border-color: #444 !important;"><p class="fw-bold mb-2">{{ trip.route.length > 0 ? 'Tambah Rute' : 'Rute Pertama' }}</p><div class="mb-3"><label class="form-label small">Dari</label><input type="text" class="form-control" v-model="newRoute.from" readonly></div><div class="mb-3"><label class="form-label small">Ke</label><select class="form-select" v-model="newRoute.to"><option disabled value="">Pilih Tujuan</option><option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option></select></div><div class="d-grid"><button @click="addRoute" class="btn btn-outline-gold" :disabled="!newRoute.to"><i class="bi bi-plus-circle"></i> Tambahkan</button></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="trip.route.length === 0">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step4'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Titik Penjemputan' : 'Langkah 4: Titik Penjemputan' }}</h3>
+                    <p class="step-subtitle">Masukkan alamat lengkap atau titik kumpul yang disepakati.</p>
+                    <div class="mb-4"><label for="pickupPoint" class="form-label">Alamat / Nama Lokasi</label><textarea class="form-control" id="pickupPoint" rows="3" placeholder="Contoh: Depan Hotel Santika Padang, atau bisa juga alamat lengkap rumah." v-model="trip.pickupPoint"></textarea></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.pickupPoint">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+                
+                <main class="planner-step" v-if="currentStep === 'step5'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Kendaraan' : 'Langkah 5: Pilih Kendaraan' }}</h3>
+                    <p class="step-subtitle">Pilih armada yang tersedia dan sesuai untuk grup <b class="text-gold">{{ trip.pax }} orang</b>.</p>
+                    <div v-if="armadaStandby.length > 0" class="d-grid gap-3">
+                        <div v-for="vehicle in armadaStandby" :key="vehicle.id" @click="trip.vehicleId = vehicle.id" class="choice-card" :class="{ active: trip.vehicleId === vehicle.id }">
+                            <div class="d-flex align-items-center">
+                                <div class="icon me-3"><i :class="vehicle.icon"></i></div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ vehicle.name }}</h6>
+                                    <small class="opacity-75">Kapasitas: {{ vehicle.capacity }} seats</small>
+                                </div>
+                                <div class="ms-auto fw-bold text-light">{{ formatRupiah(vehicle.hargaSewa) }}/hari</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="text-center py-5 opacity-50 border rounded">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+                        <p class="mt-3">Tidak ada armada yang tersedia saat ini.</p>
+                    </div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold" :disabled="!trip.vehicleId">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step6' && trip.type === 'Bermalam'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Akomodasi' : 'Langkah 6: Pilih Akomodasi' }}</h3>
+                    <p class="step-subtitle">Pilih penginapan yang tersedia di kota tujuan.</p>
+                    <div v-for="city in routeCities" :key="city"><h5 class="mt-4 mb-3" style="color: var(--sutan-gold);">Penginapan di {{ city }}</h5><div v-for="acc in accommodationsByCity(city)" :key="acc.name" class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" :id="acc.name" :value="acc" v-model="trip.accommodations"><label class="form-check-label" :for="acc.name">{{ acc.name }} <span class="badge bg-secondary">{{ acc.type }}</span></label></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+            
+                <main class="planner-step" v-if="currentStep === 'step7'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Destinasi' : 'Langkah 7: Destinasi Wisata' }}</h3>
+                    <p class="step-subtitle">Pilih tempat-tempat yang ingin dikunjungi.</p>
+                    <div class="text-center mb-4"><button @click="suggestDestinationsAI" class="btn btn-sm btn-outline-gold" :disabled="isLoadingSuggestions"><span v-if="isLoadingSuggestions" class="spinner-border spinner-border-sm" aria-hidden="true"></span> ✨ Dapatkan Rekomendasi AI</button></div>
+                    <div v-for="city in routeCities" :key="city"><h5 class="mt-4 mb-3" style="color: var(--sutan-gold);">Destinasi di {{ city }}</h5><div v-for="dest in destinationsByCity(city)" :key="dest.name" class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" :id="dest.name" :value="dest" v-model="trip.destinations"><label class="form-check-label" :for="dest.name">{{ dest.name }} <span class="badge rounded-pill" :class="dest.category_class">{{ dest.category }}</span></label></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lanjut <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+
+                <main class="planner-step" v-if="currentStep === 'step8'">
+                    <h3 class="step-title">{{ isEditing ? 'Edit Opsi Tambahan' : 'Langkah 8: Opsi Tambahan' }}</h3>
+                    <p class="step-subtitle">Lengkapi perjalanan dengan layanan ekstra.</p>
+                    <div class="list-group list-group-flush"><div class="list-group-item bg-transparent text-light px-0 d-flex justify-content-between align-items-center"><div><h6 class="mb-0">Aktivitas Outbound</h6><small>Perkuat kebersamaan tim.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="outbound" v-model="trip.addons.outbound"></div></div><div class="list-group-item bg-transparent text-light px-0 d-flex justify-content-between align-items-center mt-3"><div><h6 class="mb-0">Dokumentasi (Foto & Video)</h6><small>Abadikan setiap momen.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="documentation" v-model="trip.addons.documentation"></div></div></div>
+                    <div class="d-grid mt-5"><button @click="nextStep" class="btn btn-gold">Lihat Ringkasan <i class="bi bi-arrow-right"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+                
+                <main class="planner-step" v-if="currentStep === 'step9'">
+                    <h3 class="step-title">Ringkasan Paket Tur</h3>
+                    <p class="step-subtitle">Periksa kembali detail paket untuk pelanggan.</p>
+                    <div class="p-3 rounded" style="background-color: #222;">
+                        <div class="summary-item"><small class="opacity-75 d-block">Nama Pelanggan</small><p class="fw-bold mb-0">{{ trip.customerName }} ({{ trip.pax }} Orang)</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Tanggal & Tipe</small><p class="fw-bold mb-0">{{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }} ({{ trip.type }})</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Titik Jemput</small><p class="fw-bold mb-0">{{ trip.pickupPoint }}</p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Rute</small><p class="fw-bold mb-0"><span v-for="(r, i) in trip.route" :key="i">{{ r.from }} <i class="bi bi-arrow-right"></i> {{ r.to }}{{ i < trip.route.length - 1 ? ' <i class="bi bi-arrow-right"></i> ' : '' }}</span></p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Transportasi</small><p class="fw-bold mb-0">{{ getVehicleNameById(trip.vehicleId) }}</p></div>
+                        <div class="summary-item" v-if="trip.type === 'Bermalam' && trip.accommodations.length > 0"><small class="opacity-75 d-block">Akomodasi</small><p class="fw-bold mb-0"><span v-for="(a, i) in trip.accommodations" :key="i" class="badge bg-secondary me-1 mb-1">{{ a.name }}</span></p></div>
+                        <div class="summary-item" v-if="trip.destinations.length > 0"><small class="opacity-75 d-block">Destinasi</small><p class="fw-bold mb-0"><span v-for="(d, i) in trip.destinations" :key="i" class="badge bg-secondary me-1 mb-1">{{ d.name }}</span></p></div>
+                        <div class="summary-item"><small class="opacity-75 d-block">Opsi Tambahan</small><p class="fw-bold mb-0">Outbound: <span :class="trip.addons.outbound ? 'text-success' : 'text-danger'">{{ trip.addons.outbound ? 'Ya' : 'Tidak' }}</span>, Dokumentasi: <span :class="trip.addons.documentation ? 'text-success' : 'text-danger'">{{ trip.addons.documentation ? 'Ya' : 'Tidak' }}</span></p></div>
+                    </div>
+                     <div class="mt-4">
+                        <h5 class="step-subtitle fw-bold text-light">Rincian Estimasi Biaya</h5>
+                        <div class="p-3 rounded" style="background-color: #222;">
+                            <template v-for="(value, key) in getPriceBreakdown(trip)"><div v-if="value > 0" class="summary-item d-flex justify-content-between"><span class="opacity-75">{{ key }}</span><span class="fw-bold">Rp {{ value.toLocaleString('id-ID') }}</span></div></template>
+                            <div class="summary-item d-flex justify-content-between align-items-center bg-dark mt-2"><h5 class="text-gold fw-bolder mb-0">Total Estimasi</h5><h5 class="text-gold fw-bolder mb-0">Rp {{ calculateTotalPrice(trip).toLocaleString('id-ID') }}</h5></div>
+                        </div>
+                    </div>
+                    <div class="d-grid mt-5"><button @click="saveTour" class="btn btn-gold">{{ isEditing ? 'Update Paket' : 'Simpan Paket' }} <i class="bi bi-save"></i></button><button @click="prevStep" class="btn btn-link text-light mt-2">Kembali</button></div>
+                </main>
+            </template>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

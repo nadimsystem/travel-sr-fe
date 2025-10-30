@@ -59,17 +59,15 @@ body {
 /* Transisi Halaman (View) dengan Vue.js */
 .view-enter-active,
 .view-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: absolute; /* Mencegah layout berantakan saat transisi */
-    width: 100%;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .view-enter-from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(20px);
 }
 .view-leave-to {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-20px);
 }
 
 /* Transisi Daftar (List) dengan Vue.js */
@@ -100,4 +98,8 @@ body {
 .modal-content-enter-from, .modal-content-leave-to {
   transform: scale(0.8) translateY(-20px);
   opacity: 0;
+}
+
+[v-cloak] {
+    display: none;
 }

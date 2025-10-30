@@ -11,17 +11,12 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
-    <meta property="og:image" content="https://i.pinimg.com/736x/d4/c0/2a/d4c02ab6ea1144040cd0cb1174f39b94.jpg" />
-    <meta property="og:description"
-        content="Rasakan pengalaman mewah armada Sutan Raya dengan tur virtual 360 derajat. Jelajahi interior kendaraan kami yang nyaman dan modern." />
-    <meta property="og:title" content="Sutan Raya - Tur Virtual Armada Mewah" />
-
     <style>
-        :root {
+         :root {
             --sutan-dark: #121212;
             --sutan-gold: #d4af37;
         }
-
+        
         body {
             background-color: var(--sutan-dark);
             color: white;
@@ -38,44 +33,59 @@
             createApp,
             ref,
             onMounted,
-            onUnmounted
+            onUnmounted,
+            computed
         } = Vue;
 
         createApp({
             setup() {
+                // --- State Management ---
+                const viewer = ref(null);
                 const isGyroSupported = ref(false);
                 const isPermanentlyOff = ref(false);
                 const deactivationClicks = ref(0);
                 const isTemporarilyPaused = ref(false);
-                const viewer = ref(null);
 
+                // Konstanta untuk kode yang lebih mudah dibaca
+                const MAX_DEACTIVATION_CLICKS = 3;
+
+                // --- Computed Properties ---
+                // Logika untuk teks tombol dipindahkan ke sini
+                const buttonText = computed(() => {
+                    if (isPermanentlyOff.value) {
+                        return 'Giroskop Dimatikan';
+                    }
+                    return `Matikan Giroskop (${deactivationClicks.value}/${MAX_DEACTIVATION_CLICKS})`;
+                });
+
+                // --- Event Handlers ---
                 const handleManualInteraction = () => {
-                    if (!isPermanentlyOff.value) {
+                    if (!isPermanentlyOff.value && viewer.value) {
                         isTemporarilyPaused.value = true;
                         viewer.value.stopOrientation();
                     }
                 };
 
                 const handleDeviceMove = () => {
-                    if (!isPermanentlyOff.value && isTemporarilyPaused.value) {
+                    if (!isPermanentlyOff.value && isTemporarilyPaused.value && viewer.value) {
                         isTemporarilyPaused.value = false;
                         viewer.value.startOrientation();
                     }
                 };
 
                 const handleGyroToggle = () => {
-                    if (isPermanentlyOff.value) return;
+                    if (isPermanentlyOff.value || !viewer.value) return;
 
-                    deactivationClicks.value += 1;
-                    viewer.value.stopOrientation();
+                    deactivationClicks.value++;
+                    viewer.value.stopOrientation(); // Pastikan gyro berhenti setiap kali diklik
 
-                    if (deactivationClicks.value > 2) {
+                    if (deactivationClicks.value >= MAX_DEACTIVATION_CLICKS) {
                         isPermanentlyOff.value = true;
                     }
                 };
 
+                // --- Lifecycle Hooks ---
                 onMounted(() => {
-                    // Initialize Pannellum viewer
                     viewer.value = pannellum.viewer("panorama-container", {
                         type: "equirectangular",
                         panorama: "image2.jpg",
@@ -86,26 +96,30 @@
                         orientationOnByDefault: true,
                     });
 
-                    viewer.value.on('load', () => {
-                        const supported = viewer.value.isOrientationSupported();
+                    const currentViewer = viewer.value;
+
+                    currentViewer.on('load', () => {
+                        const supported = currentViewer.isOrientationSupported();
                         isGyroSupported.value = supported;
 
                         if (supported) {
-                            viewer.value.getContainer().addEventListener('mousedown', handleManualInteraction, true);
-                            viewer.value.getContainer().addEventListener('touchstart', handleManualInteraction, true);
-                            window.addEventListener('deviceorientation', handleDeviceMove, true);
+                            const container = currentViewer.getContainer();
+                            // Menggunakan event bubbling (default), bukan capturing
+                            container.addEventListener('mousedown', handleManualInteraction);
+                            container.addEventListener('touchstart', handleManualInteraction);
+                            window.addEventListener('deviceorientation', handleDeviceMove);
                         }
                     });
                 });
 
                 onUnmounted(() => {
-                    if (viewer.value && viewer.value.isOrientationSupported()) {
-                        viewer.value.getContainer().removeEventListener('mousedown', handleManualInteraction, true);
-                        viewer.value.getContainer().removeEventListener('touchstart', handleManualInteraction, true);
-                        window.removeEventListener('deviceorientation', handleDeviceMove, true);
-                    }
-
                     if (viewer.value) {
+                        if (isGyroSupported.value) {
+                            const container = viewer.value.getContainer();
+                            container.removeEventListener('mousedown', handleManualInteraction);
+                            container.removeEventListener('touchstart', handleManualInteraction);
+                            window.removeEventListener('deviceorientation', handleDeviceMove);
+                        }
                         viewer.value.destroy();
                     }
                 });
@@ -113,8 +127,8 @@
                 return {
                     isGyroSupported,
                     isPermanentlyOff,
-                    deactivationClicks,
-                    handleGyroToggle
+                    handleGyroToggle,
+                    buttonText // Mengirim computed property ke template
                 };
             },
             template: `
@@ -143,8 +157,7 @@
                                 'bg-[var(--sutan-gold)] text-black hover:bg-yellow-300': !isPermanentlyOff
                             }"
                         >
-                            {{ isPermanentlyOff ? 'Giroskop Dimatikan' : \`Matikan Giroskop (\${deactivationClicks}/3)\` }}
-                        </button>
+                            {{ buttonText }} </button>
                     </div>
 
                     <footer class="text-center mt-8 text-gray-500 text-sm">
