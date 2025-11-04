@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    <title>Panel Admin | Sutan Raya</title> 
+    
+    <link rel="icon" type="image/png" href="../image/logo.png" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        'sutan-dark': '#121212', 
+                        'sutan-gold': '#D4AF37', 
+                        'sutan-light': '#F8F9FA', 
+                        'sutan-secondary': '#222222' 
+                    },
+                    fontFamily: { 
+                        'sans': ['Plus Jakarta Sans', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif']
+                    },
+                    borderRadius: { 
+                        '4xl': '2rem', 
+                        '5xl': '2.5rem' 
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-sutan-light text-sutan-dark font-sans">
+
+    <div id="adminApp">
+
+        <nav class="bg-white shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto max-w-7xl px-4 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <a class="flex items-center flex-row" href="#" aria-label="Beranda Sutan Raya">
+                        <img loading="lazy" src="../image/logo.png" alt="Logo PO Sutan Raya" style="height: 36px;" class="me-2">
+                        <span class="font-bold text-xl text-black" translate="no"> SUTAN RAYA</span>
+                        <span class="ml-3 px-3 py-1 bg-sutan-gold/20 text-sutan-gold text-xs font-bold rounded-full">ADMIN</span>
+                    </a>
+
+                    <div class="hidden lg:flex items-center space-x-2 mx-auto" role="navigation">
+                        <a href="#" @click.prevent="navigateTo('list')"
+                           class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+                           :class="currentPage === 'list' ? 'text-sutan-gold' : 'text-gray-600 hover:text-sutan-dark'">
+                           Daftar Artikel
+                        </a>
+                        <a href="#" @click.prevent="navigateTo('create')"
+                           class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+                           :class="currentPage === 'create' ? 'text-sutan-gold' : 'text-gray-600 hover:text-sutan-dark'">
+                           Buat Artikel Baru
+                        </a>
+                        </div>
+
+                    <div class="flex items-center gap-4">
+                        <button class="text-gray-500 hover:text-sutan-dark relative" aria-label="Notifikasi">
+                            <i class="bi bi-bell-fill text-xl"></i>
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                        </button>
+                        <div class="w-11 h-11 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border-2 border-sutan-gold/50">
+                            <img src="https://ui-avatars.com/api/?name=Admin+Sutan&background=D4AF37&color=121212&bold=true" alt="Admin User">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container mx-auto max-w-7xl p-4 lg:p-8">
+
+            <section v-if="currentPage === 'list'">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                    <div>
+                        <span class="font-bold text-sm text-sutan-gold uppercase tracking-wider">Konten</span>
+                        <h1 class="font-serif text-4xl lg:text-5xl font-bold text-sutan-dark mt-1">
+                            Artikel & Berita
+                        </h1>
+                    </div>
+                    <div class="mt-5 md:mt-0 flex-shrink-0">
+                        <a href="#" @click.prevent="navigateTo('create')" class="inline-block px-7 py-3 bg-sutan-gold text-sutan-dark rounded-full text-sm font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-sutan-gold/40">
+                            <i class="bi bi-plus-lg -ml-1 mr-1"></i> Buat Artikel Baru
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[600px] text-left">
+                            <thead class="border-b border-gray-200">
+                                <tr>
+                                    <th scope="col" class="pb-4 text-sm font-semibold text-gray-500 uppercase">Judul Artikel</th>
+                                    <th scope="col" class="pb-4 text-sm font-semibold text-gray-500 uppercase">Status</th>
+                                    <th scope="col" class="pb-4 text-sm font-semibold text-gray-500 uppercase">Tanggal Terbit</th>
+                                    <th scope="col" class="pb-4 text-sm font-semibold text-gray-500 uppercase text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="py-5 pr-4">
+                                        <div class="font-semibold text-sutan-dark">5 Destinasi Wajib di Sumatera Barat Selain Jam Gadang</div>
+                                        <div class="text-sm text-gray-500">/artikel/5-destinasi-wajib-sumatera-barat</div>
+                                    </td>
+                                    <td class="py-5 pr-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                            <i class="bi bi-check-circle-fill mr-2"></i> Diterbitkan
+                                        </span>
+                                    </td>
+                                    <td class="py-5 pr-4 text-sm text-gray-600">30 Okt 2025</td>
+                                    <td class="py-5 text-right">
+                                        <a href="#" @click.prevent="navigateTo('edit')" class="font-semibold text-sutan-gold hover:text-sutan-dark">Edit</a>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="py-5 pr-4">
+                                        <div class="font-semibold text-sutan-dark">Tips Memilih Jasa Sewa Hiace Luxury untuk Rombongan</div>
+                                        <div class="text-sm text-gray-500">/artikel/tips-sewa-hiace</div>
+                                    </td>
+                                    <td class="py-5 pr-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                                            <i class="bi bi-pencil-fill mr-2"></i> Draf
+                                        </span>
+                                    </td>
+                                    <td class="py-5 pr-4 text-sm text-gray-600">28 Okt 2025</td>
+                                    <td class="py-5 text-right">
+                                        <a href="#" @click.prevent="navigateTo('edit')" class="font-semibold text-sutan-gold hover:text-sutan-dark">Edit</a>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="py-5 pr-4">
+                                        <div class="font-semibold text-sutan-dark">Mengapa Tour Organizer Penting untuk Liburan Perusahaan?</div>
+                                        <div class="text-sm text-gray-500">/artikel/pentingnya-tour-organizer</div>
+                                    </td>
+                                    <td class="py-5 pr-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                            <i class="bi bi-check-circle-fill mr-2"></i> Diterbitkan
+                                        </span>
+                                    </td>
+                                    <td class="py-5 pr-4 text-sm text-gray-600">25 Okt 2025</td>
+                                    <td class="py-5 text-right">
+                                        <a href="#" @click.prevent="navigateTo('edit')" class="font-semibold text-sutan-gold hover:text-sutan-dark">Edit</a>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section v-if="currentPage === 'edit'">
+                <form action="#" method="POST">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                        <div>
+                            <span class="font-bold text-sm text-sutan-gold uppercase tracking-wider">Mode Edit</span>
+                            <h1 class="font-serif text-4xl lg:text-5xl font-bold text-sutan-dark mt-1">
+                                Kelola Artikel
+                            </h1>
+                            <p class="text-gray-600 mt-2 text-lg">
+                                Mengubah: <span class="font-semibold text-sutan-dark">5 Destinasi Wajib...</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3 mt-5 md:mt-0 flex-shrink-0">
+                            <a href="#" @click.prevent="navigateTo('list')" class="px-6 py-3 bg-white border border-gray-300 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-colors">
+                                <i class="bi bi-arrow-left mr-1"></i> Kembali ke Daftar
+                            </a>
+                            <button type="submit" class="px-7 py-3 bg-sutan-gold text-sutan-dark rounded-full text-sm font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-sutan-gold/40">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+                        
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Konten Utama</h2>
+                                <div class="space-y-5">
+                                    <div>
+                                        <label for="edit-title" class="block text-sm font-semibold text-gray-700 mb-2">Judul Artikel (H1)</label>
+                                        <input type="text" id="edit-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="5 Destinasi Wajib di Sumatera Barat Selain Jam Gadang">
+                                    </div>
+                                    <div>
+                                        <label for="edit-slug" class="block text-sm font-semibold text-gray-700 mb-2">Slug (URL)</label>
+                                        <div class="flex items-center">
+                                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg">/artikel/</span>
+                                            <input type="text" id="edit-slug" class="w-full px-4 py-3 border border-gray-300 rounded-r-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="5-destinasi-wajib-sumatera-barat">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="edit-content" class="block text-sm font-semibold text-gray-700 mb-2">Isi Konten (HTML)</label>
+                                        <textarea id="edit-content" rows="20" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold font-mono text-sm" placeholder="Paste HTML di sini..."><p>Bicara soal Sumatera Barat, apa yang pertama kali terlintas di benak Anda? ...</p></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Pengaturan SEO</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                                    <div>
+                                        <label for="edit-meta-title" class="block text-sm font-semibold text-gray-700 mb-2">Judul SEO (Meta Title)</label>
+                                        <input type="text" id="edit-meta-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="5 Destinasi Wajib di Sumatera Barat... | Blog Sutan Raya">
+                                    </div>
+                                    <div>
+                                        <label for="edit-meta-desc" class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi SEO (Meta Description)</label>
+                                        <textarea id="edit-meta-desc" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold">Sumatera Barat bukan hanya Bukittinggi. Temukan surga tersembunyi...</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 space-y-8 mt-8 lg:mt-0">
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Publikasi</h2>
+                                <div class="space-y-5">
+                                    <div>
+                                        <label for="edit-status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                                        <select id="edit-status" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold bg-white">
+                                            <option value="published" selected>Diterbitkan</option>
+                                            <option value="draft">Draf</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="edit-author" class="block text-sm font-semibold text-gray-700 mb-2">Penulis</label>
+                                        <input type="text" id="edit-author" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="Tim Konten Sutan Raya">
+                                    </div>
+                                    <div>
+                                        <label for="edit-published_at" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Terbit</label>
+                                        <input type="datetime-local" id="edit-published_at" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="2025-10-30T09:00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Gambar & Atribut</h2>
+                                <div class="space-y-5">
+                                    <div class="w-full aspect-video bg-gray-100 rounded-xl mb-4 overflow-hidden border">
+                                        <img src="https://berita.pesisirselatankab.go.id/asset/foto_berita/IMG-20221109-WA00171.jpg" alt="Preview" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <label for="edit-main-image-url" class="block text-sm font-semibold text-gray-700 mb-2">URL Gambar Utama</label>
+                                        <input type="text" id="edit-main-image-url" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="https://berita.pesisirselatankab.go.id/...">
+                                    </div>
+                                    <div>
+                                        <label for="edit-kicker" class="block text-sm font-semibold text-gray-700 mb-2">Kategori (Kicker)</label>
+                                        <input type="text" id="edit-kicker" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="Tips Wisata">
+                                    </div>
+                                    <div>
+                                        <label for="edit-keywords" class="block text-sm font-semibold text-gray-700 mb-2">Keywords (Pisahkan koma)</label>
+                                        <textarea id="edit-keywords" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold">destinasi sumatera barat, wisata padang...</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section v-if="currentPage === 'create'">
+                <form action="#" method="POST">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                        <div>
+                            <span class="font-bold text-sm text-sutan-gold uppercase tracking-wider">Mode Buat</span>
+                            <h1 class="font-serif text-4xl lg:text-5xl font-bold text-sutan-dark mt-1">
+                                Tulis Artikel Baru
+                            </h1>
+                        </div>
+                        <div class="flex items-center gap-3 mt-5 md:mt-0 flex-shrink-0">
+                            <a href="#" @click.prevent="navigateTo('list')" class="px-6 py-3 bg-white border border-gray-300 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-colors">
+                                <i class="bi bi-arrow-left mr-1"></i> Batal
+                            </a>
+                            <button type="submit" class="px-7 py-3 bg-sutan-dark text-white rounded-full text-sm font-bold hover:bg-opacity-80 transition-all shadow-lg shadow-sutan-dark/40">
+                                Simpan Draf
+                            </button>
+                            <button type="submit" class="px-7 py-3 bg-sutan-gold text-sutan-dark rounded-full text-sm font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-sutan-gold/40">
+                                Terbitkan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+                        
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Konten Utama</h2>
+                                <div class="space-y-5">
+                                    <div>
+                                        <label for="new-title" class="block text-sm font-semibold text-gray-700 mb-2">Judul Artikel (H1)</label>
+                                        <input type="text" id="new-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="Tulis judul yang menarik...">
+                                    </div>
+                                    <div>
+                                        <label for="new-slug" class="block text-sm font-semibold text-gray-700 mb-2">Slug (URL)</label>
+                                        <div class="flex items-center">
+                                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg">/artikel/</span>
+                                            <input type="text" id="new-slug" class="w-full px-4 py-3 border border-gray-300 rounded-r-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="judul-artikel-baru">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="new-content" class="block text-sm font-semibold text-gray-700 mb-2">Isi Konten (HTML)</label>
+                                        <textarea id="new-content" rows="20" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold font-mono text-sm" placeholder="Paste HTML di sini..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Pengaturan SEO</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                                    <div>
+                                        <label for="new-meta-title" class="block text-sm font-semibold text-gray-700 mb-2">Judul SEO (Meta Title)</label>
+                                        <input type="text" id="new-meta-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="Judul SEO | Blog Sutan Raya">
+                                    </div>
+                                    <div>
+                                        <label for="new-meta-desc" class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi SEO (Meta Description)</label>
+                                        <textarea id="new-meta-desc" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="Deskripsi singkat artikel..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 space-y-8 mt-8 lg:mt-0">
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Publikasi</h2>
+                                <div class="space-y-5">
+                                    <div>
+                                        <label for="new-status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                                        <select id="new-status" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold bg-white">
+                                            <option value="draft" selected>Draf</option>
+                                            <option value="published">Diterbitkan</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="new-author" class="block text-sm font-semibold text-gray-700 mb-2">Penulis</label>
+                                        <input type="text" id="new-author" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="Tim Konten Sutan Raya">
+                                    </div>
+                                    <div>
+                                        <label for="new-published_at" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Terbit</label>
+                                        <input type="datetime-local" id="new-published_at" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" value="">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+                                <h2 class="font-serif text-2xl font-bold text-sutan-dark mb-6">Gambar & Atribut</h2>
+                                <div class="space-y-5">
+                                    <div class="w-full aspect-video bg-gray-100 rounded-xl mb-4 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                        <span class="text-gray-500 text-sm">Preview Gambar Utama</span>
+                                    </div>
+                                    <div>
+                                        <label for="new-main-image-url" classs="block text-sm font-semibold text-gray-700 mb-2">URL Gambar Utama</label>
+                                        <input type="text" id="new-main-image-url" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="https://...">
+                                    </div>
+                                    <div>
+                                        <label for="new-kicker" class="block text-sm font-semibold text-gray-700 mb-2">Kategori (Kicker)</label>
+                                        <input type="text" id="new-kicker" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="Tips Wisata">
+                                    </div>
+                                    <div>
+                                        <label for="new-keywords" class="block text-sm font-semibold text-gray-700 mb-2">Keywords (Pisahkan koma)</label>
+                                        <textarea id="new-keywords" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sutan-gold" placeholder="keyword1, keyword2, ..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer class="mt-12 py-8 border-t border-gray-200">
+            <div class="container mx-auto max-w-7xl px-4 lg:px-8 text-center text-sm text-gray-500">
+                © 2025 PO Sutan Raya (PT Fajar Wisata Langgeng). Admin Panel.
+            </div>
+        </footer>
+
+    </div> <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    // Halaman default saat admin dibuka
+                    currentPage: 'list' // 'list', 'create', atau 'edit'
+                }
+            },
+            methods: {
+                navigateTo(page) {
+                    // Fungsi untuk pindah "halaman"
+                    this.currentPage = page;
+                    // Selalu scroll ke atas setiap pindah halaman
+                    window.scrollTo(0, 0); 
+                }
+            }
+        }).mount('#adminApp')
+    </script>
+
+</body>
+</html>

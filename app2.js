@@ -66,7 +66,7 @@ const { createApp } = Vue;
 
                 // --- Form Kontak ---
                 handleFormSubmit() {
-                    const waNumber = "6282199996500"; // Nomor Admin untuk form (sesuaikan jika perlu)
+                    const waNumber = "6282199991265"; // Nomor Admin untuk form (sesuaikan jika perlu)
                     let message = `Halo Admin Sutan Raya,\n\n`;
                     message += `Nama: ${this.form.name}\n`;
                     message += `No. WA: ${this.form.phone}\n`;
@@ -210,14 +210,126 @@ const { createApp } = Vue;
             }
         }).mount('#app');
 
-        /**
-         * Fungsi init Google Translate
-         * HARUS berada di scope global (window) agar bisa dipanggil oleh script Google
-         */
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'id',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                autoDisplay: false
-            }, 'google_translate_element');
+     // === GOOGLE TRANSLATE (LOGIKA BARU YANG ROBUST) ===
+
+/**
+ * (BARU) Variabel yang Anda minta untuk memaksa region.
+ * Hapus (comment out) baris ini atau set ke null untuk mengaktifkan
+ * deteksi bahasa otomatis berdasarkan browser/device.
+ */
+const forceRegion = 'ID';
+
+/**
+ * (BARU) Daftar bahasa yang didukung oleh widget Anda.
+ * Ini harus SAMA PERSIS dengan 'includedLanguages' di init.
+ */
+const supportedLanguages = ['id', 'en', 'zh-CN', 'ko', 'ja', 'ar', 'de', 'fr'];
+
+/**
+ * (BARU) Helper Function: Pemicu perubahan bahasa yang robust (tahan banting).
+ * Ini akan terus mencoba menemukan <select> widget sampai berhasil atau timeout.
+ */
+function triggerLanguageChange(langCode) {
+    // Pastikan bahasa ada di daftar
+    if (!supportedLanguages.includes(langCode)) {
+        console.warn(`Bahasa ${langCode} tidak ada dalam daftar supportedLanguages.`);
+        return;
+    }
+
+    let attempt = 0;
+    const maxAttempts = 10; // Coba maksimal 10 kali (total 5 detik)
+    const intervalTime = 500; // Coba setiap 0.5 detik
+
+    // Hapus interval lama jika ada (mencegah double-click atau race condition)
+    if (window.googleTranslateInterval) {
+        clearInterval(window.googleTranslateInterval);
+    }
+
+    window.googleTranslateInterval = setInterval(() => {
+        // Cari elemen <select> yang dibuat oleh Google
+        const selectElement = document.querySelector('#google_translate_element select');
+        
+        if (selectElement) {
+            // (BERHASIL) Elemen ditemukan
+            clearInterval(window.googleTranslateInterval); // Hentikan percobaan
+            window.googleTranslateInterval = null; // Hapus ID interval
+
+            if (selectElement.value !== langCode) {
+                selectElement.value = langCode;
+                // Memicu event 'change' agar script Google Translate bekerja
+                selectElement.dispatchEvent(new Event('change'));
+                console.log(`Google Translate berhasil di-switch ke ${langCode}.`);
+            } else {
+                console.log(`Google Translate sudah di ${langCode}.`);
+            }
+        } else {
+            // (GAGAL) Elemen belum siap, coba lagi
+            attempt++;
+            console.log(`Mencoba switch ke ${langCode} (Percobaan ${attempt})... Widget belum siap.`);
+            if (attempt >= maxAttempts) {
+                clearInterval(window.googleTranslateInterval); // Hentikan percobaan
+                window.googleTranslateInterval = null;
+                console.error('Gagal menemukan elemen <select> Google Translate setelah 5 detik.');
+            }
         }
+    }, intervalTime);
+}
+
+/**
+ * (BARU) Fungsi untuk auto-switch berdasarkan bahasa browser.
+ * Hanya berjalan jika forceRegion tidak di-set ke 'ID'.
+ */
+function autoSwitchLanguage() {
+    // 1. Cek variabel paksa
+    if (forceRegion === 'ID') {
+        console.log('Region dipaksa ke ID. Google Translate tidak akan auto-switch.');
+        return; // Berhenti
+    }
+
+    // 2. Deteksi bahasa browser (misal: 'en' dari 'en-US')
+    const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
+    
+    // 3. Cek cookie dulu. Jika user pernah memilih bahasa, jangan di-override.
+    const cookieLang = document.cookie.split('; ').find(row => row.startsWith('googtrans='));
+    if (cookieLang && cookieLang !== '/id/id') {
+        console.log('Cookie terjemahan (pilihan user) ditemukan. Auto-switch dibatalkan.');
+        return;
+    }
+
+    // 4. Cek jika bahasa didukung dan bukan bahasa default (id)
+    if (supportedLanguages.includes(userLang) && userLang !== 'id') {
+        console.log(`Bahasa browser terdeteksi: ${userLang}. Mencoba auto-switch...`);
+        // Panggil helper robust untuk switch
+        triggerLanguageChange(userLang);
+    } else {
+        console.log(`Bahasa browser (${userLang}) tidak didukung atau sudah ID. Tidak ada auto-switch.`);
+    }
+}
+
+/**
+ * (Fungsi Asli Anda - DIMODIFIKASI)
+ * Fungsi init Google Translate. HARUS berada di scope global (wadtiindow).
+ */
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'id',
+        includedLanguages: supportedLanguages.join(','), // Ambil dari variabel
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+    }, 'google_translate_element');
+
+    // (BARU) Panggil fungsi auto-switch SETELAH widget di-init.
+    // Kita beri jeda sedikit agar 'google_translate_element' sempat ter-render
+    // sebelum kita mulai mencari <select> di dalam autoSwitchLanguage -> triggerLanguageChange
+    setTimeout(autoSwitchLanguage, 500); 
+}
+
+/**
+ * (Fungsi Anda yang Lain - DIMODIFIKASI)
+ * Ini adalah fungsi yang dipanggil oleh tombol-tombol bendera (pilihan manual).
+ * Sekarang menggunakan helper 'triggerLanguageChange' yang robust.
+ */
+function changeLanguage(langCode) {
+    triggerLanguageChange(langCode);
+    closeLangSelector(); // Tutup pop-up bahasa setelah diklik
+}
