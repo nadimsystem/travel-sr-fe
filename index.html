@@ -39,7 +39,101 @@
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-        
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "PO Sutan Raya",
+      "legalName": "PT Fajar Wisata Langgeng",
+      "url": "https://www.sutanraya.com/",  // SEO: Pastikan URL benar
+      "logo": "https://www.sutanraya.com/image/logo.png", // SEO: Gunakan URL absolut logo
+      "description": "Penyedia jasa sewa Hiace Luxury, Bus Pariwisata, shuttle reguler, dan tour organizer profesional di Padang, Sumatera Barat.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jln. Akses Bandara Internasional Minangkabau no.17 - 18",
+        "addressLocality": "Padang Pariaman", // Lebih spesifik jika memungkinkan
+        "addressRegion": "Sumatera Barat",
+        "postalCode": "25585", // SEO: Tambahkan Kode Pos jika tahu
+        "addressCountry": "ID"
+      },
+      "telephone": "+6282199996500", // SEO: Nomor telepon utama
+      "contactPoint": [
+        {
+          "@type":"ContactPoint",
+          "telephone":"+6282199991265",
+          "contactType":"customer service",
+          "areaServed": "ID",
+          "availableLanguage":["Indonesian", "English"],
+          "contactOption": "TollFree", // Atau HearingImpairedSupported jika relevan
+          "description": "Kontak Shuttle Reguler"
+        },
+        {
+           "@type":"ContactPoint",
+           "telephone":"+6282199991265",
+           "contactType":"sales", // atau customer support
+           "areaServed": "ID",
+           "availableLanguage":["Indonesian", "English"],
+           "contactOption": "TollFree",
+           "description": "Kontak Sewa/Carter Armada (Hiace/Bus)"
+        }
+      ],
+      "openingHoursSpecification": [ // SEO: Tambahkan jam buka jika ada
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "00:00", // Asumsi buka 24 jam
+          "closes": "23:59"
+        }
+      ],
+      "sameAs": [ // SEO: Tambahkan link media sosial
+        "https://www.instagram.com/po.sutan_raya/",
+        "https://www.tiktok.com/@sutanraya_travel"
+      ],
+      "priceRange": "Rp", // Estimasi ($, $$, $$$)
+      "hasOfferCatalog": { // SEO: Menjelaskan jenis layanan
+        "@type": "OfferCatalog",
+        "name": "Layanan Transportasi & Wisata",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Sewa Hiace Luxury Padang"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Sewa Bus Pariwisata Padang"
+            }
+          },
+           {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Shuttle Reguler Padang Bukittinggi Payakumbuh"
+            }
+          },
+           {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Tour Organizer Sumatera Barat"
+            }
+          }
+        ]
+      }
+    }
+    </script>
 
     <style>
         /* CSS Kustom Minimal untuk Google Translate */
@@ -161,7 +255,7 @@
                     },
                     fontFamily: {
                         'sans': ['Plus Jakarta Sans', 'sans-serif'],
-                        
+
                     },
                     borderRadius: {
                         '4xl': '2rem',
@@ -191,12 +285,13 @@
                             class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Beranda</a>
                         <a href="#services"
                             class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Layanan</a>
+                        <a href="#artikel"
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Artikel</a>
                         <a href="#packages"
                             class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Wisata</a>
                         <a href="#advantages"
                             class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Keunggulan</a>
-                        <a href="#artikel"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Artikel</a>
+
                         <a href="#contact"
                             class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Kontak</a>
                     </div>
@@ -344,7 +439,7 @@
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold mb-2">Sewa Hiace Luxury</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Nikmati kenyamanan  eksklusif dengan 13
+                            <p class="text-gray-600 text-[12px] lg:text-base">Nikmati kenyamanan eksklusif dengan 13
                                 unit Hiace
                                 (Commuter & Premio) berkapasitas 8 seat. Fasilitas premium: kursi pijat, karaoke,
                                 coolbox, snack & air mineral.</p>
@@ -470,6 +565,158 @@
                 </div>
             </div>
         </section>
+
+        <section id="artikel" class="bg-white  py-16 lg:py-24" aria-labelledby="artikel-terbaru">
+            <div class="container scroll-animate mx-auto max-w-6xl  max-md:px-[0px] ">
+                <div class="text-center mb-12 scroll-animate">
+                    <span class="kicker">BLOG & ARTIKEL</span>
+                    <h2 id="artikel-terbaru" class="text-3xl px-3 lg:text-5xl font-extrabold section-title pf-font">
+                        Seputar
+                        Perjalanan <br> & Berita</h2>
+                    <p class="lg:text-lg text-gray-600 max-w-2xl px-6 mx-auto mt-4 text-[14px] ">Dapatkan wawasan, tips
+                        perjalanan, dan
+                        berita terbaru dari Sutan Raya.</p>
+                </div>
+
+                <div class="flex overflow-x-auto gap-4 pb-4 scroll-smooth snap-x snap-mandatory 
+                    md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 md:snap-none 
+                    lg:grid-cols-3">
+
+
+                    <article class="bg-white shadow-xl rounded-2xl ms-5 shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
+                        w-72 flex-shrink-0 snap-center md:w-auto">
+                        <img loading="lazy"
+                            src="https://berita.pesisirselatankab.go.id/asset/foto_berita/IMG-20221109-WA00171.jpg"
+                            alt="Pemandangan indah Kawasan Mandeh, Sumatera Barat" class="h-64 w-full object-cover">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold mb-2">Panduan Super Lengkap Pulang Kampung: Destinasi Ikonik &
+                                Hidden Gems Ranah Minang | Sutan Raya
+                            </h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base">Halo dunsanak kami di Malaysia, ini
+                                panduan wisata Sumatera Barat terlengkap untuk perantau Malaysia. Dari Bukittinggi,
+                                Mandeh, Saribu Rumah Gadang, hingga Geopark Silokek. Sutan Raya jemput di BIM!
+                            </p>
+                            <div class="mt-auto pt-4">
+                                <a href="artikel-malaysia.html"
+                                    title="Baca artikel: 5 Destinasi Wajib di Sumatera Barat"
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    Baca Selengkapnya →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
+                        delay-1 w-72 flex-shrink-0 snap-center md:w-auto">
+                        <img loading="lazy" src="image/fitur.webp"
+                            alt="Interior Hiace Luxury dengan kursi captain seat dan fasilitas modern"
+                            class="h-64 w-full object-cover">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold mb-2">Tips Memilih Jasa Sewa Hiace Luxury untuk Rombongan</h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base">Perjalanan rombongan harus nyaman. Simak
+                                tips memilih armada, fasilitas yang wajib ada, dan cara menghitung anggaran agar
+                                efisien.</p>
+                            <div class="mt-auto pt-4">
+                                <a href="#" title="Baca artikel: Tips Memilih Sewa Hiace Luxury"
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    Baca Selengkapnya →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white shadow-xl rounded-2xl me-5 shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
+                        delay-2 w-72 flex-shrink-0 snap-center md:w-auto">
+                        <img loading="lazy" src="image/tim.webp"
+                            alt="Tim Sutan Raya Tour Organizer sedang melakukan briefing"
+                            class="h-64 w-full object-cover">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold mb-2">Mengapa Tour Organizer Penting untuk Liburan Perusahaan?
+                            </h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base">Hemat waktu, tenaga, dan dapatkan
+                                pengalaman terbaik. Ini alasan menggunakan jasa tour organizer adalah pilihan cerdas
+                                untuk outing perusahaan.</p>
+                            <div class="mt-auto pt-4">
+                                <a href="#" title="Baca artikel: Pentingnya Tour Organizer"
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    Baca Selengkapnya →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- <section id="karir" class="bg-white py-16 lg:py-24" aria-labelledby="karir-title">
+            <div class="container mx-auto max-w-6xl px-4 max-md:px-[35px]">
+
+                <div class="text-center mb-12 scroll-animate">
+                    <span class="kicker text-sutan-dark opacity-75">BERGABUNG DENGAN KAMI</span>
+                    <h2 id="karir-title"
+                        class="text-4xl lg:text-5xl font-extrabold section-title pf-font text-sutan-dark">Lowongan
+                        Pekerjaan</h2>
+                    <p class="text-lg text-sutan-dark max-w-2xl mx-auto mt-4">
+                        Kami selalu mencari talenta terbaik untuk bergabung dengan tim Sutan Raya.
+                    </p>
+                </div>
+
+                <div class="flex justify-center scroll-animate">
+                    <div class="bg-white p-6 lg:p-8 rounded-2xl shadow-xl border border-gray-200 w-full max-w-2xl">
+                        <h3 class="text-2xl lg:text-3xl font-bold text-sutan-dark mb-4">Posisi: Admin Kantor</h3>
+                        <p class="text-gray-600 mb-4 text-lg">
+                            Dibutuhkan tenaga admin PO. Sutan Raya di Kantor Padang (Jalan Akses Bandara BIM, Padang
+                            Pariaman).
+                        </p>
+                        <h4 class="font-bold text-xl text-sutan-dark mb-3 mt-5">Kualifikasi:</h4>
+                        <ul class="list-none pl-0 space-y-2 text-gray-700 text-base max-md:text-[14px]">
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Jujur dan berintegritas
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Belum menikah
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Usia maksimal 25 tahun
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Berpenampilan menarik
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Mampu bekerja sama dalam tim
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Komunikasi baik
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Ramah dan melayani
+                            </li>
+                            <li class="flex items-start">
+                                <i class="bi bi-check-circle-fill me-2 text-sutan-gold mt-1" aria-hidden="true"></i>
+                                Minimal D3
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center scroll-animate">
+                    <p class="text-lg text-sutan-dark font-medium mb-4">Merasa cocok dengan posisi di atas?</p>
+                    <a href="https://forms.gle/LxraBr5UQ8s1gUcRA" target="_blank" rel="noopener noreferrer"
+                        class="inline-block bg-sutan-dark text-white text-base max-md:text-[14px] text-center font-bold rounded-full px-10 py-4 text-lg hover:bg-opacity-90 transition-all">
+                        <i class="bi bi-person-fill-add me-2"></i> Kirim Lamaran Anda Di Sini
+                    </a>
+                </div>
+
+            </div>
+        </section> -->
 
         <section id="luxury-class" class="bg-sutan-dark  text-white py-16 lg:py-24" aria-labelledby="sewa-hiace-luxury">
             <div class="container mx-auto max-w-6xl px-[35px] scroll-animate">
@@ -876,83 +1123,7 @@
             </div>
         </section>
 
-        <section id="artikel" class="bg-white  py-16 lg:py-24" aria-labelledby="artikel-terbaru">
-            <div class="container scroll-animate mx-auto max-w-6xl  max-md:px-[0px] ">
-                <div class="text-center mb-12 scroll-animate">
-                    <span class="kicker">BLOG & ARTIKEL</span>
-                    <h2 id="artikel-terbaru" class="text-3xl px-3 lg:text-5xl font-extrabold section-title pf-font">
-                        Seputar
-                        Perjalanan <br> & Berita</h2>
-                    <p class="lg:text-lg text-gray-600 max-w-2xl px-6 mx-auto mt-4 text-[14px] ">Dapatkan wawasan, tips
-                        perjalanan, dan
-                        berita terbaru dari Sutan Raya.</p>
-                </div>
 
-                <div class="flex overflow-x-auto gap-4 pb-4 scroll-smooth snap-x snap-mandatory 
-                    md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 md:snap-none 
-                    lg:grid-cols-3">
-
-                    <article class="bg-white shadow-xl rounded-2xl ms-5 shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
-                        w-72 flex-shrink-0 snap-center md:w-auto">
-                        <img loading="lazy" src="image/busmandeh.webp"
-                            alt="Pemandangan indah Kawasan Mandeh, Sumatera Barat" class="h-64 w-full object-cover">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">5 Destinasi Wajib di Sumatera Barat Selain Jam Gadang
-                            </h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Sumatera Barat bukan hanya Bukittinggi.
-                                Temukan surga tersembunyi seperti Kawasan Mandeh, Istano Pagaruyung, dan Danau Kembar.
-                            </p>
-                            <div class="mt-auto pt-4">
-                                <a href="#" title="Baca artikel: 5 Destinasi Wajib di Sumatera Barat"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
-                                    Baca Selengkapnya →
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
-                        delay-1 w-72 flex-shrink-0 snap-center md:w-auto">
-                        <img loading="lazy" src="image/fitur.webp"
-                            alt="Interior Hiace Luxury dengan kursi captain seat dan fasilitas modern"
-                            class="h-64 w-full object-cover">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Tips Memilih Jasa Sewa Hiace Luxury untuk Rombongan</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Perjalanan rombongan harus nyaman. Simak
-                                tips memilih armada, fasilitas yang wajib ada, dan cara menghitung anggaran agar
-                                efisien.</p>
-                            <div class="mt-auto pt-4">
-                                <a href="#" title="Baca artikel: Tips Memilih Sewa Hiace Luxury"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
-                                    Baca Selengkapnya →
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="bg-white shadow-xl rounded-2xl me-5 shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 
-                        delay-2 w-72 flex-shrink-0 snap-center md:w-auto">
-                        <img loading="lazy" src="image/tim.webp"
-                            alt="Tim Sutan Raya Tour Organizer sedang melakukan briefing"
-                            class="h-64 w-full object-cover">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Mengapa Tour Organizer Penting untuk Liburan Perusahaan?
-                            </h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Hemat waktu, tenaga, dan dapatkan
-                                pengalaman terbaik. Ini alasan menggunakan jasa tour organizer adalah pilihan cerdas
-                                untuk outing perusahaan.</p>
-                            <div class="mt-auto pt-4">
-                                <a href="#" title="Baca artikel: Pentingnya Tour Organizer"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
-                                    Baca Selengkapnya →
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-            </div>
-        </section>
 
         <section id="team" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="tim-kami">
             <div class="container mx-auto max-w-6xl px-0 sm:px-4">

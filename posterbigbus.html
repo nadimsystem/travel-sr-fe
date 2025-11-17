@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PO Sutan Raya – Big Bus Skylander R25</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;550;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F8F8; /* Background putih bersih */
+            color: #333; /* Warna teks gelap */
+        }
+        .card {
+            background-color: #FFFFFF; /* Kartu putih */
+            border: 1px solid #E0E0E0; /* Border abu-abu tipis */
+            border-radius: 1rem; /* Sudut lebih membulat */
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); /* Shadow lembut */
+            transition: all 0.2s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Shadow sedikit lebih jelas saat hover */
+            border-color: #C0C0C0;
+        }
+        .card-primary { /* Untuk kartu promo atau highlight */
+            background-color: #F0F4FF; /* Biru muda */
+            border-color: #D0D8ED;
+        }
+        .card-primary:hover {
+            border-color: #AABBE0;
+        }
+        .text-primary { /* Warna teks utama, misal untuk judul */
+            color: #1A1A1A;
+        }
+        .text-secondary { /* Warna teks pendukung */
+            color: #555;
+        }
+        .text-highlight { /* Warna aksen biru */
+            color: #007AFF; /* Biru Apple */
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-center: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .button-primary {
+            background-color: #007AFF;
+            color: white;
+            border: 1px solid #007AFF;
+        }
+        .button-primary:hover {
+            background-color: #006EDC;
+            border-color: #006EDC;
+        }
+        .button-secondary {
+            background-color: transparent;
+            color: #007AFF;
+            border: 1px solid #007AFF;
+        }
+        .button-secondary:hover {
+            background-color: #E0F0FF;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto max-w-7xl p-4 md:p-8">
+
+        <header class="mb-10 text-center">
+            <h1 class="text-5xl font-extrabold text-primary mb-3">BIG BUS SUTAN RAYA</h1>
+            <h2 class="text-3xl font-bold text-highlight mb-4">SKYLANDER R25</h2>
+            <p class="text-xl text-secondary max-w-2xl mx-auto">Mendefinisikan Ulang Perjalanan Mewah di Sumatera Barat dengan kenyamanan dan layanan terbaik.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <div class="card lg:col-span-2 lg:row-span-2 flex flex-col overflow-hidden">
+                <h3 class="text-sm font-bold text-highlight uppercase tracking-wider mb-2">Armada Unggulan</h3>
+                <h2 class="text-3xl font-bold text-primary mb-3">Kenyamanan Eksekutif, Kapasitas Maksimal</h2>
+                <p class="text-secondary mb-4 flex-grow">
+                    Armada premium berkapasitas besar dengan fasilitas modern, cocok untuk perjalanan grup, wisata, study tour, dan charter antar kota. Nikmati pengalaman perjalanan yang tak terlupakan bersama kru profesional kami.
+                </p>
+                <img src="https://placehold.co/800x450/FFFFFF/CCCCCC?text=Bus+Skylander+R25+Modern" alt="Foto Bus Skylander R25" class="w-full h-64 object-cover rounded-lg mt-4 shadow-sm">
+                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                    <p class="text-xl font-semibold text-highlight tracking-wide">
+                        Nyaman • Aman • Berkelas
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-sm font-bold text-highlight uppercase tracking-wider mb-2">Rute Lokal</h3>
+                <h2 class="text-2xl font-bold text-primary mb-2">Padang – Bukittinggi</h2>
+                <p class="text-lg font-medium text-secondary mb-4">(45 Kursi)</p>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Harga Kantor:</span>
+                        <span class="font-bold text-primary">Rp 4.000.000</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Harga Agen:</span>
+                        <span class="font-bold text-primary">Rp 3.800.000</span>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-500">* Maksimal kembali jam 22.00<br>* Harga di luar tips kru</p>
+            </div>
+
+            <div class="card card-primary">
+                <h3 class="text-sm font-bold text-highlight uppercase tracking-wider mb-2">Rute Lokal Premium</h3>
+                <h2 class="text-2xl font-bold text-primary mb-2">Padang – Bukittinggi</h2>
+                <p class="text-lg font-medium text-secondary mb-4">(Legrest + Snack, 37 Kursi)</p>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Harga Kantor:</span>
+                        <span class="font-bold text-primary">Rp 4.500.000</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Harga Agen:</span>
+                        <span class="font-bold text-primary">Rp 4.300.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card lg:col-span-2">
+                <h2 class="text-2xl font-bold text-primary mb-4">Jangkauan Rute Antar Pulau</h2>
+                <ul class="space-y-3">
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-6 h-6 text-highlight flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m0 0l-3-3m3 3l3-3m-3.75 6A7.5 7.5 0 0118 9.75a8.25 8.25 0 00-8.25-8.25H9.75a8.25 8.25 0 00-8.25 8.25v.45A7.5 7.5 0 019 18.75z" />
+                        </svg>
+                        <div>
+                            <span class="font-semibold text-primary">Padang – Bandung:</span>
+                            <span class="text-secondary ml-2">Minimal 7 hari</span>
+                        </div>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-6 h-6 text-highlight flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m0 0l-3-3m3 3l3-3m-3.75 6A7.5 7.5 0 0118 9.75a8.25 8.25 0 00-8.25-8.25H9.75a8.25 8.25 0 00-8.25 8.25v.45A7.5 7.5 0 019 18.75z" />
+                        </svg>
+                        <div>
+                            <span class="font-semibold text-primary">Padang – Bali:</span>
+                            <span class="text-secondary ml-2">Minimal 10 hari</span>
+                        </div>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-6 h-6 text-highlight flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m0 0l-3-3m3 3l3-3m-3.75 6A7.5 7.5 0 0118 9.75a8.25 8.25 0 00-8.25-8.25H9.75a8.25 8.25 0 00-8.25 8.25v.45A7.5 7.5 0 019 18.75z" />
+                        </svg>
+                        <div>
+                            <span class="font-semibold text-primary">Padang – Medan:</span>
+                            <span class="text-secondary ml-2">Minimal 6 hari</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card lg:col-span-2">
+                <h3 class="text-sm font-bold text-highlight uppercase tracking-wider mb-2">Rute Jarak Jauh</h3>
+                <h2 class="text-2xl font-bold text-primary mb-3">Padang – Jakarta (Reguler)</h2>
+                
+                <p class="text-4xl font-bold text-primary mb-2">Rp 4.500.000 <span class="text-xl font-normal text-secondary">/ hari</span></p>
+                <p class="text-sm text-secondary mb-4">(Termasuk driver dan BBM)</p>
+
+                <p class="text-xs text-gray-500 mb-2">Tidak termasuk: tol, kapal, parkir, penginapan supir, tips supir.</p>
+                <p class="text-sm font-semibold text-secondary mb-4">Minimal sewa 6 hari.</p>
+                
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <span class="text-sm text-secondary">Jika semua biaya ditanggung perusahaan:</span>
+                    <span class="block font-bold text-primary text-xl">Rp 5.500.000 / hari</span>
+                </div>
+            </div>
+
+            <div class="card lg:col-span-2">
+                <h3 class="text-sm font-bold text-highlight uppercase tracking-wider mb-2">Rute Jarak Jauh</h3>
+                <h2 class="text-2xl font-bold text-primary mb-3">Padang – Jakarta (Legrest 37 Kursi)</h2>
+                
+                <p class="text-4xl font-bold text-primary mb-2">Rp 5.000.000 <span class="text-xl font-normal text-secondary">/ hari</span></p>
+                <p class="text-sm text-secondary mb-4">(Termasuk snack saat berangkat)</p>
+
+                <p class="text-xs text-gray-500 mb-2">Tidak termasuk: tol, kapal, parkir, penginapan supir, tips supir.</p>
+                <p class="text-sm font-semibold text-secondary mb-4">Minimal 7 hari (maksimal 6 hari perjalanan).</p>
+                
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <span class="text-sm text-secondary">Harga borongan (all-in):</span>
+                    <span class="block font-bold text-primary text-xl">Rp 6.000.000</span>
+                </div>
+            </div>
+
+            <div class="card lg:col-span-2 bg-yellow-50 border-yellow-200">
+                <div class="flex items-center mb-3">
+                    <svg class="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-primary">Catatan Penting</h2>
+                </div>
+                <ul class="list-disc list-inside space-y-2 text-secondary">
+                    <li>Semua harga belum termasuk tips crew atau supir.</li>
+                    <li>Harga dapat berubah sewaktu-waktu sesuai kebijakan perusahaan dan kondisi perjalanan.</li>
+                </ul>
+            </div>
+
+            <div class="card lg:col-span-2 flex flex-col justify-center items-center text-center">
+                <h3 class="text-3xl font-bold text-primary">PO Sutan Raya</h3>
+                <p class="text-lg text-secondary mt-1 max-w-sm">Pelopor Transportasi Luxury dan Solusi Perjalanan Terintegrasi di Sumatera Barat</p>
+                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                    <span class="bg-blue-50 text-highlight text-xs font-medium px-3 py-1 rounded-full border border-blue-200">#SutanRayaLuxuryJourney</span>
+                    <span class="bg-blue-50 text-highlight text-xs font-medium px-3 py-1 rounded-full border border-blue-200">#SkylanderR25</span>
+                    <span class="bg-blue-50 text-highlight text-xs font-medium px-3 py-1 rounded-full border border-blue-200">#LuxuryBusSumatera</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -135,7 +135,7 @@ const { createApp } = Vue;
                         // Minta frame animasi berikutnya
                         this.scrollAnimationId = requestAnimationFrame(step);
                     };
-
+  
                     // Batalkan frame sebelumnya (jika ada) dan mulai yang baru
                     if (this.scrollAnimationId) {
                         cancelAnimationFrame(this.scrollAnimationId);

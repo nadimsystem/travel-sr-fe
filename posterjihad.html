@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutan Raya Tour & Organizer - Brosur Detail</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan font Plus Jakarta Sans */
+        body {
+            font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
+        }
+        /* Style untuk dummy image agar lebih rapi */
+        .dummy-img {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af; /* text-gray-400 */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* semibold */
+            line-height: 1rem;
+            flex-shrink: 0; /* Mencegah gambar menyusut */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-zinc-900 antialiased">
+
+    <!-- Definisi Ikon SVG -->
+    <svg class="hidden">
+        <!-- ... (ikon tetap sama, tidak perlu diubah) ... -->
+        <symbol id="icon-check" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </symbol>
+        <symbol id="icon-ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </symbol>
+        <symbol id="icon-tiktok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 7.917V4a1 1 0 0 0-1-1h-4.917A1 1 0 0 0 14 4v12.5a3.5 3.5 0 1 1-6.22-2.313"></path><path d="M14 16.5a3.5 3.5 0 1 0-6.22 2.313"></path><path d="M14 4h2a1 1 0 0 1 1 1v4.117"></path>
+        </symbol>
+        <symbol id="icon-yt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.54 6.42c-.38-.93-1.2-1.63-2.2-1.85C17.5 4 12 4 12 4s-5.5 0-7.34.57c-1 .22-1.82.92-2.2 1.85C2 8.21 2 12 2 12s0 3.79.46 5.58c.38.93 1.2 1.63 2.2 1.85C6.5 20 12 20 12 20s5.5 0 7.34-.57c1-.22 1.82.92 2.2-1.85C22 15.79 22 12 22 12s0-3.79-.46-5.58z"></path><polygon points="10 15 15 12 10 9"></polygon>
+        </symbol>
+        <symbol id="icon-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </symbol>
+    </svg>
+
+    <!-- Kontainer Halaman -->
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <!-- === HALAMAN DEPAN (FRONT PAGE) === -->
+        <h2 class="text-2xl font-bold mb-4 text-zinc-800 text-center lg:text-left">Halaman Depan</h2>
+        
+        <!-- Grid 3 Kolom (Tri-fold) -->
+        <!-- 'items-stretch' tidak diperlukan jika panel adalah 'flex flex-col' -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+
+            <!-- Panel 1: Cover / Intro -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                <!-- Dummy Image Utama -->
+                <div class="dummy-img h-56 w-full">
+                    <p>[Dummy: Destinasi]</p>
+                </div>
+                
+                <!-- Konten Panel 1 -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <p class="text-base font-semibold text-yellow-500">PO. Sutan Raya</p>
+                    <h1 class="text-3xl font-bold tracking-tight my-1">Tour & Organizer</h1>
+                    <p class="text-lg text-neutral-500 mb-4">Liburan Anti Ribet.</p>
+                    <p class="text-sm text-neutral-600 mb-4">
+                        Ayo, abadikan momen perjalanan anda bersama kami. Kami menyediakan layanan lengkap untuk liburan, acara, dan outbound dengan fasilitas terbaik.
+                    </p>
+                    
+                    <!-- Galeri Kecil Panel 1 -->
+                    <div class="grid grid-cols-3 gap-2 mt-2 mb-5">
+                        <div class="dummy-img h-20 rounded-lg">[Armada]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Aktivitas]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Hotel]</div>
+                    </div>
+                    
+                    <!-- Social media di bagian bawah panel 1 -->
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        <h3 class="text-base font-semibold text-zinc-900 mb-3">Temukan Kami</h3>
+                        <div class="space-y-2">
+                            <a href="#" class="flex items-center gap-2 text-neutral-500 hover:text-black">
+                                <svg class="w-4 h-4"><use xlink:href="#icon-ig"></use></svg>
+                                <span class="text-sm">@po.sutan_raya</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-2 text-neutral-500 hover:text-black">
+                                <svg class="w-4 h-4"><use xlink:href="#icon-tiktok"></use></svg>
+                                <span class="text-sm">@sutanraya_travel</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-2 text-neutral-500 hover:text-black">
+                                <svg class="w-4 h-4"><use xlink:href="#icon-yt"></use></svg>
+                                <span class="text-sm">po.sutan_raya</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Fitur & Layanan -->
+            <!-- Tambahkan 'flex flex-col' agar 'flex-grow' di inner wrapper berfungsi -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                <!-- GAMBAR HEADER BARU -->
+                <div class="dummy-img h-48 w-full">
+                    <p>[Dummy: Fasilitas]</p>
+                </div>
+                <!-- Wrapper konten baru dengan padding -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <h2 class="text-xl font-semibold mb-3">Fasilitas Utama</h2>
+                    <ul class="space-y-2 text-sm mb-5">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg>
+                            <div>
+                                <strong>Transportasi Luxury</strong>
+                                <span class="block text-xs text-neutral-500">Medium Bus / Toyota Hiace</span>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Hotel & Penginapan ⭐⭐⭐</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Outbound / Ice Breaking</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Dokumentasi Eksklusif</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Guide / Pemandu Wisata</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Makan (Sesuai Program)</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Tiket Masuk Wisata</li>
+                    </ul>
+
+                    <hr class="my-4 border-gray-100">
+
+                    <h2 class="text-xl font-semibold mb-3">Layanan Dokumentasi</h2>
+                    <p class="text-sm text-neutral-500 mb-3">Pengambilan 5-7 Jam, 3-4 Crew di Lapangan</p>
+                    <ul class="space-y-2 text-sm mb-5">
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Kamera Profesional Dslr/Mirrorless</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Drone Dji mini 4 Pro + Pilot</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Iphone 16 ProMax</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Editing Video 7-10 Mnt.</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Softcopy Foto & Video</li>
+                    </ul>
+                    
+                    <!-- Galeri Kecil Panel 2 -->
+                    <!-- Tambahkan mt-auto agar galeri terdorong ke bawah jika ada sisa ruang -->
+                    <div class="grid grid-cols-3 gap-2 mt-auto">
+                        <div class="dummy-img h-20 rounded-lg">[Drone]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Kamera]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Crew]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Hasil Foto]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Momen]</div>
+                        <div class="dummy-img h-20 rounded-lg">[Video]</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: Paket & Booking -->
+            <!-- Tambahkan 'flex flex-col' -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                <!-- GAMBAR HEADER BARU -->
+                <div class="dummy-img h-48 w-full">
+                    <p>[Dummy: Outbound]</p>
+                </div>
+                <!-- Wrapper konten baru dengan padding -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <h2 class="text-xl font-semibold mb-3">Paket Outbound (Durasi 3-5 Jam)</h2>
+                    <div class="grid grid-cols-1 gap-3 mb-4">
+                        <!-- Paket SR 1 -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold">Paket SR 1</h3>
+                                <p class="text-lg font-bold text-yellow-500">Rp 175K<span class="text-sm font-normal text-neutral-500">/Pax</span></p>
+                            </div>
+                            <ul class="text-sm space-y-1 text-neutral-600">
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Welcome Drink</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Program Fun Games</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Trainer dan Fasilitator</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Game Tools</li>
+                                <li class="flex items-center gap-2 font-semibold"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Dokumentasi Eksklusif</li>
+                                <li class="flex items-center gap-2 font-semibold"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> 3-7 Crew di Lapangan</li>
+                            </ul>
+                        </div>
+                        <!-- Paket SR 2 -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold">Paket SR 2</h3>
+                                <p class="text-lg font-bold text-yellow-500">Rp 100K<span class="text-sm font-normal text-neutral-500">/Pax</span></p>
+                            </div>
+                             <ul class="text-sm space-y-1 text-neutral-600">
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Mineral Water</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Program Fun Games</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Trainer dan Fasilitator</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Game Tools</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> 2-3 Crew di Lapangan</li>
+                                <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> Dibantu Dokumentasi</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h2 class="text-xl font-semibold mb-3">Harga Dokumentasi</h2>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                            <p class="text-xs text-neutral-500 font-medium">Paket 1 Hari</p>
+                            <p class="text-base font-semibold">Rp 2.5 Jt</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                            <p class="text-xs text-neutral-500 font-medium">Paket 3 Hari</p>
+                            <p class="text-base font-semibold">Rp 6 Jt</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                            <p class="text-xs text-neutral-500 font-medium">Paket Hemat</p>
+                            <p class="text-base font-semibold">Hub. Admin</p>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Booking didorong ke bawah -->
+                    <div class="mt-auto">
+                        <h2 class="text-xl font-semibold mb-3">Info Booking</h2>
+                        <div class="bg-blue-600 text-white rounded-xl p-4">
+                            <a href="tel:+6282199991181" class="flex items-center gap-2 text-base font-semibold transition-opacity hover:opacity-80">
+                                <svg class="w-5 h-5 flex-shrink-0"><use xlink:href="#icon-wa"></use></svg>
+                                +62 821-9999-1181
+                            </a>
+                            <a href="tel:+6282199996500" class="flex items-center gap-2 text-base font-semibold mt-2 transition-opacity hover:opacity-80">
+                                <svg class="w-5 h-5 flex-shrink-0"><use xlink:href="#icon-wa"></use></svg>
+                                +62 821-9999-6500
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Akhir dari Grid 3 Kolom Halaman Depan -->
+
+        <!-- === HALAMAN BELAKANG (BACK PAGE) === -->
+        <h2 class="text-2xl font-bold mb-4 text-zinc-800 text-center lg:text-left">Halaman Belakang</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+            <!-- Panel 4: Mengapa Memilih Kami -->
+            <!-- 'flex flex-col' sudah ada -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                <!-- GAMBAR HEADER BARU -->
+                <div class="dummy-img h-48 w-full">
+                    <p>[Dummy: Tim Profesional]</p>
+                </div>
+                <!-- Wrapper konten baru dengan padding -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <h2 class="text-xl font-semibold mb-3">Mengapa Memilih Kami?</h2>
+                    <p class="text-sm text-neutral-600 mb-4">
+                        Kami berkomitmen memberikan pelayanan terbaik dengan pengalaman yang tak terlupakan.
+                    </p>
+                    <ul class="space-y-2 text-sm mb-5">
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> <strong>Tim Profesional & Berpengalaman</strong></li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> <strong>Harga Kompetitif & Transparan</strong></li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> <strong>Peralatan Modern & Terawat</strong></li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> <strong>Paket Fleksibel (Bisa Custom)</strong></li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor"><use xlink:href="#icon-check"></use></svg> <strong>Legalitas Jelas & Terpercaya</strong></li>
+                    </ul>
+                    <!-- Gambar didorong ke bawah -->
+                    <div class="dummy-img h-48 w-full rounded-lg mt-auto">[Dummy: Tim Kami]</div>
+                </div>
+            </div>
+
+            <!-- Panel 5: Galeri Foto (PERBAIKAN DI SINI) -->
+            <!-- Tambahkan 'flex flex-col' agar tingginya sama -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden p-5 flex flex-col">
+                <h2 class="text-xl font-semibold mb-3">Galeri Aktivitas</h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="dummy-img h-24 rounded-lg">[Rafting]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Paintball]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Fun Games]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Team Building]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Gala Dinner]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Api Unggun]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Wisata Pulau]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Snorkeling]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Jeep Lava]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Bus Party]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Guide]</div>
+                    <div class="dummy-img h-24 rounded-lg">[Makan]</div>
+                </div>
+            </div>
+
+            <!-- Panel 6: Syarat & Ketentuan -->
+            <!-- 'flex flex-col' sudah ada -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                <!-- GAMBAR HEADER BARU -->
+                <div class="dummy-img h-48 w-full">
+                    <p>[Dummy: Booking]</p>
+                </div>
+                <!-- Wrapper konten baru dengan padding -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <h2 class="text-xl font-semibold mb-3">Syarat & Ketentuan</h2>
+                    <ul class="space-y-2 text-xs text-neutral-500 list-disc list-inside mb-5">
+                        <li>Booking wajib disertai Down Payment (DP) minimal 30%.</li>
+                        <li>Pelunasan dilakukan paling lambat H-3 acara.</li>
+                        <li>Pembatalan H-7 DP dianggap hangus.</li>
+                        <li>Perubahan jadwal (reschedule) maksimal H-14 sebelum acara.</li>
+                        <li>Harga paket dapat berubah sewaktu-waktu tanpa pemberitahuan.</li>
+                        <li>Peserta dianggap sehat jasmani & rohani saat mengikuti kegiatan.</li>
+                        <li>Kami tidak bertanggung jawab atas kehilangan barang pribadi.</li>
+                    </ul>
+                    
+                    <!-- CTA didorong ke bawah -->
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        <h2 class="text-xl font-semibold mb-3">Siap Berlibur?</h2>
+                        <p class="text-sm text-neutral-600 mb-3">
+                            Hubungi kami sekarang untuk kustomisasi paket dan penawaran spesial untuk grup Anda.
+                        </p>
+                        <!-- CTA Booking -->
+                        <div class="bg-blue-600 text-white rounded-xl p-4">
+                            <a href="tel:+6282199991181" class="flex items-center gap-2 text-base font-semibold transition-opacity hover:opacity-80">
+                                <svg class="w-5 h-5 flex-shrink-0"><use xlink:href="#icon-wa"></use></svg>
+                                +62 821-9999-1181
+                            </a>
+                            <a href="tel:+6282199996500" class="flex items-center gap-2 text-base font-semibold mt-2 transition-opacity hover:opacity-80">
+                                <svg class="w-5 h-5 flex-shrink-0"><use xlink:href="#icon-wa"></use></svg>
+                                +62 821-9999-6500
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Akhir dari Grid 3 Kolom Halaman Belakang -->
+
+
+    </div> <!-- Akhir dari Kontainer Halaman -->
+
+</body>
+</html>
