@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""Sutan Raya mengadakan Grand Doorprize dengan hadiah-hadiah menarik! Ikuti eventnya dan menangkan hadiah utama."">
+    <meta name="image" content="https://i.pinimg.com/736x/a7/5a/8a/a75a8a6d5b5ceb65d5b8a85ca6c90931.jpg">
+
+    <title>Grand Doorprize | Sutan Raya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'soft-white': '#F9F9FB',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F9FB;
+            color: #1C1C1E;
+            overflow-x: hidden;
+        }
+
+        /* --- FIX ANIMASI (Agar tidak blank) --- */
+        /* Kita definisikan keyframes langsung di CSS agar pasti jalan */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-enter {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0; /* Mulai dari invisible, lalu di-animate ke visible */
+        }
+
+        /* --- DEKORASI --- */
+        .bg-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        /* --- KARTU HADIAH --- */
+        .prize-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E5EA;
+            border-radius: 20px;
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        
+        .prize-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+            border-color: #D1D1D6;
+        }
+
+        .main-prize {
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f7 100%);
+            border: 1px solid #d4d4d8;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* --- TOMBOL --- */
+        .btn-start {
+            background-color: #000000;
+            color: #FFFFFF;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+        .btn-start:hover {
+            transform: scale(1.02);
+            background-color: #1a1a1a;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-center p-6 relative">
+
+    <div class="bg-glow top-[-10%] left-[-10%]"></div>
+    <div class="bg-glow bottom-[-10%] right-[-10%]"></div>
+
+    <div class="absolute top-8 w-full text-center animate-enter" style="animation-delay: 0s;">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Sutan Raya Event</span>
+    </div>
+
+    <main class="w-full max-w-4xl text-center z-10">
+        
+       
+
+        <div class="animate-enter" style="animation-delay: 0.8s;">
+            <button onclick="startDoorprize()" class="btn-start rounded-full px-10 py-4 text-lg font-bold tracking-wide flex items-center justify-center gap-3 mx-auto">
+                Ayo Mulai
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            </button>
+            
+            <!-- <p class="mt-6 text-xs text-gray-400">
+                Syarat dan ketentuan berlaku. © 2025 PO Sutan Raya.
+            </p> -->
+        </div>
+
+    </main>
+
+    <script>
+        function startDoorprize() {
+            // Efek Confetti Elegan (Silver & Gold)
+            var end = Date.now() + (2 * 1000);
+            var colors = ['#000000', '#d4af37', '#e5e5e5']; // Hitam, Emas Pudar, Abu-abu
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Simulasi Loading Button
+            const btn = document.querySelector('button');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = 'Memproses...';
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'wait';
+            
+            setTimeout(() => {
+                alert("Sistem Doorprize Siap! (Siap diarahkan)");
+                btn.innerHTML = originalContent;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
