@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster Informasi Sutan Raya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E5E7EB;
+            /* Neutral Gray background for contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Shadow yang halus ala Apple/Modern UI */
+        .card-shadow {
+            box-shadow:
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(0, 0, 0, 0.03);
+            /* Subtle border */
+        }
+
+        /* Pattern halus untuk texture */
+        .dots-pattern {
+            background-image: radial-gradient(#ffffff 1.5px, transparent 1.5px);
+            background-size: 12px 12px;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex flex-col">
+        <!-- Container Utama: Responsif (w-full pada mobile, max-w-5xl pada desktop) -->
+        <div
+            class="relative w-full max-w-5xl bg-white rounded-[32px] overflow-hidden card-shadow flex flex-col md:flex-row">
+
+            <!-- Header Section -->
+            <div
+                class="relative bg-[#800000] text-white p-8 pt-10 text-center overflow-hidden md:w-5/12 md:flex md:flex-col md:justify-center">
+                <!-- Decorative Elements -->
+                <div class="absolute inset-0 bg-cover bg-center opacity-20" style="background-image: url('2.png');">
+                </div>
+                <div class="absolute inset-0 dots-pattern"></div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-600 rounded-full blur-3xl opacity-30"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-500 rounded-full blur-3xl opacity-20">
+                </div>
+
+                <!-- Brand Content -->
+                <div class="relative z-10">
+                    <div class="flex justify-center">
+                        <img src="image/logo.png" width="300px" class="me-[-15px]" alt="">
+                    </div>
+                    <span
+                        class="inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold tracking-widest uppercase mb-3 border border-white/20">Official
+                        Update</span>
+                    <h1 class="text-3xl font-black tracking-tight leading-none mb-1">SUTAN RAYA</h1>
+                    <p class="text-red-200 text-sm font-medium tracking-wide">Luxury Travel - www.sutanraya.com</p>
+                </div>
+            </div>
+
+            <!-- Body Content -->
+            <div class="flex-1 p-6 bg-slate-50 md:w-7/12 md:p-8">
+
+                <!-- Hero Price Card -->
+                <div
+                    class="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-slate-100 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-[#800000]"></div>
+                    <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Tarif Per Penumpang
+                    </p>
+                    <div class="flex items-baseline justify-center text-[#800000]">
+                        <span class="text-lg font-bold mr-1">Rp</span>
+                        <span class="text-5xl font-black tracking-tighter">250</span>
+                        <span class="text-xl font-bold ml-1">rb</span>
+                    </div>
+                </div>
+
+                <!-- Info Grid (Conditions) -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <!-- Condition 1: Penumpang -->
+                    <div
+                        class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+                        <div class="flex items-center gap-2 mb-2 text-[#800000]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
+                            <span class="text-xs font-bold uppercase">Kebijakan</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-medium">Tunggu Mobil Full</p>
+                            <p class="text-sm font-bold text-slate-800 leading-tight mt-0.5">Min 7 - Max 8 Orang</p>
+                        </div>
+                    </div>
+
+                    <!-- Condition 2: Cut Off -->
+                    <div
+                        class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+                        <div class="flex items-center gap-2 mb-2 text-[#800000]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-xs font-bold uppercase">Batas Order</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-medium">Selesai Dzuhur</p>
+                            <p class="text-sm font-bold text-slate-800 leading-tight mt-0.5">12.00 - 13.00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule List -->
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 mb-3 px-1">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#800000]"></div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Jadwal Start Jalan</h3>
+                    </div>
+
+                    <div class="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+                        <!-- Padang -->
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="bg-red-50 text-[#800000] w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs">
+                                    PDG</div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400 font-medium">Dari Padang </span>
+                                    <span class="text-sm font-bold text-slate-800">07.00 - 20.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payakumbuh -->
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="bg-blue-50 text-blue-800 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs">
+                                    PYK</div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400 font-medium">Dari Payakumbuh </span>
+                                    <span class="text-sm font-bold text-slate-800">04.00 - 10.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Payakumbuh -->
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="bg-orange-50 text-orange-800 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs">
+                                    BKT</div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400 font-medium">Dari Bukittinggi </span>
+                                    <span class="text-sm font-bold text-slate-800">04.00 - 18.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Paket -->
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="bg-orange-50 text-orange-800 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs">
+                                    Titip</div>
+                                <div class="flex flex-col">
+                                    <span class="text-[12px] text-slate-400 font-medium">Menerima pengantaran paket & dokumen </span>
+                                    <!-- <span class="text-sm font-bold text-slate-800">04.00 - 18.00</span> -->
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                         
+                        
+                    </div>
+                </div>
+
+                <!-- Footer Warning -->
+                <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 flex gap-3 items-start">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-[10px] text-amber-800 leading-relaxed font-medium">
+                        Mohon menunggu hingga kuota (min 7 org) terpenuhi agar keberangkatan dapat dilakukan. Terima
+                        kasih atas pengertiannya.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Footer Brand -->
+            <div class="bg-white border-t border-slate-100 p-4 text-center md:hidden">
+                <p class="text-slate-900 font-bold text-sm tracking-wide">sutanraya.com</p>
+                <p class="text-slate-400 text-[10px] mt-0.5">Info Updated: 29 Nov 2025</p>
+            </div>
+
+
+
+        </div>
+        <center class="mt-10">
+            <p>Terimakasih antusiasnya, saat ini kontak admin untuk pemesanan sedang menangani <br> banyak permintaan,
+                segenap tim admin akan segera memproses pesanan anda.</p>
+        </center>
+    </div>
+
+</body>
+
+</html>

@@ -128,6 +128,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $data['busRoutes'][] = $row;
     }
 
+    if (isset($_GET['action']) && $_GET['action'] === 'get_reports') {
+        $period = isset($_GET['period']) ? $_GET['period'] : 'monthly';
+        $reports = ['labels' => [], 'revenue' => [], 'pax' => []];
+        
+        $groupBy = "";
+        $dateFormat = "";
+        
+        switch ($period) {
+            case 'daily':
+                $groupBy = "DATE(date)";
+                $dateFormat = "%Y-%m-%d";
+                break;
+            case 'weekly':
+                $groupBy = "YEARWEEK(date, 1)";
+                $dateFormat = "Week %v %Y";
+                break;
+            case 'yearly':
+                $groupBy = "YEAR(date)";
+                $dateFormat = "%Y";
+                break;
+            case 'monthly':
+            default:
+                $groupBy = "DATE_FORMAT(date, '%Y-%m')";
+                $dateFormat = "%Y-%m";
+                break;
+        }
+        
+        $sql = "SELECT 
+                    DATE_FORMAT(date, '$dateFormat') as label, 
+                    SUM(totalPrice) as totalRevenue, 
+                    COUNT(*) as totalPax 
+                FROM bookings 
+                WHERE status != 'Batal' 
+                GROUP BY $groupBy 
+                ORDER BY date ASC";
+                
+        $res = $conn->query($sql);
+        while($row = $res->fetch_assoc()) {
+            $reports['labels'][] = $row['label'];
+            $reports['revenue'][] = (float)$row['totalRevenue'];
+            $reports['pax'][] = (int)$row['totalPax'];
+        }
+        
+        // Add reports to response
+        $data['reports'] = $reports;
+    }
+
     echo json_encode($data);
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {

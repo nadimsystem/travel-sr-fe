@@ -92,6 +92,9 @@
                 <a href="#" @click.prevent="changeView('manifest')" :class="view==='manifest'?'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold':'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors">
                     <i class="bi bi-file-earmark-spreadsheet-fill w-6"></i> Laporan Harian
                 </a>
+                <a href="reports.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="bi bi-bar-chart-fill w-6"></i> Statistik & Grafik
+                </a>
                 
                 <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Aset</div>
                 <a href="#" @click.prevent="changeView('assets')" :class="view==='assets'?'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold':'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors">

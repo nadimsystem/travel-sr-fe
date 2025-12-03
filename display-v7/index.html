@@ -5,30 +5,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sutan Raya - Business OS V7.8</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
-        
-        .ticket { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border-radius: 1.5rem 1.5rem 0 0; }
-        .ticket-cutout { position: relative; background: #fff; border-radius: 0 0 1.5rem 1.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .ticket-cutout:before, .ticket-cutout:after { content: ''; position: absolute; width: 2rem; height: 2rem; border-radius: 50%; top: -1rem; background: #111827; }
-        .ticket-cutout:before { left: -1rem; } .ticket-cutout:after { right: -1rem; }
 
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .ticket {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 1.5rem 1.5rem 0 0;
+        }
+
+        .ticket-cutout {
+            position: relative;
+            background: #fff;
+            border-radius: 0 0 1.5rem 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ticket-cutout:before,
+        .ticket-cutout:after {
+            content: '';
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            top: -1rem;
+            background: #111827;
+        }
+
+        .ticket-cutout:before {
+            left: -1rem;
+        }
+
+        .ticket-cutout:after {
+            right: -1rem;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
-    
+
     <script>
         tailwind.config = {
             theme: { extend: { colors: { 'sutan-blue': { 900: '#0A2342', 800: '#123458', 700: '#2C3E50' }, 'sutan-gold': '#D4AF37' } } }
@@ -40,96 +95,232 @@
 
     <div id="app" class="flex h-full w-full">
 
-        <aside class="w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-20 transition-all duration-300" :class="{ 'hidden': isFullscreen }">
+        <aside
+            class="w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-20 transition-all duration-300"
+            :class="{ 'hidden': isFullscreen }">
             <div class="h-24 flex items-center justify-center border-b border-gray-200">
                 <div class="text-xl font-extrabold text-sutan-blue-900 tracking-tight flex items-center gap-2">
-                    <i class="bi bi-building-fill text-sutan-gold"></i> Sutan<span class="text-blue-600">Raya</span> V7.8
+                    <i class="bi bi-building-fill text-sutan-gold"></i> Sutan<span class="text-blue-600">Raya</span>
+                    V7.8
                 </div>
             </div>
 
             <nav class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-1.5">
-                <div class="text-[10px] font-bold text-gray-400 uppercase px-4 mb-2 mt-2 tracking-wider">Front Office</div>
-                <a href="#" @click="view='dashboard'" :class="view==='dashboard' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-grid-1x2-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Dashboard</a>
-                <a href="#" @click="view='bookingTravel'" :class="view==='bookingTravel' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-car-front-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking Travel</a>
-                <a href="#" @click="view='bookingBus'" :class="view==='bookingBus' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-bus-front-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking Bus</a>
-                <a href="#" @click="view='KelolaBooking'" :class="view==='KelolaBooking' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-list-check mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking</a>
-                
-                <div class="text-[10px] font-bold text-gray-400 uppercase px-4 mb-2 mt-6 tracking-wider">Operasional</div>
-                <a href="#" @click="view='dispatcher'" :class="view==='dispatcher' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-kanban-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Dispatcher <span v-if="pendingGroupsCount > 0" class="ml-auto bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ pendingGroupsCount }}</span></a>
-                <a href="#" @click="view='manifest'" :class="view==='manifest' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-file-earmark-spreadsheet-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Laporan Harian</a>
+                <div class="text-[10px] font-bold text-gray-400 uppercase px-4 mb-2 mt-2 tracking-wider">Front Office
+                </div>
+                <a href="#" @click="view='dashboard'"
+                    :class="view==='dashboard' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-grid-1x2-fill mr-3 group-hover:text-sutan-gold transition-colors"></i>
+                    Dashboard</a>
+                <a href="#" @click="view='bookingTravel'"
+                    :class="view==='bookingTravel' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-car-front-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking
+                    Travel</a>
+                <a href="#" @click="view='bookingBus'"
+                    :class="view==='bookingBus' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-bus-front-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking
+                    Bus</a>
+                <a href="#" @click="view='KelolaBooking'"
+                    :class="view==='KelolaBooking' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-list-check mr-3 group-hover:text-sutan-gold transition-colors"></i> Booking</a>
+
+                <div class="text-[10px] font-bold text-gray-400 uppercase px-4 mb-2 mt-6 tracking-wider">Operasional
+                </div>
+                <a href="#" @click="view='dispatcher'"
+                    :class="view==='dispatcher' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-kanban-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Dispatcher
+                    <span v-if="pendingGroupsCount > 0"
+                        class="ml-auto bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{
+                        pendingGroupsCount }}</span></a>
+                <a href="#" @click="view='manifest'"
+                    :class="view==='manifest' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-file-earmark-spreadsheet-fill mr-3 group-hover:text-sutan-gold transition-colors"></i>
+                    Laporan Harian</a>
 
                 <div class="text-[10px] font-bold text-gray-400 uppercase px-4 mb-2 mt-6 tracking-wider">Aset</div>
-                <a href="#" @click="view='assets'" :class="view==='assets' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i class="bi bi-collection-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Armada & Supir</a>
+                <a href="#" @click="view='assets'"
+                    :class="view==='assets' ? 'bg-sutan-blue-800 text-white shadow-lg shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50'"
+                    class="flex items-center px-4 py-3 rounded-xl font-medium transition-all group"><i
+                        class="bi bi-collection-fill mr-3 group-hover:text-sutan-gold transition-colors"></i> Armada &
+                    Supir</a>
             </nav>
         </aside>
 
         <main class="flex-1 flex flex-col bg-gray-100 min-w-0 relative h-full">
-            <header class="bg-white h-20 border-b border-gray-200 flex flex-shrink-0 items-center justify-between px-8 shadow-sm z-10">
-                <div><h1 class="text-xl font-extrabold text-sutan-blue-900">{{ currentViewTitle }}</h1><p class="text-xs text-gray-500 font-medium">Sistem Operasional Terpadu V7.8</p></div>
+            <header
+                class="bg-white h-20 border-b border-gray-200 flex flex-shrink-0 items-center justify-between px-8 shadow-sm z-10">
+                <div>
+                    <h1 class="text-xl font-extrabold text-sutan-blue-900">{{ currentViewTitle }}</h1>
+                    <p class="text-xs text-gray-500 font-medium">Sistem Operasional Terpadu V7.8</p>
+                </div>
                 <div class="flex items-center gap-6">
-                    <div class="text-right hidden md:block"><div class="text-xs text-gray-500 font-bold uppercase tracking-wider">{{ currentDate }}</div><div class="text-xl font-bold text-sutan-blue-900 font-mono">{{ currentTime }}</div></div>
-                    <button @click="toggleFullscreen" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-700 transition-all flex items-center justify-center"><i :class="isFullscreen ? 'bi-arrows-angle-contract' : 'bi-arrows-fullscreen'"></i></button>
+                    <div class="text-right hidden md:block">
+                        <div class="text-xs text-gray-500 font-bold uppercase tracking-wider">{{ currentDate }}</div>
+                        <div class="text-xl font-bold text-sutan-blue-900 font-mono">{{ currentTime }}</div>
+                    </div>
+                    <button @click="toggleFullscreen"
+                        class="w-10 h-10 rounded-full bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-700 transition-all flex items-center justify-center"><i
+                            :class="isFullscreen ? 'bi-arrows-angle-contract' : 'bi-arrows-fullscreen'"></i></button>
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 custom-scrollbar scroll-smooth">
-                
+
                 <div v-if="view === 'dashboard'" class="space-y-6 animate-fade-in">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center"><div><div class="text-xs text-gray-400 font-bold uppercase">Pendapatan</div><div class="text-2xl font-extrabold text-gray-800 mt-1">{{ formatRupiah(todayRevenue) }}</div></div><div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-2xl"><i class="bi bi-cash-stack"></i></div></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center"><div><div class="text-xs text-gray-400 font-bold uppercase">Booking Valid</div><div class="text-2xl font-extrabold text-gray-800 mt-1">{{ todayPax }}</div></div><div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl"><i class="bi bi-ticket-perforated-fill"></i></div></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center"><div><div class="text-xs text-gray-400 font-bold uppercase">Belum Lunas (DP)</div><div class="text-2xl font-extrabold text-red-500 mt-1">{{ pendingPaymentCount }}</div></div><div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-2xl"><i class="bi bi-wallet2"></i></div></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center"><div><div class="text-xs text-gray-400 font-bold uppercase">Antrian Dispatch</div><div class="text-2xl font-extrabold text-orange-500 mt-1">{{ pendingGroupsCount }}</div></div><div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl"><i class="bi bi-clock-history"></i></div></div>
+                        <div
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+                            <div>
+                                <div class="text-xs text-gray-400 font-bold uppercase">Pendapatan</div>
+                                <div class="text-2xl font-extrabold text-gray-800 mt-1">{{ formatRupiah(todayRevenue) }}
+                                </div>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-2xl">
+                                <i class="bi bi-cash-stack"></i></div>
+                        </div>
+                        <div
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+                            <div>
+                                <div class="text-xs text-gray-400 font-bold uppercase">Booking Valid</div>
+                                <div class="text-2xl font-extrabold text-gray-800 mt-1">{{ todayPax }}</div>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+                                <i class="bi bi-ticket-perforated-fill"></i></div>
+                        </div>
+                        <div
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+                            <div>
+                                <div class="text-xs text-gray-400 font-bold uppercase">Belum Lunas (DP)</div>
+                                <div class="text-2xl font-extrabold text-red-500 mt-1">{{ pendingPaymentCount }}</div>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-2xl">
+                                <i class="bi bi-wallet2"></i></div>
+                        </div>
+                        <div
+                            class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+                            <div>
+                                <div class="text-xs text-gray-400 font-bold uppercase">Antrian Dispatch</div>
+                                <div class="text-2xl font-extrabold text-orange-500 mt-1">{{ pendingGroupsCount }}</div>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl">
+                                <i class="bi bi-clock-history"></i></div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-                        
+
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 h-full flex flex-col">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between"><span><i class="bi bi-box-arrow-up-right text-blue-600 mr-2"></i> Keberangkatan</span><span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">Dari Padang</span></h3>
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between"><span><i
+                                        class="bi bi-box-arrow-up-right text-blue-600 mr-2"></i>
+                                    Keberangkatan</span><span
+                                    class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">Dari Padang</span></h3>
                             <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-                                <div v-if="outboundTrips.length === 0" class="h-32 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50"><span class="text-xs">Tidak ada keberangkatan aktif.</span></div>
-                                <div v-for="trip in outboundTrips" :key="trip.id" class="p-4 rounded-xl border bg-white hover:shadow-md transition-all relative group" :class="getTripCardClass(trip.status)">
+                                <div v-if="outboundTrips.length === 0"
+                                    class="h-32 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50">
+                                    <span class="text-xs">Tidak ada keberangkatan aktif.</span></div>
+                                <div v-for="trip in outboundTrips" :key="trip.id"
+                                    class="p-4 rounded-xl border bg-white hover:shadow-md transition-all relative group"
+                                    :class="getTripCardClass(trip.status)">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div><div class="text-xl font-extrabold text-blue-900">{{ trip.routeConfig.time }}</div><div class="text-[10px] text-gray-400 font-bold uppercase">{{ trip.routeConfig.routeId }}</div></div>
-                                        <div class="text-right"><span class="text-[10px] font-bold uppercase px-2 py-1 rounded text-white" :class="getTripStatusBadge(trip.status)">{{ trip.status }}</span></div>
+                                        <div>
+                                            <div class="text-xl font-extrabold text-blue-900">{{ trip.routeConfig.time
+                                                }}</div>
+                                            <div class="text-[10px] text-gray-400 font-bold uppercase">{{
+                                                trip.routeConfig.routeId }}</div>
+                                        </div>
+                                        <div class="text-right"><span
+                                                class="text-[10px] font-bold uppercase px-2 py-1 rounded text-white"
+                                                :class="getTripStatusBadge(trip.status)">{{ trip.status }}</span></div>
                                     </div>
-                                    <div class="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2"><i class="bi bi-truck-front-fill text-blue-500"></i> {{ trip.fleet.name }}</div>
-                                    <div class="text-xs text-gray-500 border-t border-gray-100 pt-2 mb-3">Driver: <strong>{{ trip.driver.name }}</strong></div>
-                                    
+                                    <div class="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2"><i
+                                            class="bi bi-truck-front-fill text-blue-500"></i> {{ trip.fleet.name }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 border-t border-gray-100 pt-2 mb-3">Driver:
+                                        <strong>{{ trip.driver.name }}</strong></div>
+
                                     <div class="grid grid-cols-2 gap-2">
-                                        <button @click="updateTripStatus(trip, 'Tiba')" class="py-1.5 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700"><i class="bi bi-check2-circle"></i> Sampai</button>
-                                        <button @click="openTripControl(trip)" class="py-1.5 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold hover:bg-gray-200"><i class="bi bi-gear-fill"></i> Ubah Status</button>
+                                        <button @click="updateTripStatus(trip, 'Tiba')"
+                                            class="py-1.5 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700"><i
+                                                class="bi bi-check2-circle"></i> Sampai</button>
+                                        <button @click="openTripControl(trip)"
+                                            class="py-1.5 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold hover:bg-gray-200"><i
+                                                class="bi bi-gear-fill"></i> Ubah Status</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 h-full flex flex-col">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between"><span><i class="bi bi-box-arrow-in-down-left text-green-600 mr-2"></i> Kedatangan</span><span class="text-xs bg-green-50 text-green-600 px-2 py-1 rounded">Menuju Padang</span></h3>
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center justify-between"><span><i
+                                        class="bi bi-box-arrow-in-down-left text-green-600 mr-2"></i>
+                                    Kedatangan</span><span
+                                    class="text-xs bg-green-50 text-green-600 px-2 py-1 rounded">Menuju Padang</span>
+                            </h3>
                             <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-                                <div v-if="inboundTrips.length === 0" class="h-32 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50"><span class="text-xs">Tidak ada kedatangan aktif.</span></div>
-                                <div v-for="trip in inboundTrips" :key="trip.id" class="p-4 rounded-xl border bg-white hover:shadow-md transition-all relative group" :class="getTripCardClass(trip.status)">
+                                <div v-if="inboundTrips.length === 0"
+                                    class="h-32 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50">
+                                    <span class="text-xs">Tidak ada kedatangan aktif.</span></div>
+                                <div v-for="trip in inboundTrips" :key="trip.id"
+                                    class="p-4 rounded-xl border bg-white hover:shadow-md transition-all relative group"
+                                    :class="getTripCardClass(trip.status)">
                                     <div class="flex justify-between items-start mb-3">
-                                        <div><div class="text-xl font-extrabold text-green-900">{{ trip.routeConfig.time }}</div><div class="text-[10px] text-gray-400 font-bold uppercase">{{ trip.routeConfig.routeId }}</div></div>
-                                        <div class="text-right"><span class="text-[10px] font-bold uppercase px-2 py-1 rounded text-white" :class="getTripStatusBadge(trip.status)">{{ trip.status }}</span></div>
+                                        <div>
+                                            <div class="text-xl font-extrabold text-green-900">{{ trip.routeConfig.time
+                                                }}</div>
+                                            <div class="text-[10px] text-gray-400 font-bold uppercase">{{
+                                                trip.routeConfig.routeId }}</div>
+                                        </div>
+                                        <div class="text-right"><span
+                                                class="text-[10px] font-bold uppercase px-2 py-1 rounded text-white"
+                                                :class="getTripStatusBadge(trip.status)">{{ trip.status }}</span></div>
                                     </div>
-                                    <div class="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2"><i class="bi bi-truck-front-fill text-green-500"></i> {{ trip.fleet.name }}</div>
-                                    <div class="text-xs text-gray-500 border-t border-gray-100 pt-2 mb-3">Driver: <strong>{{ trip.driver.name }}</strong></div>
-                                    
+                                    <div class="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2"><i
+                                            class="bi bi-truck-front-fill text-green-500"></i> {{ trip.fleet.name }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 border-t border-gray-100 pt-2 mb-3">Driver:
+                                        <strong>{{ trip.driver.name }}</strong></div>
+
                                     <div class="grid grid-cols-2 gap-2">
-                                        <button @click="updateTripStatus(trip, 'Tiba')" class="py-1.5 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700"><i class="bi bi-check-lg"></i> Tiba di Pool</button>
-                                        <button @click="openTripControl(trip)" class="py-1.5 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold hover:bg-gray-200"><i class="bi bi-gear-fill"></i> Ubah Status</button>
+                                        <button @click="updateTripStatus(trip, 'Tiba')"
+                                            class="py-1.5 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700"><i
+                                                class="bi bi-check-lg"></i> Tiba di Pool</button>
+                                        <button @click="openTripControl(trip)"
+                                            class="py-1.5 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold hover:bg-gray-200"><i
+                                                class="bi bi-gear-fill"></i> Ubah Status</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i class="bi bi-p-circle text-gray-500 mr-2"></i> Armada Standby</h3>
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i
+                                    class="bi bi-p-circle text-gray-500 mr-2"></i> Armada Standby</h3>
                             <div class="space-y-3 max-h-[450px] overflow-y-auto custom-scrollbar pr-1">
-                                <div v-for="f in fleet" :key="f.id" class="flex items-center justify-between p-3 rounded-xl border border-gray-100 transition-all hover:bg-gray-50" :class="getVehicleStatusClass(f.status)">
-                                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-lg bg-white shadow-sm"><i :class="f.icon"></i></div><div><div class="text-xs font-bold text-gray-800">{{ f.name }}</div><div class="text-[10px] text-gray-500">{{ f.plate }}</div></div></div>
-                                    <div class="text-[10px] font-bold px-2 py-1 rounded-md uppercase bg-white shadow-sm">{{ f.status }}</div>
+                                <div v-for="f in fleet" :key="f.id"
+                                    class="flex items-center justify-between p-3 rounded-xl border border-gray-100 transition-all hover:bg-gray-50"
+                                    :class="getVehicleStatusClass(f.status)">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-lg flex items-center justify-center text-lg bg-white shadow-sm">
+                                            <i :class="f.icon"></i></div>
+                                        <div>
+                                            <div class="text-xs font-bold text-gray-800">{{ f.name }}</div>
+                                            <div class="text-[10px] text-gray-500">{{ f.plate }}</div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="text-[10px] font-bold px-2 py-1 rounded-md uppercase bg-white shadow-sm">
+                                        {{ f.status }}</div>
                                 </div>
                             </div>
                         </div>
@@ -137,105 +328,404 @@
                 </div>
 
                 <div v-if="view === 'bookingTravel'" class="animate-fade-in flex justify-center">
-                    <div class="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-[85vh]">
+                    <div
+                        class="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-[85vh]">
                         <div class="w-full md:w-7/12 p-8 overflow-y-auto custom-scrollbar">
-                            <div class="mb-6 border-b border-gray-100 pb-4"><h2 class="text-2xl font-extrabold text-sutan-blue-900">Booking Travel (Hiace/Innova)</h2><p class="text-sm text-gray-500">Layanan Reguler, Carter & Dropping</p></div>
+                            <div class="mb-6 border-b border-gray-100 pb-4">
+                                <h2 class="text-2xl font-extrabold text-sutan-blue-900">Booking Travel (Hiace/Innova)
+                                </h2>
+                                <p class="text-sm text-gray-500">Layanan Reguler, Carter & Dropping</p>
+                            </div>
                             <div class="space-y-5">
                                 <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
-                                    <button @click="setServiceType('Travel')" class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1" :class="bookingForm.data.serviceType==='Travel'?'bg-white shadow-sm text-sutan-blue-900 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i class="bi bi-person-fill"></i> Reguler</span></button>
-                                    <button @click="setServiceType('Carter')" class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1" :class="bookingForm.data.serviceType==='Carter'?'bg-white shadow-sm text-pink-600 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i class="bi bi-star-fill"></i> Carter</span></button>
-                                    <button @click="setServiceType('Dropping')" class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1" :class="bookingForm.data.serviceType==='Dropping'?'bg-white shadow-sm text-purple-600 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i class="bi bi-cursor-fill"></i> Dropping</span></button>
+                                    <button @click="setServiceType('Travel')"
+                                        class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1"
+                                        :class="bookingForm.data.serviceType==='Travel'?'bg-white shadow-sm text-sutan-blue-900 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i
+                                                class="bi bi-person-fill"></i> Reguler</span></button>
+                                    <button @click="setServiceType('Carter')"
+                                        class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1"
+                                        :class="bookingForm.data.serviceType==='Carter'?'bg-white shadow-sm text-pink-600 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i
+                                                class="bi bi-star-fill"></i> Carter</span></button>
+                                    <button @click="setServiceType('Dropping')"
+                                        class="py-2.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center gap-1"
+                                        :class="bookingForm.data.serviceType==='Dropping'?'bg-white shadow-sm text-purple-600 ring-1 ring-black/5':'text-gray-500 hover:bg-gray-200'"><span><i
+                                                class="bi bi-cursor-fill"></i> Dropping</span></button>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="col-span-2"><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Rute</label><select v-model="bookingForm.data.routeId" @change="calculatePrice" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"><option value="" disabled>Pilih Rute</option><option v-for="r in routeConfig" :value="r.id">{{ r.origin }} ⇄ {{ r.destination }}</option></select></div>
-                                    <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Tanggal</label><input type="date" v-model="bookingForm.data.date" @change="resetSeatSelection" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                                    <div class="col-span-2"><label
+                                            class="text-xs font-bold text-gray-400 uppercase mb-1 block">Rute</label><select
+                                            v-model="bookingForm.data.routeId" @change="calculatePrice"
+                                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                                            <option value="" disabled>Pilih Rute</option>
+                                            <option v-for="r in routeConfig" :value="r.id">{{ r.origin }} ⇄ {{
+                                                r.destination }}</option>
+                                        </select></div>
+                                    <div><label
+                                            class="text-xs font-bold text-gray-400 uppercase mb-1 block">Tanggal</label><input
+                                            type="date" v-model="bookingForm.data.date" @change="resetSeatSelection"
+                                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    </div>
                                     <div>
                                         <label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Jam</label>
-                                        <select v-if="bookingForm.data.serviceType === 'Travel'" v-model="bookingForm.data.time" @change="resetSeatSelection" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"><option value="" disabled>Pilih Jam</option><option v-for="t in selectedRoute?.schedules" :value="t">{{ t }}</option></select>
-                                        <input v-else type="time" v-model="bookingForm.data.time" class="w-full p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                                        <select v-if="bookingForm.data.serviceType === 'Travel'"
+                                            v-model="bookingForm.data.time" @change="resetSeatSelection"
+                                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+                                            <option value="" disabled>Pilih Jam</option>
+                                            <option v-for="t in selectedRoute?.schedules" :value="t">{{ t }}</option>
+                                        </select>
+                                        <input v-else type="time" v-model="bookingForm.data.time"
+                                            class="w-full p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none">
                                     </div>
                                 </div>
-                                <div v-if="bookingForm.data.serviceType==='Carter'" class="animate-fade-in"><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Durasi Sewa (Hari)</label><div class="flex items-center gap-3"><button @click="bookingForm.data.duration = Math.max(1, bookingForm.data.duration - 1); calculatePrice()" class="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-lg">-</button><input type="number" v-model="bookingForm.data.duration" @change="calculatePrice" class="flex-1 text-center font-bold text-lg p-2 border-b-2 border-pink-200 outline-none" min="1"><button @click="bookingForm.data.duration++; calculatePrice()" class="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-lg">+</button></div></div>
-                                <div v-if="bookingForm.data.serviceType==='Dropping'" class="animate-fade-in"><label class="flex items-center gap-3 p-3 bg-purple-50 border border-purple-100 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors"><input type="checkbox" v-model="bookingForm.data.isMultiStop" @change="calculatePrice" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"><span class="text-sm font-bold text-purple-800">Banyak Titik Antar (Multi-stop)</span></label></div>
-                                <div v-if="bookingForm.data.routeId" class="space-y-4">
-                                    <div class="grid grid-cols-2 gap-4"><div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Nama</label><input type="text" v-model="bookingForm.data.passengerName" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 outline-none"></div><div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">WhatsApp</label><input type="text" v-model="bookingForm.data.passengerPhone" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 outline-none"></div></div>
-                                    <div v-if="bookingForm.data.serviceType==='Travel'" class="flex gap-4">
-                                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer flex-1 hover:bg-gray-50"><input type="radio" value="Umum" v-model="bookingForm.data.passengerType" @change="calculatePrice" class="text-blue-600"><span class="text-sm font-bold text-gray-700">Umum</span></label>
-                                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer flex-1 hover:bg-gray-50"><input type="radio" value="Pelajar" v-model="bookingForm.data.passengerType" @change="calculatePrice" class="text-blue-600"><span class="text-sm font-bold text-gray-700">Pelajar</span></label>
+                                <div v-if="bookingForm.data.serviceType==='Carter'" class="animate-fade-in"><label
+                                        class="text-xs font-bold text-gray-400 uppercase mb-1 block">Durasi Sewa
+                                        (Hari)</label>
+                                    <div class="flex items-center gap-3"><button
+                                            @click="bookingForm.data.duration = Math.max(1, bookingForm.data.duration - 1); calculatePrice()"
+                                            class="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-lg">-</button><input
+                                            type="number" v-model="bookingForm.data.duration" @change="calculatePrice"
+                                            class="flex-1 text-center font-bold text-lg p-2 border-b-2 border-pink-200 outline-none"
+                                            min="1"><button @click="bookingForm.data.duration++; calculatePrice()"
+                                            class="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-lg">+</button>
                                     </div>
-                                    <div v-if="bookingForm.data.passengerType === 'Pelajar' && bookingForm.data.serviceType==='Travel'" class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl animate-fade-in"><label class="text-xs font-bold text-yellow-700 uppercase mb-2 block flex items-center"><i class="bi bi-person-vcard mr-2"></i> Upload KTM (Wajib)</label><div class="flex items-center gap-3"><label class="cursor-pointer bg-white border border-yellow-300 text-yellow-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-yellow-100 shadow-sm flex items-center gap-2"><i class="bi bi-upload"></i> Pilih File <input type="file" accept="image/*" @change="handleKTMUpload" class="hidden"></label><span v-if="bookingForm.data.ktmProof" class="text-xs text-green-600 font-bold flex items-center"><i class="bi bi-check-circle-fill mr-1"></i> {{ bookingForm.data.ktmProof }}</span></div></div>
-                                    <div class="grid grid-cols-2 gap-4"><input type="text" v-model="bookingForm.data.pickupAddress" placeholder="Alamat Jemput" class="w-full p-3 border border-gray-200 rounded-xl text-sm"><input type="text" v-model="bookingForm.data.dropoffAddress" placeholder="Alamat Antar" class="w-full p-3 border border-gray-200 rounded-xl text-sm"></div>
+                                </div>
+                                <div v-if="bookingForm.data.serviceType==='Dropping'" class="animate-fade-in"><label
+                                        class="flex items-center gap-3 p-3 bg-purple-50 border border-purple-100 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors"><input
+                                            type="checkbox" v-model="bookingForm.data.isMultiStop"
+                                            @change="calculatePrice"
+                                            class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"><span
+                                            class="text-sm font-bold text-purple-800">Banyak Titik Antar
+                                            (Multi-stop)</span></label></div>
+                                <div v-if="bookingForm.data.routeId" class="space-y-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div><label
+                                                class="text-xs font-bold text-gray-400 uppercase mb-1 block">Nama</label><input
+                                                type="text" v-model="bookingForm.data.passengerName"
+                                                class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 outline-none">
+                                        </div>
+                                        <div><label
+                                                class="text-xs font-bold text-gray-400 uppercase mb-1 block">WhatsApp</label><input
+                                                type="text" v-model="bookingForm.data.passengerPhone"
+                                                class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 outline-none">
+                                        </div>
+                                    </div>
+                                    <div v-if="bookingForm.data.serviceType==='Travel'" class="flex gap-4">
+                                        <label
+                                            class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer flex-1 hover:bg-gray-50"><input
+                                                type="radio" value="Umum" v-model="bookingForm.data.passengerType"
+                                                @change="calculatePrice" class="text-blue-600"><span
+                                                class="text-sm font-bold text-gray-700">Umum</span></label>
+                                        <label
+                                            class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer flex-1 hover:bg-gray-50"><input
+                                                type="radio" value="Pelajar" v-model="bookingForm.data.passengerType"
+                                                @change="calculatePrice" class="text-blue-600"><span
+                                                class="text-sm font-bold text-gray-700">Pelajar</span></label>
+                                    </div>
+                                    <div v-if="bookingForm.data.passengerType === 'Pelajar' && bookingForm.data.serviceType==='Travel'"
+                                        class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl animate-fade-in">
+                                        <label
+                                            class="text-xs font-bold text-yellow-700 uppercase mb-2 block flex items-center"><i
+                                                class="bi bi-person-vcard mr-2"></i> Upload KTM (Wajib)</label>
+                                        <div class="flex items-center gap-3"><label
+                                                class="cursor-pointer bg-white border border-yellow-300 text-yellow-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-yellow-100 shadow-sm flex items-center gap-2"><i
+                                                    class="bi bi-upload"></i> Pilih File <input type="file"
+                                                    accept="image/*" @change="handleKTMUpload"
+                                                    class="hidden"></label><span v-if="bookingForm.data.ktmProof"
+                                                class="text-xs text-green-600 font-bold flex items-center"><i
+                                                    class="bi bi-check-circle-fill mr-1"></i> {{
+                                                bookingForm.data.ktmProof }}</span></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4"><input type="text"
+                                            v-model="bookingForm.data.pickupAddress" placeholder="Alamat Jemput"
+                                            class="w-full p-3 border border-gray-200 rounded-xl text-sm"><input
+                                            type="text" v-model="bookingForm.data.dropoffAddress"
+                                            placeholder="Alamat Antar"
+                                            class="w-full p-3 border border-gray-200 rounded-xl text-sm"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="w-full md:w-5/12 bg-gray-50 border-l border-gray-200 flex flex-col">
                             <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
                                 <div class="flex justify-center mb-6">
-                                    <div v-if="bookingForm.data.routeId && bookingForm.data.serviceType === 'Travel'" class="bg-white border-2 border-gray-200 rounded-[2rem] p-5 shadow-sm relative w-[200px]"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-200 rounded-b-lg"></div><div class="space-y-3 mt-2"><div v-for="row in seatLayout" :key="row.row"><div class="text-[8px] text-gray-300 text-center uppercase tracking-widest mb-1">{{ row.label }}</div><div class="flex justify-between gap-2"><div v-for="seat in row.seats" :key="seat.id" class="flex-1 flex justify-center"><div v-if="seat.type==='driver'" class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-gray-300"><i class="bi bi-person-fill"></i></div><button v-else @click="toggleSeat(seat.id)" :disabled="isSeatOccupied(seat.id)" class="w-9 h-9 rounded-lg font-bold text-xs border transition-all relative" :class="[isSeatOccupied(seat.id) ? 'bg-gray-800 text-white cursor-not-allowed border-gray-800' : (isSeatSelected(seat.id) ? 'bg-sutan-blue-900 text-white border-sutan-blue-900 shadow-md scale-105' : 'bg-white hover:bg-yellow-50 text-gray-600 border-gray-200')]">{{ seat.id }}</button></div></div></div></div></div>
-                                    <div v-else-if="bookingForm.data.serviceType === 'Carter'" class="text-center p-8 animate-fade-in"><div class="w-20 h-20 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="bi bi-star-fill"></i></div><h3 class="font-bold text-gray-800">Carter Harian</h3><p class="text-xs text-gray-500 mt-1">Sewa {{ bookingForm.data.duration }} Hari. Unit Full.</p></div>
-                                    <div v-else-if="bookingForm.data.serviceType === 'Dropping'" class="text-center p-8 animate-fade-in"><div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="bi bi-cursor-fill"></i></div><h3 class="font-bold text-gray-800">Dropping Point</h3><p class="text-xs text-gray-500 mt-1">Antar Jemput Langsung. Unit Full.</p></div>
+                                    <div v-if="bookingForm.data.routeId && bookingForm.data.serviceType === 'Travel'"
+                                        class="bg-white border-2 border-gray-200 rounded-[2rem] p-5 shadow-sm relative w-[200px]">
+                                        <div
+                                            class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-200 rounded-b-lg">
+                                        </div>
+                                        <div class="space-y-3 mt-2">
+                                            <div v-for="row in seatLayout" :key="row.row">
+                                                <div
+                                                    class="text-[8px] text-gray-300 text-center uppercase tracking-widest mb-1">
+                                                    {{ row.label }}</div>
+                                                <div class="flex justify-between gap-2">
+                                                    <div v-for="seat in row.seats" :key="seat.id"
+                                                        class="flex-1 flex justify-center">
+                                                        <div v-if="seat.type==='driver'"
+                                                            class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-gray-300">
+                                                            <i class="bi bi-person-fill"></i></div><button v-else
+                                                            @click="toggleSeat(seat.id)"
+                                                            :disabled="isSeatOccupied(seat.id)"
+                                                            class="w-9 h-9 rounded-lg font-bold text-xs border transition-all relative"
+                                                            :class="[isSeatOccupied(seat.id) ? 'bg-gray-800 text-white cursor-not-allowed border-gray-800' : (isSeatSelected(seat.id) ? 'bg-sutan-blue-900 text-white border-sutan-blue-900 shadow-md scale-105' : 'bg-white hover:bg-yellow-50 text-gray-600 border-gray-200')]">{{
+                                                            seat.id }}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="bookingForm.data.serviceType === 'Carter'"
+                                        class="text-center p-8 animate-fade-in">
+                                        <div
+                                            class="w-20 h-20 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                                            <i class="bi bi-star-fill"></i></div>
+                                        <h3 class="font-bold text-gray-800">Carter Harian</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Sewa {{ bookingForm.data.duration }} Hari.
+                                            Unit Full.</p>
+                                    </div>
+                                    <div v-else-if="bookingForm.data.serviceType === 'Dropping'"
+                                        class="text-center p-8 animate-fade-in">
+                                        <div
+                                            class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                                            <i class="bi bi-cursor-fill"></i></div>
+                                        <h3 class="font-bold text-gray-800">Dropping Point</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Antar Jemput Langsung. Unit Full.</p>
+                                    </div>
                                 </div>
-                                <div v-if="bookingForm.data.routeId" class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                                <div v-if="bookingForm.data.routeId"
+                                    class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
                                     <h4 class="text-xs font-bold text-gray-400 uppercase border-b pb-2">Pembayaran</h4>
                                     <div class="flex gap-2">
-                                        <label class="flex-1 cursor-pointer text-center"><input type="radio" value="Cash" v-model="bookingForm.data.paymentMethod" class="hidden peer"><div class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-checked:border-blue-200 transition-all flex items-center justify-center gap-1"><i class="bi bi-cash"></i> Cash</div></label>
-                                        <label class="flex-1 cursor-pointer text-center"><input type="radio" value="Transfer" v-model="bookingForm.data.paymentMethod" class="hidden peer"><div class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-checked:border-blue-200 transition-all flex items-center justify-center gap-1"><i class="bi bi-bank"></i> Transfer</div></label>
-                                        <label class="flex-1 cursor-pointer text-center"><input type="radio" value="DP" v-model="bookingForm.data.paymentMethod" class="hidden peer"><div class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-700 peer-checked:border-yellow-200 transition-all flex items-center justify-center gap-1"><i class="bi bi-hourglass-split"></i> DP</div></label>
+                                        <label class="flex-1 cursor-pointer text-center"><input type="radio"
+                                                value="Cash" v-model="bookingForm.data.paymentMethod"
+                                                class="hidden peer">
+                                            <div
+                                                class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-checked:border-blue-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="bi bi-cash"></i> Cash</div>
+                                        </label>
+                                        <label class="flex-1 cursor-pointer text-center"><input type="radio"
+                                                value="Transfer" v-model="bookingForm.data.paymentMethod"
+                                                class="hidden peer">
+                                            <div
+                                                class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-checked:border-blue-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="bi bi-bank"></i> Transfer</div>
+                                        </label>
+                                        <label class="flex-1 cursor-pointer text-center"><input type="radio" value="DP"
+                                                v-model="bookingForm.data.paymentMethod" class="hidden peer">
+                                            <div
+                                                class="py-2 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-700 peer-checked:border-yellow-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="bi bi-hourglass-split"></i> DP</div>
+                                        </label>
                                     </div>
-                                    <div v-if="bookingForm.data.paymentMethod === 'Cash'" class="space-y-3 animate-fade-in"><div><label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Lokasi Pembayaran</label><input type="text" v-model="bookingForm.data.paymentLocation" placeholder="Contoh: Loket / Di Mobil" class="w-full p-2 border border-gray-200 rounded-lg text-xs"></div><div><label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Diterima Oleh</label><input type="text" v-model="bookingForm.data.paymentReceiver" placeholder="Nama Staf / Supir" class="w-full p-2 border border-gray-200 rounded-lg text-xs"></div></div>
-                                    <div v-else-if="bookingForm.data.paymentMethod === 'Transfer'" class="space-y-3 animate-fade-in"><div class="text-xs text-center bg-gray-50 p-2 rounded text-gray-600 font-mono">BCA: 123456789 (Sutan Raya)</div><label class="block w-full text-xs text-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"><span v-if="!bookingForm.data.paymentProof" class="text-gray-400"><i class="bi bi-cloud-upload text-xl block mb-1"></i>Upload Bukti Transfer</span><span v-else class="text-green-600 font-bold flex flex-col items-center"><i class="bi bi-check-circle-fill text-xl mb-1"></i> {{ bookingForm.data.paymentProof }}</span><input type="file" accept="image/*" @change="handlePaymentProofUpload" class="hidden"></label></div>
-                                    <div v-else-if="bookingForm.data.paymentMethod === 'DP'" class="space-y-3 animate-fade-in">
-                                        <div><label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Nominal DP</label><input type="number" v-model="bookingForm.data.downPaymentAmount" placeholder="Min. Rp 100.000" class="w-full p-2 border border-yellow-200 bg-yellow-50 rounded-lg text-xs font-bold text-yellow-700"></div>
-                                        <label class="block w-full text-xs text-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"><span v-if="!bookingForm.data.paymentProof" class="text-gray-400"><i class="bi bi-cloud-upload text-xl block mb-1"></i>Upload Bukti DP</span><span v-else class="text-green-600 font-bold flex flex-col items-center"><i class="bi bi-check-circle-fill text-xl mb-1"></i> {{ bookingForm.data.paymentProof }}</span><input type="file" accept="image/*" @change="handlePaymentProofUpload" class="hidden"></label>
+                                    <div v-if="bookingForm.data.paymentMethod === 'Cash'"
+                                        class="space-y-3 animate-fade-in">
+                                        <div><label
+                                                class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Lokasi
+                                                Pembayaran</label><input type="text"
+                                                v-model="bookingForm.data.paymentLocation"
+                                                placeholder="Contoh: Loket / Di Mobil"
+                                                class="w-full p-2 border border-gray-200 rounded-lg text-xs"></div>
+                                        <div><label
+                                                class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Diterima
+                                                Oleh</label><input type="text"
+                                                v-model="bookingForm.data.paymentReceiver"
+                                                placeholder="Nama Staf / Supir"
+                                                class="w-full p-2 border border-gray-200 rounded-lg text-xs"></div>
+                                    </div>
+                                    <div v-else-if="bookingForm.data.paymentMethod === 'Transfer'"
+                                        class="space-y-3 animate-fade-in">
+                                        <div class="text-xs text-center bg-gray-50 p-2 rounded text-gray-600 font-mono">
+                                            BCA: 123456789 (Sutan Raya)</div><label
+                                            class="block w-full text-xs text-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"><span
+                                                v-if="!bookingForm.data.paymentProof" class="text-gray-400"><i
+                                                    class="bi bi-cloud-upload text-xl block mb-1"></i>Upload Bukti
+                                                Transfer</span><span v-else
+                                                class="text-green-600 font-bold flex flex-col items-center"><i
+                                                    class="bi bi-check-circle-fill text-xl mb-1"></i> {{
+                                                bookingForm.data.paymentProof }}</span><input type="file"
+                                                accept="image/*" @change="handlePaymentProofUpload"
+                                                class="hidden"></label>
+                                    </div>
+                                    <div v-else-if="bookingForm.data.paymentMethod === 'DP'"
+                                        class="space-y-3 animate-fade-in">
+                                        <div><label
+                                                class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Nominal
+                                                DP</label><input type="number"
+                                                v-model="bookingForm.data.downPaymentAmount"
+                                                placeholder="Min. Rp 100.000"
+                                                class="w-full p-2 border border-yellow-200 bg-yellow-50 rounded-lg text-xs font-bold text-yellow-700">
+                                        </div>
+                                        <label
+                                            class="block w-full text-xs text-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"><span
+                                                v-if="!bookingForm.data.paymentProof" class="text-gray-400"><i
+                                                    class="bi bi-cloud-upload text-xl block mb-1"></i>Upload Bukti
+                                                DP</span><span v-else
+                                                class="text-green-600 font-bold flex flex-col items-center"><i
+                                                    class="bi bi-check-circle-fill text-xl mb-1"></i> {{
+                                                bookingForm.data.paymentProof }}</span><input type="file"
+                                                accept="image/*" @change="handlePaymentProofUpload"
+                                                class="hidden"></label>
                                     </div>
                                 </div>
                             </div>
                             <div class="p-6 bg-white border-t border-gray-200">
-                                <div class="flex justify-between items-end mb-4"><div class="text-xs text-gray-500 font-bold uppercase">Total Biaya</div><div class="text-2xl font-extrabold text-sutan-blue-900">{{ formatRupiah(bookingForm.data.totalPrice) }}</div></div>
-                                <button @click="saveBooking" :disabled="!bookingForm.data.routeId || bookingForm.data.totalPrice === 0" class="w-full py-3 bg-sutan-blue-900 hover:bg-sutan-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">Proses Booking</button>
+                                <div class="flex justify-between items-end mb-4">
+                                    <div class="text-xs text-gray-500 font-bold uppercase">Total Biaya</div>
+                                    <div class="text-2xl font-extrabold text-sutan-blue-900">{{
+                                        formatRupiah(bookingForm.data.totalPrice) }}</div>
+                                </div>
+                                <button @click="saveBooking"
+                                    :disabled="!bookingForm.data.routeId || bookingForm.data.totalPrice === 0"
+                                    class="w-full py-3 bg-sutan-blue-900 hover:bg-sutan-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">Proses
+                                    Booking</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div v-if="view === 'bookingBus'" class="animate-fade-in flex justify-center">
-                    <div class="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-[85vh]">
+                    <div
+                        class="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-[85vh]">
                         <div class="w-full md:w-7/12 p-8 overflow-y-auto custom-scrollbar">
-                            <div class="mb-6 border-b border-gray-100 pb-4"><h2 class="text-2xl font-extrabold text-sutan-blue-900">Booking Bus Pariwisata</h2><p class="text-sm text-gray-500">Medium & Big Bus</p></div>
+                            <div class="mb-6 border-b border-gray-100 pb-4">
+                                <h2 class="text-2xl font-extrabold text-sutan-blue-900">Booking Bus Pariwisata</h2>
+                                <p class="text-sm text-gray-500">Medium & Big Bus</p>
+                            </div>
                             <div class="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-xl">
-                                <button @click="bookingBusForm.type='Medium'" class="flex-1 py-3 rounded-lg text-sm font-bold transition-all" :class="bookingBusForm.type==='Medium'?'bg-white shadow text-sutan-blue-900':'text-gray-500 hover:bg-gray-200'">Medium Bus (33/35)</button>
-                                <button @click="bookingBusForm.type='Big'" class="flex-1 py-3 rounded-lg text-sm font-bold transition-all" :class="bookingBusForm.type==='Big'?'bg-white shadow text-sutan-blue-900':'text-gray-500 hover:bg-gray-200'">Big Bus (32/45)</button>
+                                <button @click="bookingBusForm.type='Medium'"
+                                    class="flex-1 py-3 rounded-lg text-sm font-bold transition-all"
+                                    :class="bookingBusForm.type==='Medium'?'bg-white shadow text-sutan-blue-900':'text-gray-500 hover:bg-gray-200'">Medium
+                                    Bus (33/35)</button>
+                                <button @click="bookingBusForm.type='Big'"
+                                    class="flex-1 py-3 rounded-lg text-sm font-bold transition-all"
+                                    :class="bookingBusForm.type==='Big'?'bg-white shadow text-sutan-blue-900':'text-gray-500 hover:bg-gray-200'">Big
+                                    Bus (32/45)</button>
                             </div>
                             <div class="space-y-5 animate-fade-in">
-                                <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Rute Perjalanan</label><select v-model="bookingBusForm.routeId" @change="calculateBusPrice" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:ring-2 focus:ring-blue-500"><option value="" disabled>-- Pilih Tujuan --</option><option v-for="route in busRouteConfig" :value="route.id">{{ route.name }}</option></select></div>
+                                <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Rute
+                                        Perjalanan</label><select v-model="bookingBusForm.routeId"
+                                        @change="calculateBusPrice"
+                                        class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="" disabled>-- Pilih Tujuan --</option>
+                                        <option v-for="route in busRouteConfig" :value="route.id">{{ route.name }}
+                                        </option>
+                                    </select></div>
                                 <div class="flex gap-4">
-                                    <div class="flex-1"><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Kapasitas</label>
-                                        <div v-if="bookingBusForm.type === 'Medium'" class="flex gap-2"><label class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input type="radio" value="33" v-model="bookingBusForm.seatCapacity" @change="calculateBusPrice" class="text-blue-600"> <span class="text-sm font-bold">33 Seat</span></label><label class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input type="radio" value="35" v-model="bookingBusForm.seatCapacity" @change="calculateBusPrice" class="text-blue-600"> <span class="text-sm font-bold">35 Seat</span></label></div>
-                                        <div v-if="bookingBusForm.type === 'Big'" class="flex gap-2"><label class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input type="radio" value="45" v-model="bookingBusForm.seatCapacity" @change="calculateBusPrice" class="text-blue-600"> <span class="text-[10px] font-bold">45 Seat (No Legrest)</span></label><label class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input type="radio" value="32" v-model="bookingBusForm.seatCapacity" @change="calculateBusPrice" class="text-blue-600"> <span class="text-[10px] font-bold">32 Seat (Legrest)</span></label></div>
+                                    <div class="flex-1"><label
+                                            class="text-xs font-bold text-gray-400 uppercase mb-1 block">Kapasitas</label>
+                                        <div v-if="bookingBusForm.type === 'Medium'" class="flex gap-2"><label
+                                                class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input
+                                                    type="radio" value="33" v-model="bookingBusForm.seatCapacity"
+                                                    @change="calculateBusPrice" class="text-blue-600"> <span
+                                                    class="text-sm font-bold">33 Seat</span></label><label
+                                                class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input
+                                                    type="radio" value="35" v-model="bookingBusForm.seatCapacity"
+                                                    @change="calculateBusPrice" class="text-blue-600"> <span
+                                                    class="text-sm font-bold">35 Seat</span></label></div>
+                                        <div v-if="bookingBusForm.type === 'Big'" class="flex gap-2"><label
+                                                class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input
+                                                    type="radio" value="45" v-model="bookingBusForm.seatCapacity"
+                                                    @change="calculateBusPrice" class="text-blue-600"> <span
+                                                    class="text-[10px] font-bold">45 Seat (No
+                                                    Legrest)</span></label><label
+                                                class="flex-1 cursor-pointer border border-gray-200 rounded-xl p-2.5 hover:bg-gray-50 flex items-center gap-2"><input
+                                                    type="radio" value="32" v-model="bookingBusForm.seatCapacity"
+                                                    @change="calculateBusPrice" class="text-blue-600"> <span
+                                                    class="text-[10px] font-bold">32 Seat (Legrest)</span></label></div>
                                     </div>
-                                    <div class="flex-1"><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Tanggal Mulai</label><input type="date" v-model="bookingBusForm.date" class="w-full p-2.5 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none"></div>
+                                    <div class="flex-1"><label
+                                            class="text-xs font-bold text-gray-400 uppercase mb-1 block">Tanggal
+                                            Mulai</label><input type="date" v-model="bookingBusForm.date"
+                                            class="w-full p-2.5 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none">
+                                    </div>
                                 </div>
-                                <div v-if="bookingBusForm.type === 'Big' && bookingBusForm.routeId" class="flex gap-2 p-1 bg-blue-50 rounded-lg"><label class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="Kantor" v-model="bookingBusForm.priceType" @change="calculateBusPrice" class="hidden peer"><span class="text-xs font-bold text-gray-500 peer-checked:text-blue-700">Harga Kantor</span></label><label class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="Agen" v-model="bookingBusForm.priceType" @change="calculateBusPrice" class="hidden peer"><span class="text-xs font-bold text-gray-500 peer-checked:text-blue-700">Harga Agen</span></label></div>
-                                <div v-if="isLongTrip" class="flex gap-2 p-1 bg-yellow-50 rounded-lg mb-2"><label class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="Unit" v-model="bookingBusForm.packageType" @change="calculateBusPrice" class="hidden peer"><span class="text-xs font-bold text-gray-500 peer-checked:text-yellow-700">Unit + Driver + BBM</span></label><label class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="AllIn" v-model="bookingBusForm.packageType" @change="calculateBusPrice" class="hidden peer"><span class="text-xs font-bold text-gray-500 peer-checked:text-yellow-700">Paket All In</span></label></div>
-                                <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Durasi Sewa (Hari)</label><div class="flex items-center gap-3"><button @click="bookingBusForm.duration = Math.max(1, bookingBusForm.duration - 1); calculateBusPrice()" class="w-10 h-10 rounded-lg bg-gray-100 font-bold text-lg">-</button><input type="number" v-model="bookingBusForm.duration" @change="calculateBusPrice" class="w-20 text-center font-bold text-xl p-1 border-b-2 border-blue-200 outline-none" min="1"><button @click="bookingBusForm.duration++; calculateBusPrice()" class="w-10 h-10 rounded-lg bg-gray-100 font-bold text-lg">+</button><span v-if="getBusMinDays > 1" class="text-xs text-red-500 font-bold ml-2 animate-pulse"><i class="bi bi-info-circle"></i> Min. {{ getBusMinDays }} Hari</span></div></div>
-                                <div class="grid grid-cols-2 gap-4"><div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Nama Penyewa</label><input type="text" v-model="bookingBusForm.passengerName" class="w-full p-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500"></div><div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">WhatsApp</label><input type="text" v-model="bookingBusForm.passengerPhone" class="w-full p-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500"></div></div>
+                                <div v-if="bookingBusForm.type === 'Big' && bookingBusForm.routeId"
+                                    class="flex gap-2 p-1 bg-blue-50 rounded-lg"><label
+                                        class="flex-1 cursor-pointer text-center py-1"><input type="radio"
+                                            value="Kantor" v-model="bookingBusForm.priceType"
+                                            @change="calculateBusPrice" class="hidden peer"><span
+                                            class="text-xs font-bold text-gray-500 peer-checked:text-blue-700">Harga
+                                            Kantor</span></label><label
+                                        class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="Agen"
+                                            v-model="bookingBusForm.priceType" @change="calculateBusPrice"
+                                            class="hidden peer"><span
+                                            class="text-xs font-bold text-gray-500 peer-checked:text-blue-700">Harga
+                                            Agen</span></label></div>
+                                <div v-if="isLongTrip" class="flex gap-2 p-1 bg-yellow-50 rounded-lg mb-2"><label
+                                        class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="Unit"
+                                            v-model="bookingBusForm.packageType" @change="calculateBusPrice"
+                                            class="hidden peer"><span
+                                            class="text-xs font-bold text-gray-500 peer-checked:text-yellow-700">Unit +
+                                            Driver + BBM</span></label><label
+                                        class="flex-1 cursor-pointer text-center py-1"><input type="radio" value="AllIn"
+                                            v-model="bookingBusForm.packageType" @change="calculateBusPrice"
+                                            class="hidden peer"><span
+                                            class="text-xs font-bold text-gray-500 peer-checked:text-yellow-700">Paket
+                                            All In</span></label></div>
+                                <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Durasi Sewa
+                                        (Hari)</label>
+                                    <div class="flex items-center gap-3"><button
+                                            @click="bookingBusForm.duration = Math.max(1, bookingBusForm.duration - 1); calculateBusPrice()"
+                                            class="w-10 h-10 rounded-lg bg-gray-100 font-bold text-lg">-</button><input
+                                            type="number" v-model="bookingBusForm.duration" @change="calculateBusPrice"
+                                            class="w-20 text-center font-bold text-xl p-1 border-b-2 border-blue-200 outline-none"
+                                            min="1"><button @click="bookingBusForm.duration++; calculateBusPrice()"
+                                            class="w-10 h-10 rounded-lg bg-gray-100 font-bold text-lg">+</button><span
+                                            v-if="getBusMinDays > 1"
+                                            class="text-xs text-red-500 font-bold ml-2 animate-pulse"><i
+                                                class="bi bi-info-circle"></i> Min. {{ getBusMinDays }} Hari</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="text-xs font-bold text-gray-400 uppercase mb-1 block">Nama
+                                            Penyewa</label><input type="text" v-model="bookingBusForm.passengerName"
+                                            class="w-full p-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500">
+                                    </div>
+                                    <div><label
+                                            class="text-xs font-bold text-gray-400 uppercase mb-1 block">WhatsApp</label><input
+                                            type="text" v-model="bookingBusForm.passengerPhone"
+                                            class="w-full p-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="w-full md:w-5/12 bg-blue-50 border-l border-blue-100 flex flex-col p-8">
                             <div class="flex-1 flex flex-col items-center justify-center text-center">
-                                <div class="w-24 h-24 bg-white rounded-full shadow-md flex items-center justify-center text-4xl text-blue-600 mb-4"><i class="bi bi-bus-front-fill"></i></div>
-                                <h3 class="text-xl font-extrabold text-sutan-blue-900">{{ bookingBusForm.type }} Bus Pariwisata</h3>
-                                <p class="text-sm text-blue-600/70 mt-1 font-medium">{{ bookingBusForm.seatCapacity }} Seat • {{ bookingBusForm.type==='Big' && bookingBusForm.seatCapacity==32 ? 'Legrest + Snack' : 'Standard' }}</p>
-                                <div v-if="bookingBusForm.routeId" class="mt-6 w-full bg-white p-4 rounded-xl shadow-sm text-left">
-                                    <div class="flex justify-between mb-2"><span class="text-xs text-gray-500 font-bold">Rute</span><span class="text-xs font-bold text-gray-800 text-right">{{ getBusRouteName }}</span></div>
-                                    <div class="flex justify-between mb-2"><span class="text-xs text-gray-500 font-bold">Durasi</span><span class="text-xs font-bold text-gray-800">{{ bookingBusForm.duration }} Hari</span></div>
-                                    <div class="flex justify-between pt-2 border-t border-dashed"><span class="text-xs text-gray-500 font-bold">Harga/Hari</span><span class="text-xs font-bold text-blue-600">{{ formatRupiah(getBusDailyPrice) }}</span></div>
+                                <div
+                                    class="w-24 h-24 bg-white rounded-full shadow-md flex items-center justify-center text-4xl text-blue-600 mb-4">
+                                    <i class="bi bi-bus-front-fill"></i></div>
+                                <h3 class="text-xl font-extrabold text-sutan-blue-900">{{ bookingBusForm.type }} Bus
+                                    Pariwisata</h3>
+                                <p class="text-sm text-blue-600/70 mt-1 font-medium">{{ bookingBusForm.seatCapacity }}
+                                    Seat • {{ bookingBusForm.type==='Big' && bookingBusForm.seatCapacity==32 ? 'Legrest
+                                    + Snack' : 'Standard' }}</p>
+                                <div v-if="bookingBusForm.routeId"
+                                    class="mt-6 w-full bg-white p-4 rounded-xl shadow-sm text-left">
+                                    <div class="flex justify-between mb-2"><span
+                                            class="text-xs text-gray-500 font-bold">Rute</span><span
+                                            class="text-xs font-bold text-gray-800 text-right">{{ getBusRouteName
+                                            }}</span></div>
+                                    <div class="flex justify-between mb-2"><span
+                                            class="text-xs text-gray-500 font-bold">Durasi</span><span
+                                            class="text-xs font-bold text-gray-800">{{ bookingBusForm.duration }}
+                                            Hari</span></div>
+                                    <div class="flex justify-between pt-2 border-t border-dashed"><span
+                                            class="text-xs text-gray-500 font-bold">Harga/Hari</span><span
+                                            class="text-xs font-bold text-blue-600">{{ formatRupiah(getBusDailyPrice)
+                                            }}</span></div>
                                 </div>
                             </div>
                             <div class="mt-auto">
-                                <div v-if="bookingBusForm.type === 'Big'" class="text-xs text-center text-red-500 font-bold mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Wajib DP Minimal Rp 1.000.000</div>
-                                <div class="flex justify-between items-end mb-4"><div class="text-xs text-blue-400 font-bold uppercase">Total Estimasi</div><div class="text-3xl font-extrabold text-sutan-blue-900">{{ formatRupiah(bookingBusForm.totalPrice) }}</div></div>
-                                <button @click="saveBusBooking" :disabled="bookingBusForm.totalPrice === 0" class="w-full py-4 bg-sutan-blue-900 hover:bg-sutan-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">Buat Pesanan Bus</button>
+                                <div v-if="bookingBusForm.type === 'Big'"
+                                    class="text-xs text-center text-red-500 font-bold mb-2"><i
+                                        class="bi bi-exclamation-triangle-fill"></i> Wajib DP Minimal Rp 1.000.000</div>
+                                <div class="flex justify-between items-end mb-4">
+                                    <div class="text-xs text-blue-400 font-bold uppercase">Total Estimasi</div>
+                                    <div class="text-3xl font-extrabold text-sutan-blue-900">{{
+                                        formatRupiah(bookingBusForm.totalPrice) }}</div>
+                                </div>
+                                <button @click="saveBusBooking" :disabled="bookingBusForm.totalPrice === 0"
+                                    class="w-full py-4 bg-sutan-blue-900 hover:bg-sutan-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">Buat
+                                    Pesanan Bus</button>
                             </div>
                         </div>
                     </div>
@@ -249,48 +739,410 @@
                 </div>
 
                 <div v-if="view === 'dispatcher'" class="animate-fade-in h-full flex flex-col">
-                    <div class="flex justify-between items-end mb-6"><div><h2 class="text-lg font-bold text-gray-800">Dispatcher Console</h2><p class="text-sm text-gray-500">Validasi pembayaran dan berangkatkan armada.</p></div><div class="text-right"><div class="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg">{{ pendingGroupsCount }} Grup Menunggu</div></div></div>
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800">Dispatcher Console</h2>
+                            <p class="text-sm text-gray-500">Validasi pembayaran dan berangkatkan armada.</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg">{{
+                                pendingGroupsCount }} Grup Menunggu</div>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pb-4">
-                        <div v-for="group in groupedBookings" :key="group.key" class="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden group hover:shadow-md transition-all h-[500px]">
-                            <div class="p-5 border-b border-gray-100 bg-gray-50/30 relative"><div class="absolute top-0 left-0 bottom-0 w-1.5 bg-orange-500"></div><div class="flex justify-between items-start mb-2"><span class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">{{ group.routeConfig?.id || group.routeId }}</span><span class="text-xs font-bold text-orange-600 flex items-center gap-1"><i class="bi bi-clock"></i> {{ group.time }}</span></div><div class="flex items-center gap-2 text-sm font-bold text-gray-800"><span>{{ group.routeOrigin }}</span> <i class="bi bi-arrow-right text-gray-400 text-xs"></i> <span>{{ group.routeDest }}</span></div><div class="text-[10px] text-gray-400 mt-1 uppercase font-semibold">{{ formatDate(group.date) }}</div></div>
+                        <div v-for="group in groupedBookings" :key="group.key"
+                            class="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden group hover:shadow-md transition-all h-[500px]">
+                            <div class="p-5 border-b border-gray-100 bg-gray-50/30 relative">
+                                <div class="absolute top-0 left-0 bottom-0 w-1.5 bg-orange-500"></div>
+                                <div class="flex justify-between items-start mb-2"><span
+                                        class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">{{
+                                        group.routeConfig?.id || group.routeId }}</span><span
+                                        class="text-xs font-bold text-orange-600 flex items-center gap-1"><i
+                                            class="bi bi-clock"></i> {{ group.time }}</span></div>
+                                <div class="flex items-center gap-2 text-sm font-bold text-gray-800"><span>{{
+                                        group.routeOrigin }}</span> <i
+                                        class="bi bi-arrow-right text-gray-400 text-xs"></i> <span>{{ group.routeDest
+                                        }}</span></div>
+                                <div class="text-[10px] text-gray-400 mt-1 uppercase font-semibold">{{
+                                    formatDate(group.date) }}</div>
+                            </div>
                             <div class="flex-1 overflow-y-auto p-2 custom-scrollbar bg-white space-y-1">
-                                <div v-for="p in group.passengers" class="p-3 rounded-lg border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+                                <div v-for="p in group.passengers"
+                                    class="p-3 rounded-lg border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
                                     <div class="flex justify-between items-start">
-                                        <div><div class="font-bold text-xs text-gray-800">{{ p.passengerName }} <span v-if="p.serviceType === 'Carter'" class="bg-pink-100 text-pink-700 px-1.5 rounded-[4px] text-[9px] font-bold">CARTER</span><span v-else-if="p.serviceType === 'Dropping'" class="bg-purple-100 text-purple-700 px-1.5 rounded-[4px] text-[9px] font-bold">DROPPING</span><span v-else class="text-[10px] text-gray-500 font-normal">({{ p.seatNumbers }})</span></div><div v-if="p.passengerType === 'Pelajar'" class="text-[9px] text-blue-600 font-bold mt-0.5"><i class="bi bi-mortarboard-fill"></i> Pelajar</div></div>
-                                        <div class="text-right"><div class="text-[10px] font-bold mb-1" :class="p.paymentStatus==='Lunas'?'text-green-600':'text-red-500'">{{ p.paymentStatus }}</div><button @click="validatePaymentModal(p)" v-if="p.validationStatus !== 'Valid'" class="text-[9px] bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded font-bold transition-colors">Validasi <i class="bi bi-chevron-right"></i></button><span v-else class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold"><i class="bi bi-check-lg"></i> Valid</span></div>
+                                        <div>
+                                            <div class="font-bold text-xs text-gray-800">{{ p.passengerName }} <span
+                                                    v-if="p.serviceType === 'Carter'"
+                                                    class="bg-pink-100 text-pink-700 px-1.5 rounded-[4px] text-[9px] font-bold">CARTER</span><span
+                                                    v-else-if="p.serviceType === 'Dropping'"
+                                                    class="bg-purple-100 text-purple-700 px-1.5 rounded-[4px] text-[9px] font-bold">DROPPING</span><span
+                                                    v-else class="text-[10px] text-gray-500 font-normal">({{
+                                                    p.seatNumbers }})</span></div>
+                                            <div v-if="p.passengerType === 'Pelajar'"
+                                                class="text-[9px] text-blue-600 font-bold mt-0.5"><i
+                                                    class="bi bi-mortarboard-fill"></i> Pelajar</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-[10px] font-bold mb-1"
+                                                :class="p.paymentStatus==='Lunas'?'text-green-600':'text-red-500'">{{
+                                                p.paymentStatus }}</div><button @click="validatePaymentModal(p)"
+                                                v-if="p.validationStatus !== 'Valid'"
+                                                class="text-[9px] bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded font-bold transition-colors">Validasi
+                                                <i class="bi bi-chevron-right"></i></button><span v-else
+                                                class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold"><i
+                                                    class="bi bi-check-lg"></i> Valid</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center"><div><div class="text-[10px] text-gray-400 font-bold uppercase">Total Muatan</div><div class="text-lg font-extrabold text-gray-800">{{ group.totalPassengers }} <span class="text-xs font-medium text-gray-500">Kursi</span></div></div><button @click="openDispatchModal(group)" class="bg-sutan-blue-900 hover:bg-sutan-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center gap-2"><i class="bi bi-send-fill"></i> Dispatch</button></div>
+                            <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <div>
+                                    <div class="text-[10px] text-gray-400 font-bold uppercase">Total Muatan</div>
+                                    <div class="text-lg font-extrabold text-gray-800">{{ group.totalPassengers }} <span
+                                            class="text-xs font-medium text-gray-500">Kursi</span></div>
+                                </div><button @click="openDispatchModal(group)"
+                                    class="bg-sutan-blue-900 hover:bg-sutan-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center gap-2"><i
+                                        class="bi bi-send-fill"></i> Dispatch</button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div v-if="view === 'manifest'" class="animate-fade-in"><div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-6"><h2 class="text-lg font-bold text-gray-800">Laporan Harian</h2><input type="date" v-model="reportDate" class="p-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 outline-none"></div><div class="space-y-8"><div v-for="(data, routeId) in dailyReportData" :key="routeId" class="border border-gray-200 rounded-xl overflow-hidden"><div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center"><div class="font-bold text-sutan-blue-900 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-mono border border-blue-200">{{ routeId }}</span> {{ data.route.origin }} ⇄ {{ data.route.destination }}</div><div class="text-xs text-gray-500 font-bold uppercase">Total Pax: {{ data.total.totalPax }}</div></div><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100"><tr><th class="px-4 py-3">Jam</th><th class="px-4 py-3 text-center bg-blue-50/50">Umum</th><th class="px-4 py-3 text-center bg-green-50/50">Pelajar</th><th class="px-4 py-3 text-right">Total</th></tr></thead><tbody class="divide-y divide-gray-50"><tr v-for="row in data.schedules" :key="row.time" class="hover:bg-gray-50"><td class="px-4 py-3 font-mono font-bold text-gray-700">{{ row.time }}</td><td class="px-4 py-3 text-center bg-blue-50/30"><div v-if="row.umumPax > 0"><span class="font-bold">{{ row.umumPax }}</span> <span class="text-[10px] text-gray-400">Pax</span> <div class="text-[10px] text-blue-600 font-bold">{{ formatRupiah(row.umumNom) }}</div></div><span v-else class="text-gray-300">-</span></td><td class="px-4 py-3 text-center bg-green-50/30"><div v-if="row.pelajarPax > 0"><span class="font-bold">{{ row.pelajarPax }}</span> <span class="text-[10px] text-gray-400">Pax</span> <div class="text-[10px] text-green-600 font-bold">{{ formatRupiah(row.pelajarNom) }}</div></div><span v-else class="text-gray-300">-</span></td><td class="px-4 py-3 text-right font-bold text-gray-800">{{ formatRupiah(row.totalNom) }}</td></tr></tbody></table></div></div></div></div></div>
-                <div v-if="view === 'assets'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in"><div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-4"><h2 class="font-bold text-gray-800"><i class="bi bi-truck-front-fill mr-2 text-blue-600"></i>Data Armada</h2><button @click="openVehicleModal(null)" class="text-xs bg-gray-100 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg transition-colors">+ Tambah</button></div><div class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1"><div v-for="v in fleet" :key="v.id" class="flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition-all bg-white"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400"><i :class="v.icon"></i></div><div><div class="font-bold text-sm text-gray-800">{{ v.name }}</div><div class="text-[10px] font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded inline-block">{{ v.plate }}</div></div></div><div class="text-right"><div class="text-[10px] font-bold px-2 py-1 rounded uppercase mb-1" :class="getVehicleStatusClass(v.status)">{{ v.status }}</div><button @click="openVehicleModal(v)" class="text-[10px] text-blue-600 font-bold hover:underline">Edit</button></div></div></div></div><div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-4"><h2 class="font-bold text-gray-800"><i class="bi bi-person-badge-fill mr-2 text-green-600"></i>Data Supir</h2><button @click="openDriverModal(null)" class="text-xs bg-gray-100 hover:bg-green-100 text-green-600 font-bold px-3 py-1.5 rounded-lg transition-colors">+ Tambah</button></div><div class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1"><div v-for="d in drivers" :key="d.id" class="flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition-all bg-white"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400"><i class="bi bi-person-fill"></i></div><div><div class="font-bold text-sm text-gray-800">{{ d.name }}</div><div class="text-[10px] text-gray-500">{{ d.phone }}</div></div></div><div class="text-right"><div class="text-[10px] font-bold px-2 py-1 rounded uppercase mb-1" :class="getDriverStatusClass(d.status)">{{ d.status }}</div><button @click="openDriverModal(d)" class="text-[10px] text-blue-600 font-bold hover:underline">Edit</button></div></div></div></div></div>
+                <div v-if="view === 'manifest'" class="animate-fade-in">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-bold text-gray-800">Laporan Harian</h2><input type="date"
+                                v-model="reportDate"
+                                class="p-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 outline-none">
+                        </div>
+                        <div class="space-y-8">
+                            <div v-for="(data, routeId) in dailyReportData" :key="routeId"
+                                class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                                    <div class="font-bold text-sutan-blue-900 flex items-center gap-2"><span
+                                            class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-mono border border-blue-200">{{
+                                            routeId }}</span> {{ data.route.origin }} ⇄ {{ data.route.destination }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 font-bold uppercase">Total Pax: {{
+                                        data.total.totalPax }}</div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm text-left">
+                                        <thead
+                                            class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100">
+                                            <tr>
+                                                <th class="px-4 py-3">Jam</th>
+                                                <th class="px-4 py-3 text-center bg-blue-50/50">Umum</th>
+                                                <th class="px-4 py-3 text-center bg-green-50/50">Pelajar</th>
+                                                <th class="px-4 py-3 text-right">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-50">
+                                            <tr v-for="row in data.schedules" :key="row.time" class="hover:bg-gray-50">
+                                                <td class="px-4 py-3 font-mono font-bold text-gray-700">{{ row.time }}
+                                                </td>
+                                                <td class="px-4 py-3 text-center bg-blue-50/30">
+                                                    <div v-if="row.umumPax > 0"><span class="font-bold">{{ row.umumPax
+                                                            }}</span> <span class="text-[10px] text-gray-400">Pax</span>
+                                                        <div class="text-[10px] text-blue-600 font-bold">{{
+                                                            formatRupiah(row.umumNom) }}</div>
+                                                    </div><span v-else class="text-gray-300">-</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-center bg-green-50/30">
+                                                    <div v-if="row.pelajarPax > 0"><span class="font-bold">{{
+                                                            row.pelajarPax }}</span> <span
+                                                            class="text-[10px] text-gray-400">Pax</span>
+                                                        <div class="text-[10px] text-green-600 font-bold">{{
+                                                            formatRupiah(row.pelajarNom) }}</div>
+                                                    </div><span v-else class="text-gray-300">-</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-right font-bold text-gray-800">{{
+                                                    formatRupiah(row.totalNom) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="view === 'assets'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="font-bold text-gray-800"><i
+                                    class="bi bi-truck-front-fill mr-2 text-blue-600"></i>Data Armada</h2><button
+                                @click="openVehicleModal(null)"
+                                class="text-xs bg-gray-100 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg transition-colors">+
+                                Tambah</button>
+                        </div>
+                        <div class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
+                            <div v-for="v in fleet" :key="v.id"
+                                class="flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition-all bg-white">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+                                        <i :class="v.icon"></i></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-800">{{ v.name }}</div>
+                                        <div
+                                            class="text-[10px] font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded inline-block">
+                                            {{ v.plate }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] font-bold px-2 py-1 rounded uppercase mb-1"
+                                        :class="getVehicleStatusClass(v.status)">{{ v.status }}</div><button
+                                        @click="openVehicleModal(v)"
+                                        class="text-[10px] text-blue-600 font-bold hover:underline">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="font-bold text-gray-800"><i
+                                    class="bi bi-person-badge-fill mr-2 text-green-600"></i>Data Supir</h2><button
+                                @click="openDriverModal(null)"
+                                class="text-xs bg-gray-100 hover:bg-green-100 text-green-600 font-bold px-3 py-1.5 rounded-lg transition-colors">+
+                                Tambah</button>
+                        </div>
+                        <div class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
+                            <div v-for="d in drivers" :key="d.id"
+                                class="flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition-all bg-white">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                                        <i class="bi bi-person-fill"></i></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-800">{{ d.name }}</div>
+                                        <div class="text-[10px] text-gray-500">{{ d.phone }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] font-bold px-2 py-1 rounded uppercase mb-1"
+                                        :class="getDriverStatusClass(d.status)">{{ d.status }}</div><button
+                                        @click="openDriverModal(d)"
+                                        class="text-[10px] text-blue-600 font-bold hover:underline">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <div v-if="isTripControlVisible" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="isTripControlVisible=false">
+                <div v-if="isTripControlVisible"
+                    class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+                    @click.self="isTripControlVisible=false">
                     <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center animate-fade-in">
                         <h3 class="font-bold text-lg mb-4">Update Status Perjalanan</h3>
                         <div class="grid grid-cols-2 gap-3">
-                            <button @click="updateTripStatus(activeTripControl, 'On Trip')" class="p-3 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-100 border border-blue-200">On Trip (Jalan)</button>
-                            <button @click="updateTripStatus(activeTripControl, 'Pending')" class="p-3 bg-orange-50 text-orange-700 font-bold rounded-xl hover:bg-orange-100 border border-orange-200">Pending (Istirahat)</button>
-                            <button @click="updateTripStatus(activeTripControl, 'Kendala')" class="p-3 bg-red-50 text-red-700 font-bold rounded-xl hover:bg-red-100 border border-red-200">Kendala / Accident</button>
-                            <button @click="updateTripStatus(activeTripControl, 'Tiba')" class="p-3 bg-green-50 text-green-700 font-bold rounded-xl hover:bg-green-100 border border-green-200">Tiba (Selesai)</button>
+                            <button @click="updateTripStatus(activeTripControl, 'On Trip')"
+                                class="p-3 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-100 border border-blue-200">On
+                                Trip (Jalan)</button>
+                            <button @click="updateTripStatus(activeTripControl, 'Pending')"
+                                class="p-3 bg-orange-50 text-orange-700 font-bold rounded-xl hover:bg-orange-100 border border-orange-200">Pending
+                                (Istirahat)</button>
+                            <button @click="updateTripStatus(activeTripControl, 'Kendala')"
+                                class="p-3 bg-red-50 text-red-700 font-bold rounded-xl hover:bg-red-100 border border-red-200">Kendala
+                                / Accident</button>
+                            <button @click="updateTripStatus(activeTripControl, 'Tiba')"
+                                class="p-3 bg-green-50 text-green-700 font-bold rounded-xl hover:bg-green-100 border border-green-200">Tiba
+                                (Selesai)</button>
                         </div>
-                        <button @click="isTripControlVisible=false" class="mt-4 text-sm text-gray-500 font-bold">Batal</button>
+                        <button @click="isTripControlVisible=false"
+                            class="mt-4 text-sm text-gray-500 font-bold">Batal</button>
                     </div>
                 </div>
 
-                <div v-if="isProofModalVisible" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="isProofModalVisible=false"><div class="bg-white p-6 rounded-2xl text-center max-w-lg w-full shadow-2xl animate-fade-in"><h3 class="text-xl font-bold text-gray-800 mb-1">Validasi Pembayaran</h3><p class="text-sm text-gray-500 mb-4">Metode: <span class="font-bold text-sutan-blue-900 uppercase">{{ validationData.paymentMethod }}</span></p><div v-if="validationData.paymentMethod === 'Cash'" class="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-6 text-left space-y-3"><div class="flex justify-between"><span class="text-gray-500 text-sm">Lokasi Bayar:</span> <span class="font-bold text-gray-800">{{ validationData.paymentLocation || '-' }}</span></div><div class="flex justify-between"><span class="text-gray-500 text-sm">Diterima Oleh:</span> <span class="font-bold text-gray-800">{{ validationData.paymentReceiver || '-' }}</span></div><div class="flex justify-between border-t border-gray-200 pt-2 mt-2"><span class="text-gray-500 text-sm">Nominal:</span> <span class="font-bold text-blue-600 text-lg">{{ formatRupiah(validationData.totalPrice) }}</span></div></div><div v-else class="relative bg-gray-100 h-[300px] w-full rounded-xl flex items-center justify-center text-gray-500 overflow-hidden border border-gray-200 mb-6"><span v-if="!validationData.paymentProof" class="text-gray-400 flex flex-col items-center"><i class="bi bi-image-alt text-4xl mb-2"></i>Tidak ada bukti upload</span><img v-else :src="validationData.paymentProofUrl || 'placeholder.jpg'" class="object-contain w-full h-full"><div v-if="validationData.paymentProof" class="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs">{{ validationData.paymentProof }}</div></div><div v-if="validationData.passengerType === 'Pelajar'" class="mb-6"><h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Bukti Mahasiswa/Pelajar</h4><div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex items-center justify-center text-yellow-700 text-sm font-bold gap-2"><i class="bi bi-person-vcard"></i> {{ validationData.ktmProof || 'Tidak ada KTM' }}</div></div><div class="flex gap-3"><button @click="isProofModalVisible=false" class="flex-1 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 hover:bg-gray-200 transition-colors">Tutup</button><button @click="confirmValidation(validationData)" class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition-transform active:scale-95 flex items-center justify-center gap-2"><i class="bi bi-check-lg"></i> Validasi Lunas</button></div></div></div>
-                <div v-if="isDispatchModalVisible" class="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fade-in"><div class="text-center mb-6"><div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl"><i class="bi bi-steering-wheel"></i></div><h3 class="text-xl font-bold text-gray-900">Berangkatkan Armada</h3><p class="text-sm text-gray-500 mt-1">Pilih unit dan supir untuk jadwal ini.</p></div><div class="space-y-4"><div><label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Armada</label><select v-model="dispatchForm.fleetId" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700"><option value="" disabled>-- Pilih Mobil --</option><option v-for="f in fleet.filter(x=>x.status==='Tersedia' && (dispatchForm.group.serviceType==='Carter'?x.name.includes('Hiace'):true))" :value="f.id">{{ f.name }} ({{f.plate}})</option></select></div><div><label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Supir</label><select v-model="dispatchForm.driverId" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700"><option value="" disabled>-- Pilih Supir --</option><option v-for="d in drivers.filter(x=>x.status==='Standby')" :value="d.id">{{ d.name }}</option></select></div></div><div class="mt-8 flex gap-3"><button @click="isDispatchModalVisible=false" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold transition-colors">Batal</button><button @click="processDispatch" class="flex-1 bg-sutan-blue-900 hover:bg-sutan-blue-800 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-transform active:scale-95">Proses</button></div></div></div>
-                <div v-if="isTicketModalVisible" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="isTicketModalVisible=false"><div class="w-full max-w-sm transform transition-all scale-100 animate-fade-in"><div class="ticket p-8 text-white relative overflow-hidden"><div class="flex justify-between items-start mb-8 relative z-10"><div><div class="text-3xl font-bold tracking-tight">Sutan<span class="font-light">Raya</span></div><div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold">Boarding Pass</div></div><div class="text-right"><div class="text-[10px] opacity-60 uppercase font-bold">Booking ID</div><div class="font-mono text-lg font-bold">#{{ ticketData.id.toString().slice(-6) }}</div></div></div><div class="flex justify-between items-end relative z-10"><div><div class="text-[10px] opacity-60 uppercase font-bold mb-1">Nama Penumpang</div><div class="text-xl font-bold truncate max-w-[160px]">{{ ticketData.passengerName }}</div></div><div class="text-right"><div class="text-[10px] opacity-60 uppercase font-bold mb-1">Jam</div><div class="text-xl font-bold">{{ ticketData.time }}</div></div></div></div><div class="ticket-cutout bg-white p-8 pt-10"><div class="flex justify-between mb-5 border-b border-dashed border-gray-200 pb-5"><div><div class="text-xs text-gray-400 uppercase font-bold">Rute</div><div class="font-bold text-gray-800 text-sm">{{ getRouteName(ticketData.routeId) || getBusRouteName }}</div></div><div class="text-right"><div class="text-xs text-gray-400 uppercase font-bold">Tanggal</div><div class="font-bold text-gray-800 text-sm">{{ formatDate(ticketData.date) }}</div></div></div><button class="w-full py-3 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"><i class="bi bi-printer"></i> Cetak / Download</button></div></div></div>
-                <div v-if="isVehicleModalVisible" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in"><h3 class="text-xl font-bold text-gray-900 mb-4">{{ vehicleModal.mode === 'add' ? 'Tambah Unit Baru' : 'Edit Data Unit' }}</h3><div class="space-y-4"><input type="text" v-model="vehicleModal.data.name" placeholder="Nama Armada (Contoh: Hiace 01)" class="w-full border p-3 rounded-xl"><input type="text" v-model="vehicleModal.data.plate" placeholder="Plat Nomor" class="w-full border p-3 rounded-xl"><div class="grid grid-cols-2 gap-4"><select v-model="vehicleModal.data.type" class="w-full border p-3 rounded-xl bg-white"><option>Hiace Premio</option><option>Hiace Commuter</option><option>Medium Bus</option><option>Big Bus</option></select><input type="number" v-model.number="vehicleModal.data.capacity" placeholder="Kapasitas Seat" class="w-full border p-3 rounded-xl"></div><select v-model="vehicleModal.data.status" class="w-full border p-3 rounded-xl bg-white"><option>Tersedia</option><option>Perbaikan</option></select></div><div class="mt-6 flex justify-end gap-3"><button @click="closeVehicleModal" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Batal</button><button @click="saveVehicle" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Simpan Data</button></div></div></div>
-                <div v-if="isDriverModalVisible" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in"><h3 class="text-xl font-bold text-gray-900 mb-4">{{ driverModal.mode === 'add' ? 'Tambah Supir Baru' : 'Edit Data Supir' }}</h3><div class="space-y-4"><input type="text" v-model="driverModal.data.name" placeholder="Nama Lengkap" class="w-full border p-3 rounded-xl"><input type="text" v-model="driverModal.data.phone" placeholder="Nomor Telepon" class="w-full border p-3 rounded-xl"><div class="grid grid-cols-2 gap-4"><select v-model="driverModal.data.licenseType" class="w-full border p-3 rounded-xl bg-white"><option>A Umum</option><option>B1 Umum</option><option>B2 Umum</option></select><select v-model="driverModal.data.status" class="w-full border p-3 rounded-xl bg-white"><option>Standby</option><option>Libur</option></select></div></div><div class="mt-6 flex justify-end gap-3"><button @click="closeDriverModal" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Batal</button><button @click="saveDriver" class="px-6 py-2 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700">Simpan Data</button></div></div></div>
+                <div v-if="isProofModalVisible"
+                    class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+                    @click.self="isProofModalVisible=false">
+                    <div class="bg-white p-6 rounded-2xl text-center max-w-lg w-full shadow-2xl animate-fade-in">
+                        <h3 class="text-xl font-bold text-gray-800 mb-1">Validasi Pembayaran</h3>
+                        <p class="text-sm text-gray-500 mb-4">Metode: <span
+                                class="font-bold text-sutan-blue-900 uppercase">{{ validationData.paymentMethod
+                                }}</span></p>
+                        <div v-if="validationData.paymentMethod === 'Cash'"
+                            class="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-6 text-left space-y-3">
+                            <div class="flex justify-between"><span class="text-gray-500 text-sm">Lokasi Bayar:</span>
+                                <span class="font-bold text-gray-800">{{ validationData.paymentLocation || '-' }}</span>
+                            </div>
+                            <div class="flex justify-between"><span class="text-gray-500 text-sm">Diterima Oleh:</span>
+                                <span class="font-bold text-gray-800">{{ validationData.paymentReceiver || '-' }}</span>
+                            </div>
+                            <div class="flex justify-between border-t border-gray-200 pt-2 mt-2"><span
+                                    class="text-gray-500 text-sm">Nominal:</span> <span
+                                    class="font-bold text-blue-600 text-lg">{{ formatRupiah(validationData.totalPrice)
+                                    }}</span></div>
+                        </div>
+                        <div v-else
+                            class="relative bg-gray-100 h-[300px] w-full rounded-xl flex items-center justify-center text-gray-500 overflow-hidden border border-gray-200 mb-6">
+                            <span v-if="!validationData.paymentProof"
+                                class="text-gray-400 flex flex-col items-center"><i
+                                    class="bi bi-image-alt text-4xl mb-2"></i>Tidak ada bukti upload</span><img v-else
+                                :src="validationData.paymentProofUrl || 'placeholder.jpg'"
+                                class="object-contain w-full h-full">
+                            <div v-if="validationData.paymentProof"
+                                class="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs">{{
+                                validationData.paymentProof }}</div>
+                        </div>
+                        <div v-if="validationData.passengerType === 'Pelajar'" class="mb-6">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Bukti Mahasiswa/Pelajar</h4>
+                            <div
+                                class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex items-center justify-center text-yellow-700 text-sm font-bold gap-2">
+                                <i class="bi bi-person-vcard"></i> {{ validationData.ktmProof || 'Tidak ada KTM' }}
+                            </div>
+                        </div>
+                        <div class="flex gap-3"><button @click="isProofModalVisible=false"
+                                class="flex-1 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 hover:bg-gray-200 transition-colors">Tutup</button><button
+                                @click="confirmValidation(validationData)"
+                                class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition-transform active:scale-95 flex items-center justify-center gap-2"><i
+                                    class="bi bi-check-lg"></i> Validasi Lunas</button></div>
+                    </div>
+                </div>
+                <div v-if="isDispatchModalVisible"
+                    class="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fade-in">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                                <i class="bi bi-steering-wheel"></i></div>
+                            <h3 class="text-xl font-bold text-gray-900">Berangkatkan Armada</h3>
+                            <p class="text-sm text-gray-500 mt-1">Pilih unit dan supir untuk jadwal ini.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label
+                                    class="text-xs font-bold text-gray-500 uppercase mb-1 block">Armada</label><select
+                                    v-model="dispatchForm.fleetId"
+                                    class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700">
+                                    <option value="" disabled>-- Pilih Mobil --</option>
+                                    <option
+                                        v-for="f in fleet.filter(x=>x.status==='Tersedia' && (dispatchForm.group.serviceType==='Carter'?x.name.includes('Hiace'):true))"
+                                        :value="f.id">{{ f.name }} ({{f.plate}})</option>
+                                </select></div>
+                            <div><label
+                                    class="text-xs font-bold text-gray-500 uppercase mb-1 block">Supir</label><select
+                                    v-model="dispatchForm.driverId"
+                                    class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700">
+                                    <option value="" disabled>-- Pilih Supir --</option>
+                                    <option v-for="d in drivers.filter(x=>x.status==='Standby')" :value="d.id">{{ d.name
+                                        }}</option>
+                                </select></div>
+                        </div>
+                        <div class="mt-8 flex gap-3"><button @click="isDispatchModalVisible=false"
+                                class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold transition-colors">Batal</button><button
+                                @click="processDispatch"
+                                class="flex-1 bg-sutan-blue-900 hover:bg-sutan-blue-800 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-transform active:scale-95">Proses</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isTicketModalVisible"
+                    class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+                    @click.self="isTicketModalVisible=false">
+                    <div class="w-full max-w-sm transform transition-all scale-100 animate-fade-in">
+                        <div class="ticket p-8 text-white relative overflow-hidden">
+                            <div class="flex justify-between items-start mb-8 relative z-10">
+                                <div>
+                                    <div class="text-3xl font-bold tracking-tight">Sutan<span
+                                            class="font-light">Raya</span></div>
+                                    <div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold">
+                                        Boarding Pass</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] opacity-60 uppercase font-bold">Booking ID</div>
+                                    <div class="font-mono text-lg font-bold">#{{ ticketData.id.toString().slice(-6) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-end relative z-10">
+                                <div>
+                                    <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Nama Penumpang</div>
+                                    <div class="text-xl font-bold truncate max-w-[160px]">{{ ticketData.passengerName }}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Jam</div>
+                                    <div class="text-xl font-bold">{{ ticketData.time }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ticket-cutout bg-white p-8 pt-10">
+                            <div class="flex justify-between mb-5 border-b border-dashed border-gray-200 pb-5">
+                                <div>
+                                    <div class="text-xs text-gray-400 uppercase font-bold">Rute</div>
+                                    <div class="font-bold text-gray-800 text-sm">{{ getRouteName(ticketData.routeId) ||
+                                        getBusRouteName }}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-gray-400 uppercase font-bold">Tanggal</div>
+                                    <div class="font-bold text-gray-800 text-sm">{{ formatDate(ticketData.date) }}</div>
+                                </div>
+                            </div><button
+                                class="w-full py-3 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"><i
+                                    class="bi bi-printer"></i> Cetak / Download</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="isVehicleModalVisible"
+                    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">{{ vehicleModal.mode === 'add' ? 'Tambah Unit
+                            Baru' : 'Edit Data Unit' }}</h3>
+                        <div class="space-y-4"><input type="text" v-model="vehicleModal.data.name"
+                                placeholder="Nama Armada (Contoh: Hiace 01)" class="w-full border p-3 rounded-xl"><input
+                                type="text" v-model="vehicleModal.data.plate" placeholder="Plat Nomor"
+                                class="w-full border p-3 rounded-xl">
+                            <div class="grid grid-cols-2 gap-4"><select v-model="vehicleModal.data.type"
+                                    class="w-full border p-3 rounded-xl bg-white">
+                                    <option>Hiace Premio</option>
+                                    <option>Hiace Commuter</option>
+                                    <option>Medium Bus</option>
+                                    <option>Big Bus</option>
+                                </select><input type="number" v-model.number="vehicleModal.data.capacity"
+                                    placeholder="Kapasitas Seat" class="w-full border p-3 rounded-xl"></div><select
+                                v-model="vehicleModal.data.status" class="w-full border p-3 rounded-xl bg-white">
+                                <option>Tersedia</option>
+                                <option>Perbaikan</option>
+                            </select>
+                        </div>
+                        <div class="mt-6 flex justify-end gap-3"><button @click="closeVehicleModal"
+                                class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Batal</button><button
+                                @click="saveVehicle"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Simpan
+                                Data</button></div>
+                    </div>
+                </div>
+                <div v-if="isDriverModalVisible"
+                    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">{{ driverModal.mode === 'add' ? 'Tambah Supir
+                            Baru' : 'Edit Data Supir' }}</h3>
+                        <div class="space-y-4"><input type="text" v-model="driverModal.data.name"
+                                placeholder="Nama Lengkap" class="w-full border p-3 rounded-xl"><input type="text"
+                                v-model="driverModal.data.phone" placeholder="Nomor Telepon"
+                                class="w-full border p-3 rounded-xl">
+                            <div class="grid grid-cols-2 gap-4"><select v-model="driverModal.data.licenseType"
+                                    class="w-full border p-3 rounded-xl bg-white">
+                                    <option>A Umum</option>
+                                    <option>B1 Umum</option>
+                                    <option>B2 Umum</option>
+                                </select><select v-model="driverModal.data.status"
+                                    class="w-full border p-3 rounded-xl bg-white">
+                                    <option>Standby</option>
+                                    <option>Libur</option>
+                                </select></div>
+                        </div>
+                        <div class="mt-6 flex justify-end gap-3"><button @click="closeDriverModal"
+                                class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Batal</button><button
+                                @click="saveDriver"
+                                class="px-6 py-2 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700">Simpan
+                                Data</button></div>
+                    </div>
+                </div>
 
             </div>
         </main>
     </div>
     <script src="app.js"></script>
 </body>
+
 </html>
