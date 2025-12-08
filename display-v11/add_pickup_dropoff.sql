@@ -1,0 +1,2 @@
+ALTER TABLE bookings ADD COLUMN pickupAddress TEXT DEFAULT NULL;
+ALTER TABLE bookings ADD COLUMN dropoffAddress TEXT DEFAULT NULL;
