@@ -6,11 +6,18 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
+// // --- KONFIGURASI DATABASE ---
+// $host = 'localhost';
+// $user = 'sutanray_admin2';      // Ganti dengan username database hosting Anda
+// $pass = 'adminpass1998';          // Ganti dengan password database hosting Anda
+// $db   = 'sutanray_v11'; // Ganti dengan nama database Anda
 // --- KONFIGURASI DATABASE ---
-$host = 'localhost';
-$user = 'root';      // Ganti dengan username database hosting Anda
-$pass = '';          // Ganti dengan password database hosting Anda
-$db   = 'sutanraya_v11'; // Ganti dengan nama database Anda
+// $host = 'localhost';
+// $user = 'root';      // Ganti dengan username database hosting Anda
+// $pass = '';          // Ganti dengan password database hosting Anda
+// $db   = 'sutanraya_v11'; // Ganti dengan nama database Anda
+
+include 'base.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 ini_set('display_errors', 0); // Disable HTML output
@@ -97,6 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
          ];
          unset($row['price_umum'], $row['price_pelajar'], $row['price_dropping'], $row['price_carter']);
          $data['routes'][] = $row;
+     }
+
+     // Ambil Schedule Defaults
+     $data['scheduleDefaults'] = [];
+     $res = $conn->query("SELECT * FROM schedule_defaults");
+     if ($res) {
+         while ($row = $res->fetch_assoc()) {
+             $data['scheduleDefaults'][] = $row;
+         }
      }
  
      // Ambil Bus Routes
@@ -200,6 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 // ---------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
+    file_put_contents('debug_log.txt', print_r($input, true), FILE_APPEND);
     
     // Cek Action
     $action = isset($input['action']) ? $input['action'] : '';
@@ -233,13 +250,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Handle KTM Upload
-        $ktmProof = $b['ktmProof'];
+        $ktmProof = isset($b['ktmProof']) ? $b['ktmProof'] : (isset($b['ktmImage']) ? $b['ktmImage'] : '');
         if (!empty($ktmProof) && strpos($ktmProof, 'data:image') === 0) {
             $ktmProof = saveBase64Image($ktmProof, 'ktm_' . $b['id']);
         }
 
-        // Changed 'd' to 's' for id, removed spaces if any (though none here)
-        $stmt->bind_param("sssssssisddsssssssssdsissssss", 
+        // Corrected type string: ssssssss isid sssssssss dsi sssss
+        // 1-8: s (inc passType)
+        // 9: i (seatCount)
+        // 10: s (selectedSeats - JSON string)
+        // 11: i (duration)
+        // 12: d (totalPrice)
+        // 13-21: s (inc ktmProof)
+        // 22: d (downPayment)
+        // 23: s (type)
+        // 24: i (seatCapacity)
+        // 25-29: s
+        $stmt->bind_param("ssssssssisidsssssssssdsisssss", 
             $b['id'], $b['serviceType'], $b['routeId'], $b['date'], $b['time'], 
             $b['passengerName'], $b['passengerPhone'], $b['passengerType'], $b['seatCount'], 
             $selectedSeats, $b['duration'], $b['totalPrice'], $b['paymentMethod'], 
@@ -317,6 +344,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
+    // --- E. SAVE TRIP (Create/Update) ---
+    if ($action === 'save_trip') {
+        $t = $input['data'];
+        
+        $conn->begin_transaction();
+        try {
+            $routeJson = json_encode($t['routeConfig']);
+            $fleetJson = json_encode($t['fleet']);
+            $driverJson = json_encode($t['driver']);
+            $passJson = json_encode($t['passengers']);
+            $now = date('Y-m-d H:i:s');
+            
+            // Check if trip exists
+            $check = $conn->query("SELECT id FROM trips WHERE id='{$t['id']}'");
+            if ($check->num_rows > 0) {
+                // Update
+                $stmt = $conn->prepare("UPDATE trips SET routeConfig=?, fleet=?, driver=?, passengers=?, status=? WHERE id=?");
+                $stmt->bind_param("ssssss", $routeJson, $fleetJson, $driverJson, $passJson, $t['status'], $t['id']);
+                $stmt->execute();
+            } else {
+                // Insert
+                $stmt = $conn->prepare("INSERT INTO trips (id, routeConfig, fleet, driver, passengers, status, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("sssssss", $t['id'], $routeJson, $fleetJson, $driverJson, $passJson, $t['status'], $now);
+                $stmt->execute();
+            }
+
+            // Optional: Update Fleet/Driver status if needed
+            // For now, we just save the assignment.
+            
+            $conn->commit();
+            echo json_encode(['status' => 'success']);
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        exit;
+    }
+
     // --- E. UPDATE TRIP STATUS (Tiba/Kendala) ---
     if ($action === 'update_trip_status') {
         $tripId = $input['tripId'];
@@ -348,6 +413,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->rollback();
             echo json_encode(['status' => 'error']);
         }
+        exit;
+    }
+
+    // --- SCHEDULE DEFAULTS ---
+    if ($action === 'save_schedule_default') {
+        $routeId = $input['routeId'];
+        $time = $input['time'];
+        $fleetId = $input['fleetId'];
+        $driverId = $input['driverId'];
+        
+        $stmt = $conn->prepare("INSERT INTO schedule_defaults (routeId, time, fleetId, driverId) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE fleetId=?, driverId=?");
+        $stmt->bind_param("ssssss", $routeId, $time, $fleetId, $driverId, $fleetId, $driverId);
+        
+        if ($stmt->execute()) echo json_encode(['status' => 'success']);
+        else echo json_encode(['status' => 'error', 'message' => $conn->error]);
         exit;
     }
 

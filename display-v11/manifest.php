@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Harian - Sutan Raya</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -57,7 +58,7 @@
                     <!-- Hero Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Total Revenue -->
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+                        <div @click="openDetailModal('income')" class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
                             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <i class="bi bi-cash-stack text-6xl text-blue-600"></i>
                             </div>
@@ -69,13 +70,14 @@
                         </div>
 
                         <!-- Total Pax -->
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+                        <div @click="openDetailModal('passengers')" class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
                             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <i class="bi bi-people-fill text-6xl text-purple-600"></i>
                             </div>
                             <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Total Penumpang</div>
                             <div class="text-2xl font-black text-slate-800 dark:text-white">{{ manifestReport.grandTotal.totalPax }} <span class="text-sm font-medium text-slate-400">Org</span></div>
-                            <div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                            <div class="mt-2 flex items-center gap-3 text-xs text-slate-500">
+                                <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
                                 <span>Umum: <b>{{ manifestReport.grandTotal.umumPax }}</b></span>
                                 <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
                                 <span>Pelajar: <b>{{ manifestReport.grandTotal.pelajarPax }}</b></span>
@@ -83,7 +85,7 @@
                         </div>
 
                         <!-- Unpaid -->
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+                        <div @click="openDetailModal('unpaid')" class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
                             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <i class="bi bi-exclamation-circle-fill text-6xl text-orange-600"></i>
                             </div>
@@ -183,6 +185,94 @@
                 </div>
             </div>
         </main>
+
+        <!-- Detail Modal -->
+        <div v-if="detailModal.isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" @click.self="closeDetailModal">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-fade-in">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white">{{ detailModal.title }}</h3>
+                    <button @click="closeDetailModal" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                
+                <div class="overflow-y-auto p-4 custom-scrollbar">
+                    
+                    <!-- Income Table -->
+                    <table v-if="detailModal.type === 'income'" class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-700/50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-lg">Penumpang</th>
+                                <th class="px-4 py-3">Rute</th>
+                                <th class="px-4 py-3">Metode</th>
+                                <th class="px-4 py-3 text-right rounded-r-lg">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr v-for="item in detailModal.data" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                <td class="px-4 py-3">
+                                    <div class="font-bold text-slate-800 dark:text-white">{{ item.name }}</div>
+                                    <div class="text-[10px] text-slate-400">Penerima: {{ item.receiver }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ item.route }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 rounded text-xs font-bold" :class="item.method === 'Cash' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'">{{ item.method }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-right font-bold text-slate-800 dark:text-white">Rp {{ formatNumber(item.amount) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Passengers Table -->
+                    <table v-if="detailModal.type === 'passengers'" class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-700/50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-lg">Nama</th>
+                                <th class="px-4 py-3">Rute</th>
+                                <th class="px-4 py-3">Kursi</th>
+                                <!-- <th class="px-4 py-3 text-right rounded-r-lg">Tipe</th> -->
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr v-for="item in detailModal.data" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                <td class="px-4 py-3">
+                                    <div class="font-bold text-slate-800 dark:text-white">{{ item.name }}</div>
+                                    <div class="text-[10px] text-slate-400">{{ item.phone }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ item.route }}</td>
+                                <td class="px-4 py-3 font-mono font-bold text-slate-800 dark:text-white">{{ item.seat }}</td>
+                                <!-- <td class="px-4 py-3 text-right">
+                                    <span class="px-2 py-1 rounded text-xs font-bold" :class="item.type === 'Umum' ? 'bg-slate-100 text-slate-600' : 'bg-purple-100 text-purple-600'">{{ item.type }}</span>
+                                </td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Unpaid Table -->
+                    <table v-if="detailModal.type === 'unpaid'" class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-700/50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-lg">Penumpang</th>
+                                <th class="px-4 py-3 text-right">Total</th>
+                                <th class="px-4 py-3 text-right">Sudah Bayar</th>
+                                <th class="px-4 py-3 text-right rounded-r-lg">Sisa</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr v-for="item in detailModal.data" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                <td class="px-4 py-3">
+                                    <div class="font-bold text-slate-800 dark:text-white">{{ item.name }}</div>
+                                    <div class="text-[10px] text-slate-400">{{ item.route }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-right text-slate-600 dark:text-slate-300">Rp {{ formatNumber(item.total) }}</td>
+                                <td class="px-4 py-3 text-right text-green-600">Rp {{ formatNumber(item.paid) }}</td>
+                                <td class="px-4 py-3 text-right font-bold text-red-500">Rp {{ formatNumber(item.remaining) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="app.js?v=<?= time() ?>"></script>
 </body>

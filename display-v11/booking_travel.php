@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sutan Raya - Booking Travel</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -54,10 +55,42 @@
                         <h2 class="text-xl font-extrabold text-sr-blue dark:text-white mb-6">Booking Travel</h2>
                         
                         <!-- Service Type Tabs -->
-                        <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-700 rounded-xl mb-6">
-                            <button class="service-type-btn py-2.5 rounded-lg text-xs font-bold transition-all bg-white dark:bg-slate-600 shadow-sm text-sr-blue dark:text-white" data-type="Travel">Travel</button>
-                            <button class="service-type-btn py-2.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-600" data-type="Carter">Carter</button>
-                            <button class="service-type-btn py-2.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-600" data-type="Dropping">Dropping</button>
+                        <div class="grid grid-cols-3 gap-2 p-1.5 bg-slate-100 dark:bg-slate-700 rounded-xl mb-8">
+                            <button class="service-type-btn py-3 rounded-lg text-sm font-bold transition-all bg-white dark:bg-slate-600 shadow-sm text-sr-blue dark:text-white" data-type="Travel">Travel</button>
+                            <button class="service-type-btn py-3 rounded-lg text-sm font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-600" data-type="Carter">Carter</button>
+                            <button class="service-type-btn py-3 rounded-lg text-sm font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-600" data-type="Dropping">Dropping</button>
+                        </div>
+
+                        <!-- Passenger Category (Only for Travel) -->
+                        <div id="passengerCategorySection" class="mb-6">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Kategori Penumpang</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-700 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-600 transition-colors">
+                                    <input type="radio" name="passengerCategory" value="Umum" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-white">Umum</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-700 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-600 transition-colors">
+                                    <input type="radio" name="passengerCategory" value="Pelajar" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-white">Mahasiswa / Pelajar</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- KTM Upload Section (Hidden by default) -->
+                        <div id="ktmUploadSection" class="hidden mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
+                            <label class="block text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">Upload Foto KTM / Kartu Pelajar</label>
+                            <div class="flex items-center gap-4">
+                                <div id="ktmPreviewContainer" class="hidden w-20 h-14 bg-slate-200 rounded-lg overflow-hidden relative group">
+                                    <img id="ktmPreview" src="" class="w-full h-full object-cover">
+                                    <button onclick="removeKtm()" class="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                                <label for="ktmInput" id="ktmUploadLabel" class="cursor-pointer px-4 py-2 bg-white dark:bg-slate-700 border border-blue-200 dark:border-blue-700 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors">
+                                    <i class="bi bi-camera-fill mr-1"></i> Pilih Foto
+                                </label>
+                                <input type="file" id="ktmInput" accept="image/*" class="hidden" onchange="handleKtmUpload(event)">
+                                <span id="ktmFileName" class="text-[10px] text-slate-400 italic">Belum ada file</span>
+                            </div>
+                            <div class="mt-2 text-[10px] text-blue-400">*Wajib untuk validasi harga pelajar</div>
                         </div>
 
                         <div class="space-y-5">
@@ -77,6 +110,17 @@
                                 <select id="routeSelect" class="w-full p-3 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white rounded-xl text-sm outline-none focus:border-blue-500 transition-colors">
                                     <option value="" disabled selected>Pilih Rute</option>
                                 </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Alamat Jemput</label>
+                                    <input type="text" id="pickupAddress" placeholder="Detail lokasi jemput..." class="w-full p-3 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white rounded-xl text-sm outline-none focus:border-blue-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Alamat Antar</label>
+                                    <input type="text" id="dropoffAddress" placeholder="Detail lokasi antar..." class="w-full p-3 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-white rounded-xl text-sm outline-none focus:border-blue-500 transition-colors">
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -224,7 +268,7 @@
                             </div>
                         </div>
 
-                        <button id="submitBookingBtn" disabled class="w-full py-4 bg-sr-blue dark:bg-blue-600 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95 text-lg">
+                        <button id="submitBookingBtn" onclick="saveBooking()" disabled class="w-full py-4 bg-sr-blue dark:bg-blue-600 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95 text-lg">
                             Proses Booking
                         </button>
                     </div>
@@ -233,6 +277,6 @@
         </main>
     </div>
     <script src="js/utils.js"></script>
-    <script src="js/booking_travel.js"></script>
+    <script src="js/booking_travel.js?v=<?= time() ?>"></script>
 </body>
 </html>

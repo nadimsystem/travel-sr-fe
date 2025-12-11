@@ -21,6 +21,10 @@ createApp({
             isTicketModalVisible: false,
             isRouteModalVisible: false,
             isManualAssignModalVisible: false,
+            isScheduleModalVisible: false,
+            isKtmModalVisible: false,
+            activeKtmImage: '',
+            activeBookingName: '',
             
             // -- Data Models --
             activeTripControl: null,
@@ -28,6 +32,8 @@ createApp({
             ticketData: null,
             manualAssignments: {}, // { bookingId: { fleetId, driverId } }
             manualAssignForm: { bookingId: null, fleetId: '', driverId: '' },
+            scheduleForm: { route: null, time: '', fleetId: '', driverId: '', isDefault: false },
+            scheduleDefaults: [],
             
             // -- Forms --
             bookingManagementTab: 'travel',
@@ -72,6 +78,7 @@ createApp({
             reportData: { labels: [], revenue: [], pax: [], details: {} },
             charts: { revenue: null, pax: null },
             manifestDate: new Date().toISOString().slice(0,10),
+            detailModal: { isOpen: false, type: 'income', title: '', data: [] },
         };
     },
     created() {
@@ -95,11 +102,21 @@ createApp({
         view(val) { localStorage.setItem('sutan_v10_view', val); },
     },
     computed: {
-        currentViewTitle() { return {dashboard:"Dashboard",bookingManagement:"Kelola Booking",dispatcher:"Dispatcher",bookingTravel:"Travel",bookingBus:"Bus",manifest:"Laporan",assets:"Aset",routeManagement:"Rute"}[this.view] || "Sutan Raya"; },
+        currentViewTitle() { return {dashboard:"Dashboard",bookingManagement:"Kelola Booking",dispatcher:"Dispatcher",bookingTravel:"Travel",bookingBus:"Bus",manifest:"Laporan",assets:"Aset",routeManagement:"Rute",schedule:"Jadwal"}[this.view] || "Sutan Raya"; },
         todayRevenue() { return this.bookings.filter(b => b.date === new Date().toISOString().slice(0,10) && b.status !== 'Batal').reduce((a,b) => a + (b.totalPrice||0), 0); },
         todayPax() { return this.bookings.filter(b => b.date === new Date().toISOString().slice(0,10) && b.status !== 'Batal').length; },
         pendingValidationCount() { return this.bookings.filter(b => b.validationStatus === 'Menunggu Validasi').length; },
-        activeTrips() { return this.trips.filter(t => !['Tiba', 'Batal'].includes(t.status)); },
+        activeTrips() { 
+            return this.trips.filter(t => {
+                if (['Tiba', 'Batal'].includes(t.status)) return false;
+                // Check for empty trips (0 passengers)
+                const pCount = this.getTripPassengerCount(t);
+                if (pCount === 0) return false; 
+                return true;
+            }); 
+        },
+        pendingGroupsCount() { return this.groupedBookings.length; },
+        pendingDispatchCount() { return this.groupedBookings.length; },
         
         groupedBookings() {
             // Logic Dispatcher: Mengelompokkan booking Travel/Carter yang siap jalan
@@ -123,7 +140,8 @@ createApp({
                         routeId: b.routeId,
                         routeConfig: r,
                         passengers: [],
-                        totalPassengers: 0
+                        totalPassengers: 0,
+                        assignment: null
                     };
                 }
                 groups[key].passengers.push(b);
@@ -136,28 +154,24 @@ createApp({
                 const passengers = group.passengers;
                 const batchSize = 8;
                 
-                // We need to distribute passengers into batches
-                // Rule: A batch cannot have duplicate seat numbers (unless 'Unit' or undefined)
-                // And max 8 passengers.
-                
-                const fleetBatches = []; // Array of arrays of passengers
+                // Get Assignment for this Route/Time
+                const assignment = this.getAssignment(group.routeId, group.time, group.date);
+                group.assignment = assignment;
+
+                const fleetBatches = []; 
                 
                 passengers.forEach(p => {
                     let placed = false;
                     const pSeats = p.seatNumbers ? p.seatNumbers.split(',').map(s => s.trim()) : [];
                     
-                    // Try to fit in existing batches
                     for (let i = 0; i < fleetBatches.length; i++) {
                         const batch = fleetBatches[i];
                         
-                        // Check capacity
                         const currentLoad = batch.reduce((sum, bp) => sum + (parseInt(bp.seatCount) || 1), 0);
                         const pLoad = parseInt(p.seatCount) || 1;
                         
-                        if (currentLoad + pLoad > batchSize) continue; // Full
+                        if (currentLoad + pLoad > batchSize) continue; 
                         
-                        // Check seat conflict
-                        // If p has specific seats, check if any are taken in this batch
                         let conflict = false;
                         if (pSeats.length > 0) {
                             const batchSeats = [];
@@ -179,7 +193,6 @@ createApp({
                         }
                     }
                     
-                    // If not placed, create new batch
                     if (!placed) {
                         fleetBatches.push([p]);
                     }
@@ -194,7 +207,8 @@ createApp({
                         passengers: batchPassengers,
                         totalPassengers: batchPassengers.reduce((sum, p) => sum + (parseInt(p.seatCount) || 1), 0),
                         batchNumber: batchNumber,
-                        isFullBatch: batchPassengers.reduce((sum, p) => sum + (parseInt(p.seatCount) || 1), 0) >= batchSize
+                        isFullBatch: batchPassengers.reduce((sum, p) => sum + (parseInt(p.seatCount) || 1), 0) >= batchSize,
+                        assignment: group.assignment // Propagate assignment
                     });
                 });
             });
@@ -399,6 +413,53 @@ createApp({
         },
         toggleDarkMode() { this.isDarkMode = !this.isDarkMode; if(this.isDarkMode) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); },
         
+        openDetailModal(type) {
+            this.detailModal.type = type;
+            this.detailModal.isOpen = true;
+            
+            // Filter bookings for the selected date
+            const date = this.manifestDate;
+            const bookings = this.bookings.filter(b => b.date === date && b.status !== 'Batal');
+            
+            if (type === 'income') {
+                this.detailModal.title = 'Detail Pendapatan';
+                this.detailModal.data = bookings.map(b => ({
+                    id: b.id,
+                    name: b.passengerName,
+                    route: b.routeName || b.routeId,
+                    amount: b.totalPrice,
+                    status: b.paymentStatus,
+                    method: b.paymentMethod,
+                    receiver: b.paymentReceiver || '-'
+                })).sort((a,b) => b.amount - a.amount);
+            } else if (type === 'passengers') {
+                this.detailModal.title = 'Daftar Penumpang';
+                this.detailModal.data = bookings.map(b => ({
+                    id: b.id,
+                    name: b.passengerName,
+                    phone: b.passengerPhone,
+                    route: b.routeName || b.routeId,
+                    seat: b.selectedSeats ? b.selectedSeats.join(', ') : '-',
+                    type: b.passengerType
+                })).sort((a,b) => a.name.localeCompare(b.name));
+            } else if (type === 'unpaid') {
+                this.detailModal.title = 'Belum Bayar / DP';
+                this.detailModal.data = bookings.filter(b => b.paymentStatus !== 'Lunas').map(b => ({
+                    id: b.id,
+                    name: b.passengerName,
+                    phone: b.passengerPhone,
+                    route: b.routeName || b.routeId,
+                    total: b.totalPrice,
+                    paid: b.downPaymentAmount || 0,
+                    remaining: b.totalPrice - (b.downPaymentAmount || 0),
+                    status: b.paymentStatus
+                })).sort((a,b) => b.remaining - a.remaining);
+            }
+        },
+        closeDetailModal() {
+            this.detailModal.isOpen = false;
+        },
+        
         // --- API COMMUNICATION ---
 
 
@@ -585,8 +646,24 @@ createApp({
                 passengers: g.passengers,
                 remainingCount: 0, // No remaining in this specific batch
                 scheduleOption: 'Normal', 
-                nextSchedules: nextSchedules
+                nextSchedules: nextSchedules,
+                isLocked: false,
+                assignmentReason: ''
             };
+            
+            // Check for assignment
+            const assignment = this.getAssignment(g.routeId, g.time, g.date);
+            if (assignment && assignment.fleet && assignment.driver && assignment.status !== 'Conflict') {
+                this.dispatchForm.fleetId = assignment.fleet.id;
+                this.dispatchForm.driverId = assignment.driver.id;
+                this.dispatchForm.isLocked = true;
+                this.dispatchForm.assignmentReason = assignment.type === 'Specific' ? 'Penugasan Khusus' : 'Jadwal Default';
+            } else {
+                // No valid assignment - this case is now handled by the UI button
+                // But for safety:
+                this.dispatchForm.isLocked = false;
+            }
+
             this.isDispatchModalVisible = true; 
         },
 
@@ -700,15 +777,32 @@ createApp({
             if (!f.origin || !f.destination) return alert("Asal dan Tujuan wajib diisi!");
             
             // Generate ID if new
+            // Generate ID if new
             if (this.routeModal.mode === 'add') {
                 const getCode = (name) => {
-                    if(name.toLowerCase().includes('padang')) return 'PDG';
-                    if(name.toLowerCase().includes('bukittinggi')) return 'BKT';
-                    if(name.toLowerCase().includes('payakumbuh')) return 'PYK';
-                    if(name.toLowerCase().includes('pekanbaru')) return 'PKU';
+                    const n = name.toLowerCase();
+                    if(n.includes('padang panjang')) return 'PDP';
+                    if(n.includes('padang')) return 'PDG';
+                    if(n.includes('bukittinggi')) return 'BKT';
+                    if(n.includes('payakumbuh')) return 'PYK';
+                    if(n.includes('pekanbaru')) return 'PKU';
+                    if(n.includes('solok')) return 'SLK';
+                    if(n.includes('sawahlunto')) return 'SWL';
+                    if(n.includes('batusangkar')) return 'BSK';
+                    if(n.includes('pariaman')) return 'PRM';
                     return name.substring(0,3).toUpperCase();
                 };
-                f.id = `${getCode(f.origin)}-${getCode(f.destination)}`;
+                let newId = `${getCode(f.origin)}-${getCode(f.destination)}`;
+                
+                // Check for duplicate ID
+                if (this.routeConfig.some(r => r.id === newId)) {
+                    let counter = 2;
+                    while (this.routeConfig.some(r => r.id === `${newId}-${counter}`)) {
+                        counter++;
+                    }
+                    newId = `${newId}-${counter}`;
+                }
+                f.id = newId;
             }
 
             const schedules = f.schedulesInput.split(',').map(s => s.trim()).filter(s => s);
@@ -730,6 +824,7 @@ createApp({
                 alert("Gagal menyimpan rute: " + res.message);
             }
         },
+
         async deleteRoute(id) {
             if(!confirm("Yakin ingin menghapus rute ini?")) return;
             const res = await this.postToApi('delete_route', { id: id });
@@ -738,6 +833,163 @@ createApp({
                 this.loadData();
             } else {
                 alert("Gagal menghapus rute: " + res.message);
+            }
+        },
+
+        // --- SCHEDULE MANAGEMENT ---
+        isChartered(fleetId, driverId, date) {
+            // Check if fleet/driver is in a Charter trip on this date
+            // Charter trips are in this.trips
+            // We need to check passengers for 'Carter' service and duration
+            
+            return this.trips.find(t => {
+                if (!t.passengers) return false;
+                // Check if this trip uses the fleet/driver
+                const sameFleet = t.fleet && t.fleet.id === fleetId;
+                const sameDriver = t.driver && t.driver.id === driverId;
+                
+                if (!sameFleet && !sameDriver) return false;
+                
+                // Check if any passenger is Carter and date overlaps
+                // Note: t.passengers is array of objects.
+                // We need to check if ANY passenger implies a charter that covers 'date'.
+                // Usually Carter is 1 passenger (the booker).
+                
+                return t.passengers.some(p => {
+                    if (p.serviceType !== 'Carter' && p.serviceType !== 'Dropping') return false;
+                    
+                    const start = new Date(p.date);
+                    const duration = parseInt(p.duration) || 1;
+                    const end = new Date(start);
+                    end.setDate(end.getDate() + duration - 1);
+                    
+                    const check = new Date(date);
+                    return check >= start && check <= end;
+                });
+            });
+        },
+
+        getAssignment(routeId, time, date = null) {
+            if (!date) date = this.manifestDate;
+            
+            // 1. Check Specific Trip (Override)
+            const specificTrip = this.trips.find(t => {
+                const p = t.passengers && t.passengers[0];
+                const tDate = t.date || (p ? p.date : null);
+                const tTime = t.time || (p ? p.time : null);
+                const tRouteId = t.routeConfig?.id || (p ? p.routeId : null);
+                return tDate === date && tTime === time && tRouteId === routeId;
+            });
+            
+            if (specificTrip) return { ...specificTrip, type: 'Specific' };
+            
+            // 2. Check Default Schedule
+            // Use loose comparison (==) because routeId might be string vs int
+            const def = this.scheduleDefaults.find(d => d.routeId == routeId && d.time === time);
+            if (def) {
+                const f = this.fleet.find(f => f.id == def.fleetId);
+                const d = this.drivers.find(d => d.id == def.driverId);
+
+                // If fleet or driver not found (e.g. deleted), treat as empty
+                if (!f || !d) return null;
+
+                // Check Conflict
+                const conflictTrip = this.isChartered(def.fleetId, def.driverId, date);
+                if (conflictTrip) {
+                    return { 
+                        status: 'Conflict', 
+                        fleet: f,
+                        driver: d,
+                        conflictWith: conflictTrip,
+                        type: 'Default'
+                    };
+                }
+                
+                return {
+                    status: 'Scheduled',
+                    fleet: f,
+                    driver: d,
+                    type: 'Default'
+                };
+            }
+            
+            return null;
+        },
+        
+        openScheduleModal(route, time, assignment) {
+            this.scheduleForm = {
+                route: route,
+                time: time,
+                fleetId: assignment ? assignment.fleet?.id : '',
+                driverId: assignment ? assignment.driver?.id : '',
+                isDefault: assignment && assignment.type === 'Default'
+            };
+            this.isScheduleModalVisible = true;
+        },
+        
+        async saveScheduleAssignment() {
+            const { route, time, fleetId, driverId, isDefault } = this.scheduleForm;
+            if (!fleetId || !driverId) return alert("Pilih Armada dan Supir!");
+            
+            if (isDefault) {
+                // Check for conflict with other defaults (Same Time)
+                const conflict = this.scheduleDefaults.find(d => 
+                    (d.fleetId == fleetId || d.driverId == driverId) && 
+                    d.time === time && 
+                    d.routeId != route.id // Allow updating self
+                );
+                
+                if (conflict) {
+                    const conflictRoute = this.routeConfig.find(r => r.id == conflict.routeId);
+                    const rName = conflictRoute ? `${conflictRoute.origin}-${conflictRoute.destination}` : conflict.routeId;
+                    if (!confirm(`PERINGATAN: Armada/Supir ini sudah menjadi default di rute ${rName} pada jam ${time}. Yakin ingin menimpa/menggunakan ganda?`)) {
+                        return;
+                    }
+                }
+
+                // Save as Default
+                const res = await this.postToApi('save_schedule_default', {
+                    routeId: route.id,
+                    time: time,
+                    fleetId: fleetId,
+                    driverId: driverId
+                });
+                if(res.status === 'success') {
+                    alert("Jadwal Default Disimpan!");
+                    this.isScheduleModalVisible = false;
+                    this.loadData();
+                } else {
+                    alert("Gagal: " + res.message);
+                }
+            } else {
+                // Save as Specific Trip (Override)
+                const f = this.fleet.find(x => x.id === fleetId);
+                const d = this.drivers.find(x => x.id === driverId);
+                
+                // Check if updating existing specific trip
+                const existingTrip = this.getAssignment(route.id, time);
+                const tripId = (existingTrip && existingTrip.type === 'Specific') ? existingTrip.id : Date.now();
+                
+                const tripData = {
+                    id: tripId,
+                    routeConfig: route,
+                    fleet: f,
+                    driver: d,
+                    passengers: (existingTrip && existingTrip.type === 'Specific') ? existingTrip.passengers : [],
+                    status: 'Scheduled',
+                    date: this.manifestDate,
+                    time: time
+                };
+                
+                const res = await this.postToApi('save_trip', { data: tripData });
+                
+                if(res.status === 'success') {
+                    alert("Penugasan Harian Disimpan!");
+                    this.isScheduleModalVisible = false;
+                    this.loadData();
+                } else {
+                    alert("Gagal: " + res.message);
+                }
             }
         },
 
@@ -867,18 +1119,28 @@ createApp({
                 this.drivers = data.drivers || [];
                 this.trips = data.trips || [];
                 this.routeConfig = data.routes || [];
+                this.scheduleDefaults = data.scheduleDefaults || [];
                 
                 // Also fetch reports if we are in manifest view
                 if (this.view === 'manifest') {
                     this.fetchReports();
                 }
 
-                // Update counts or other computed logic if needed
+                // Update sidebar counts after data load
+                this.updateSidebarCounts();
             } catch (e) {
                 console.error("Error loading data", e);
             } finally {
                 this.isLoading = false;
             }
+        },
+
+        updateSidebarCounts() {
+            const elValidation = document.getElementById('pendingValidationCount');
+            const elDispatch = document.getElementById('pendingDispatchCount');
+            
+            if (elValidation) elValidation.innerText = this.pendingValidationCount;
+            if (elDispatch) elDispatch.innerText = this.pendingDispatchCount;
         },
         
         getTripPassengerCount(trip) {

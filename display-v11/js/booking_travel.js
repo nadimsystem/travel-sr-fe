@@ -98,23 +98,46 @@ function handleProofUpload(e) {
 
 function removeProof() {
     paymentProofBase64 = null;
-    document.getElementById('paymentProofInput').value = ''; // Reset input
     document.getElementById('proofPreviewContainer').classList.add('hidden');
     document.getElementById('uploadProofLabel').classList.remove('hidden');
-    document.getElementById('proofLabel').innerHTML = '<i class="bi bi-cloud-upload text-lg block mb-1"></i>Upload Bukti';
+    document.getElementById('proofLabel').innerHTML = 'Upload Bukti Transfer';
+    document.getElementById('paymentProofInput').value = ''; // Changed input ID to paymentProofInput
 }
 
-async function saveBooking() {
-    const routeId = document.getElementById('routeSelect').value;
-    const passengerType = document.getElementById('passengerType').value;
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'Cash';
-    
-    if (!routeId || !date || !time) {
-        occupiedSeats = []; // Clear occupied seats if criteria not met
-        renderSeatAvailability();
-        return;
+// --- KTM UPLOAD LOGIC ---
+function handleKtmUpload(e) {
+    const input = e.target;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            ktmBase64 = e.target.result;
+            
+            // Show Preview
+            const previewImg = document.getElementById('ktmPreview');
+            const previewContainer = document.getElementById('ktmPreviewContainer');
+            const uploadLabel = document.getElementById('ktmUploadLabel');
+            const fileName = document.getElementById('ktmFileName');
+            
+            if (previewImg && previewContainer) {
+                previewImg.src = ktmBase64;
+                previewContainer.classList.remove('hidden');
+                uploadLabel.classList.add('hidden');
+                if(fileName) fileName.textContent = input.files[0].name;
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 }
+
+function removeKtm() {
+    ktmBase64 = null;
+    document.getElementById('ktmPreviewContainer').classList.add('hidden');
+    document.getElementById('ktmUploadLabel').classList.remove('hidden');
+    document.getElementById('ktmInput').value = '';
+    const fileName = document.getElementById('ktmFileName');
+    if(fileName) fileName.textContent = 'Belum ada file';
+}
+// --- END KTM UPLOAD LOGIC ---
 
 async function fetchOccupiedSeats() {
     const routeId = document.getElementById('routeSelect').value;
@@ -299,28 +322,145 @@ async function loadBookingData() {
     });
 
     renderRouteOptions();
+    
+    // Calculate and update Sidebar Counts
+    const bookings = data.bookings || [];
+    const pendingValidation = bookings.filter(b => b.validationStatus === 'Menunggu Validasi').length;
+    
+    // Grouping Logic to match app.js (Dispatcher)
+    // 1. Group by Time + Route
+    // 2. Split into Batches (Max 8)
+    const groups = {};
+    bookings.forEach(b => {
+        if (b.status !== 'Pending' && b.status !== 'Confirmed') return; 
+        
+        const key = `${b.date}_${b.time}_${b.routeId}`;
+        if (!groups[key]) {
+            groups[key] = [];
+        }
+        groups[key].push(b);
+    });
+
+    let pendingDispatchGroupCount = 0;
+    Object.values(groups).forEach(groupPassengers => {
+        const batchSize = 8;
+        const fleetBatches = []; 
+        
+        groupPassengers.forEach(p => {
+             let placed = false;
+             const pSeats = p.seatNumbers ? p.seatNumbers.split(',').map(s => s.trim()) : [];
+             
+             for (let i = 0; i < fleetBatches.length; i++) {
+                 const batch = fleetBatches[i];
+                 const currentLoad = batch.reduce((sum, bp) => sum + (parseInt(bp.seatCount) || 1), 0);
+                 const pLoad = parseInt(p.seatCount) || 1;
+                 
+                 if (currentLoad + pLoad > batchSize) continue; 
+                 
+                 // Check conflict
+                 let conflict = false;
+                 if (pSeats.length > 0) {
+                     const batchSeats = [];
+                     batch.forEach(bp => {
+                         if (bp.seatNumbers) bp.seatNumbers.split(',').forEach(s => batchSeats.push(s.trim()));
+                     });
+                     if (pSeats.some(s => batchSeats.includes(s))) conflict = true;
+                 }
+                 
+                 if (!conflict) {
+                     batch.push(p);
+                     placed = true;
+                     break;
+                 }
+             }
+             
+             if (!placed) fleetBatches.push([p]);
+        });
+        
+        pendingDispatchGroupCount += fleetBatches.length;
+    });
+
+    const elValidation = document.getElementById('pendingValidationCount');
+    const elDispatch = document.getElementById('pendingDispatchCount');
+    
+    if (elValidation) elValidation.innerText = pendingValidation;
+    if (elDispatch) elDispatch.innerText = pendingDispatchGroupCount; 
 }
 
 function setupEventListeners() {
     // Service Type Buttons
     document.querySelectorAll('.service-type-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            setServiceType(e.target.dataset.type);
+        btn.addEventListener('click', () => {
+            // Update UI
             document.querySelectorAll('.service-type-btn').forEach(b => {
                 b.classList.remove('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-sr-blue', 'dark:text-white');
-                b.classList.add('text-slate-400');
+                b.classList.add('text-slate-500', 'hover:bg-white/50', 'dark:hover:bg-slate-600');
             });
-            e.target.classList.remove('text-slate-400');
-            e.target.classList.add('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-sr-blue', 'dark:text-white');
+            btn.classList.remove('text-slate-500', 'hover:bg-white/50', 'dark:hover:bg-slate-600');
+            btn.classList.add('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-sr-blue', 'dark:text-white');
+            
+            currentServiceType = btn.dataset.type;
+            
+            // Toggle Multi Drop & KTM Section
+            const multiDropArea = document.getElementById('multiDropArea');
+            const ktmSection = document.getElementById('ktmUploadSection');
+            const seatSelection = document.getElementById('seatSelectionArea');
+            const durationInput = document.getElementById('durationInputArea');
+            const seatCountInput = document.getElementById('seatCountInputArea');
+            const categorySection = document.getElementById('passengerCategorySection');
+
+            // Reset visibility for all service type specific areas
+            seatSelection.classList.add('hidden');
+            durationInput.classList.add('hidden');
+            seatCountInput.classList.add('hidden');
+            if (multiDropArea) multiDropArea.classList.add('hidden');
+            if (ktmSection) ktmSection.classList.add('hidden');
+            if (categorySection) categorySection.classList.add('hidden');
+
+            if (currentServiceType === 'Travel') {
+                seatSelection.classList.remove('hidden');
+                if (categorySection) categorySection.classList.remove('hidden');
+                // Check current category to show/hide KTM
+                const category = document.querySelector('input[name="passengerCategory"]:checked').value;
+                if (category === 'Pelajar' && ktmSection) ktmSection.classList.remove('hidden');
+            } else if (currentServiceType === 'Dropping') {
+                if(multiDropArea) multiDropArea.classList.remove('hidden');
+            } else if (currentServiceType === 'Carter') {
+                durationInput.classList.remove('hidden');
+            }
+            
+            // Reset Multi Drop Checkbox
+            const multiDropCheck = document.getElementById('multiDrop');
+            if(multiDropCheck) multiDropCheck.checked = false;
+            
+            calculatePrice();
+        });
+    });
+
+    // Passenger Category Radio Buttons
+    document.querySelectorAll('input[name="passengerCategory"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const category = e.target.value;
+            const ktmSection = document.getElementById('ktmUploadSection');
+            if (ktmSection) {
+                if (category === 'Pelajar') {
+                    ktmSection.classList.remove('hidden');
+                } else {
+                    ktmSection.classList.add('hidden');
+                    removeKtm();
+                }
+            }
+            calculatePrice();
         });
     });
 
     // Form Inputs
-    // Form Inputs
     const routeSelect = document.getElementById('routeSelect');
     if (routeSelect) {
-        routeSelect.addEventListener('change', calculatePrice);
-        routeSelect.addEventListener('change', fetchOccupiedSeats);
+        routeSelect.addEventListener('change', () => {
+            fetchOccupiedSeats();
+            calculatePrice();
+        });
     }
 
     const passengerTypeSelect = document.getElementById('passengerTypeSelect');
@@ -328,11 +468,13 @@ function setupEventListeners() {
         passengerTypeSelect.addEventListener('change', (e) => {
             const type = e.target.value;
             const ktmArea = document.getElementById('ktmUploadArea');
-            if (ktmArea) {
+            const ktmSection = document.getElementById('ktmUploadSection'); // Use ktmUploadSection for overall visibility
+            if (ktmArea && ktmSection) {
                 if (type === 'Mahasiswa / Pelajar') {
-                    ktmArea.classList.remove('hidden');
+                    ktmSection.classList.remove('hidden'); // Show the whole section
                 } else {
-                    ktmArea.classList.add('hidden');
+                    ktmSection.classList.add('hidden'); // Hide the whole section
+                    removeKtm(); // Clear KTM data if hidden
                 }
             }
             calculatePrice();
@@ -341,6 +483,8 @@ function setupEventListeners() {
 
     const ktmInput = document.getElementById('ktmInput');
     if (ktmInput) ktmInput.addEventListener('change', handleKtmUpload);
+    const removeKtmBtn = document.getElementById('removeKtmBtn');
+    if (removeKtmBtn) removeKtmBtn.addEventListener('click', removeKtm);
     
     const seatCountInput = document.getElementById('seatCountInput');
     if (seatCountInput) seatCountInput.addEventListener('input', calculatePrice);
@@ -398,19 +542,6 @@ function setupEventListeners() {
     if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
 }
 
-
-
-function handleKtmUpload(e) {
-    const file = e.target.files[0];
-    if (file) {
-        document.getElementById('ktmFileName').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            ktmBase64 = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
 
 function setServiceType(type) {
     currentServiceType = type;
@@ -478,21 +609,19 @@ function calculatePrice() {
         return;
     }
 
-    if (currentServiceType === 'Travel') {
-        const pricePerSeat = (passengerType === 'Mahasiswa / Pelajar') ? route.prices.pelajar : route.prices.umum;
-        currentPrice = selectedSeats.length * pricePerSeat;
+       // Determine Price based on Service Type
+    if (currentServiceType === 'Carter') {
+        currentPrice = route.prices.carter;
     } else if (currentServiceType === 'Dropping') {
-        // Dropping Logic
-        const routeName = `${route.origin} - ${route.destination}`;
-        if (routeName.includes('Bukittinggi') || routeName.includes('Padang Panjang')) {
-            currentPrice = isMultiDrop ? 960000 : 900000;
-        } else if (routeName.includes('Payakumbuh')) {
-            currentPrice = isMultiDrop ? 1200000 : 1100000;
+        currentPrice = route.prices.dropping;
+    } else {
+        // Travel: Check Category
+        const category = document.querySelector('input[name="passengerCategory"]:checked').value;
+        if (category === 'Pelajar') {
+            currentPrice = route.prices.pelajar;
         } else {
-            currentPrice = route.prices.dropping || 1000000;
+            currentPrice = route.prices.umum;
         }
-    } else if (currentServiceType === 'Carter') {
-        currentPrice = (route.prices.carter || 1500000) * duration;
     }
     
     // Update Schedule Options
@@ -515,90 +644,109 @@ function updatePriceDisplay() {
     document.getElementById('submitBookingBtn').disabled = currentPrice === 0;
 }
 
+let isSaving = false;
+
 async function saveBooking() {
-    const routeId = document.getElementById('routeSelect').value;
-    const route = routes.find(r => r.id === routeId);
+    if (isSaving) return;
     
-    if (!routeId) return alert("Pilih Rute!");
-    if (currentServiceType === 'Travel' && selectedSeats.length === 0) return alert("Pilih Kursi!");
+    try {
+        const routeId = document.getElementById('routeSelect').value;
+        const route = routes.find(r => r.id === routeId);
+        
+        if (!routeId) return alert("Pilih Rute!");
+        if (currentServiceType === 'Travel' && selectedSeats.length === 0) return alert("Pilih Kursi!");
 
-    const passengerType = document.getElementById('passengerTypeSelect').value;
-    if (passengerType === 'Mahasiswa / Pelajar' && !ktmBase64) {
-        return alert("Wajib upload bukti KTM / Kartu Pelajar!");
-    }
+        let passengerType = 'Umum';
+        if (currentServiceType === 'Travel') {
+            const categoryInput = document.querySelector('input[name="passengerCategory"]:checked');
+            if (!categoryInput) return alert("Pilih Kategori Penumpang!");
+            passengerType = categoryInput.value; // 'Umum' or 'Pelajar'
+        }
 
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'Cash';
-    let paymentStatus = 'Menunggu Validasi';
-    let validationStatus = 'Menunggu Validasi';
-    
-    if (paymentMethod === 'Cash') {
-        if (!document.getElementById('paymentLoc').value) return alert("Isi Lokasi Pembayaran!");
-        paymentStatus = 'Lunas';
-        validationStatus = 'Valid';
-    } else if (paymentMethod === 'Transfer') {
-        if (!paymentProofBase64) return alert("Wajib Upload Bukti Transfer!");
-        paymentStatus = 'Menunggu Validasi';
-        validationStatus = 'Menunggu Validasi';
-    } else if (paymentMethod === 'DP') {
-        const dpAmount = parseInt(document.getElementById('dpAmount').value) || 0;
-        if (dpAmount < 50000) return alert("Minimal DP Rp 50.000");
-        paymentStatus = 'DP';
-    }
+        if (passengerType === 'Pelajar' && !ktmBase64) {
+            return alert("Wajib upload bukti KTM / Kartu Pelajar!");
+        }
 
-    const manualSeatCount = parseInt(document.getElementById('seatCountInput').value) || 1;
-    const duration = parseInt(document.getElementById('durationInput').value) || 1;
-    // paymentProofBase64 is global
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'Cash';
+        let paymentStatus = 'Menunggu Validasi';
+        let validationStatus = 'Menunggu Validasi';
+        
+        if (paymentMethod === 'Cash') {
+            if (!document.getElementById('paymentLoc').value) return alert("Isi Lokasi Pembayaran!");
+            paymentStatus = 'Lunas';
+            validationStatus = 'Valid';
+        } else if (paymentMethod === 'Transfer') {
+            if (!paymentProofBase64) return alert("Wajib Upload Bukti Transfer!");
+            paymentStatus = 'Menunggu Validasi';
+            validationStatus = 'Menunggu Validasi';
+        } else if (paymentMethod === 'DP') {
+            const dpAmount = parseInt(document.getElementById('dpAmount').value) || 0;
+            if (dpAmount < 50000) return alert("Minimal DP Rp 50.000");
+            paymentStatus = 'DP';
+        }
 
-    // Save Input Memory
-    saveInputMemory(
-        document.getElementById('paymentRecv')?.value,
-        document.getElementById('paymentLoc')?.value
-    );
+        const manualSeatCount = parseInt(document.getElementById('seatCountInput').value) || 1;
+        const duration = parseInt(document.getElementById('durationInput').value) || 1;
 
-    const bookingData = {
-        id: Date.now().toString(),
-        serviceType: currentServiceType,
-        routeId: routeId,
-        date: document.getElementById('dateInput').value,
-        time: currentServiceType === 'Travel' ? document.getElementById('timeInput').value : '',
-        passengerName: document.getElementById('passengerName').value,
-        passengerPhone: document.getElementById('passengerPhone').value,
-        passengerType: passengerType,
-        seatCount: currentServiceType === 'Travel' ? selectedSeats.length : manualSeatCount,
-        selectedSeats: selectedSeats,
-        duration: duration,
-        totalPrice: currentPrice,
-        paymentMethod: paymentMethod,
-        paymentStatus: paymentStatus,
-        validationStatus: validationStatus,
-        paymentLocation: document.getElementById('paymentLoc')?.value || '',
-        paymentReceiver: document.getElementById('paymentRecv')?.value || '',
-        paymentProof: paymentProofBase64,
-        seatNumbers: currentServiceType === 'Travel' ? selectedSeats.join(', ') : 'Full Unit',
-        ktmProof: ktmBase64,
-        downPaymentAmount: parseInt(document.getElementById('dpAmount')?.value) || 0,
-        type: 'Unit',
-        seatCapacity: manualSeatCount,
-        priceType: 'Kantor',
-        packageType: 'Unit',
-        routeName: route ? `${route.origin} - ${route.destination}` : '',
-        pickupAddress: document.getElementById('pickupAddress').value,
-        dropoffAddress: document.getElementById('dropoffAddress').value
-    };
-    const btn = document.getElementById('submitBookingBtn');
-    btn.disabled = true;
-    btn.textContent = 'Menyimpan...';
+        // Save Input Memory
+        saveInputMemory(
+            document.getElementById('paymentRecv')?.value,
+            document.getElementById('paymentLoc')?.value
+        );
 
-    const res = await postData('create_booking', { data: bookingData });
-    
-    btn.disabled = false;
-    btn.textContent = 'Proses Booking';
+        const bookingData = {
+            id: Date.now().toString(),
+            serviceType: currentServiceType,
+            routeId: routeId,
+            date: document.getElementById('dateInput').value,
+            time: currentServiceType === 'Travel' ? document.getElementById('timeInput').value : '',
+            passengerName: document.getElementById('passengerName').value,
+            passengerPhone: document.getElementById('passengerPhone').value,
+            passengerType: passengerType,
+            seatCount: currentServiceType === 'Travel' ? selectedSeats.length : manualSeatCount,
+            selectedSeats: selectedSeats,
+            duration: duration,
+            totalPrice: currentPrice,
+            paymentMethod: paymentMethod,
+            paymentStatus: paymentStatus,
+            validationStatus: validationStatus,
+            paymentLocation: document.getElementById('paymentLoc')?.value || '',
+            paymentReceiver: document.getElementById('paymentRecv')?.value || '',
+            paymentProof: paymentProofBase64,
+            seatNumbers: currentServiceType === 'Travel' ? selectedSeats.join(', ') : 'Full Unit',
+            ktmProof: ktmBase64,
+            downPaymentAmount: parseInt(document.getElementById('dpAmount')?.value) || 0,
+            type: 'Unit',
+            seatCapacity: manualSeatCount,
+            priceType: 'Kantor',
+            packageType: 'Unit',
+            routeName: route ? `${route.origin} - ${route.destination}` : '',
+            pickupAddress: document.getElementById('pickupAddress').value,
+            dropoffAddress: document.getElementById('dropoffAddress').value
+        };
+        
+        isSaving = true;
+        const btn = document.getElementById('submitBookingBtn');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
 
-    if (res.status === 'success') {
-        alert("Booking Berhasil Disimpan!");
-        window.location.href = 'booking_management.php';
-    } else {
-        alert("Gagal Simpan: " + (res.message || JSON.stringify(res)));
+        const res = await postData('create_booking', { data: bookingData });
+        
+        if (res.status === 'success') {
+            alert("Booking Berhasil Disimpan!");
+            window.location.href = 'booking_management.php';
+        } else {
+            alert("Gagal Simpan: " + (res.message || JSON.stringify(res)));
+            isSaving = false;
+            btn.disabled = false;
+            btn.textContent = 'Proses Booking';
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Terjadi kesalahan sistem: " + error.message);
+        isSaving = false;
+        document.getElementById('submitBookingBtn').disabled = false;
+        document.getElementById('submitBookingBtn').textContent = 'Proses Booking';
     }
 }
 

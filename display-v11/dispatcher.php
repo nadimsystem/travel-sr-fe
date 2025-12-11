@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sutan Raya - Business OS V8.5</title>
+    <title>Sutan Raya - Business OS V11</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -67,7 +68,7 @@
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shadow-sm z-10 flex-shrink-0 transition-colors duration-300">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 dark:text-white">{{ currentViewTitle }}</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V8.5 Ultimate</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V11 Ultimate</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
@@ -99,7 +100,7 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <div v-for="group in groupedBookings" :key="group.key" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-0 relative overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
+                            <div v-for="group in groupedBookings" :key="group.key" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-0 relative overflow-hidden hover:shadow-lg transition-all group flex flex-col">
                                 <div class="p-5 border-b border-gray-50 bg-gray-50/50 flex justify-between items-start relative">
                                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-500"></div>
                                     <div>
@@ -112,40 +113,78 @@
                                         <span v-if="group.batchNumber" class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Armada {{ group.batchNumber }}</span>
                                     </div>
                                 </div>
-                                <div class="flex-1 overflow-y-auto p-2 custom-scrollbar max-h-64 bg-white">
-                                    <div v-for="p in group.passengers" class="p-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors rounded-lg">
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex-1">
-                                                <div class="font-bold text-sm text-gray-800 flex items-center">
-                                                    {{ p.passengerName }} 
-                                                    <span v-if="p.serviceType==='Travel'" class="ml-2 text-[10px] bg-gray-200 px-1.5 rounded font-mono">{{ p.seatNumbers || '-' }}</span>
-                                                    <span v-else class="ml-2 text-[10px] bg-purple-100 text-purple-700 px-1.5 rounded font-bold border border-purple-200">Charter</span>
+                                <div class="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-[16rem] max-h-[28rem] bg-white relative">
+                                    <div class="space-y-3 mb-6">
+                                        <div v-for="p in group.passengers" class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <div class="font-bold text-gray-800 text-sm flex items-center gap-2">
+                                                        {{ p.passengerName }}
+                                                        <span v-if="p.seatNumbers" class="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold">{{ p.seatNumbers }}</span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-400 mt-1"><i class="bi bi-whatsapp mr-1"></i> {{ p.passengerPhone }}</div>
                                                 </div>
-                                                <div class="text-[11px] text-gray-500 mt-0.5"><i class="bi bi-whatsapp mr-1"></i> {{ p.passengerPhone }}</div>
-                                                <div class="text-[10px] mt-2 flex gap-1 flex-wrap items-center">
-                                                    <button v-if="p.validationStatus === 'Menunggu Validasi'" @click="viewProof(p)" class="px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 font-bold flex items-center gap-1 animate-pulse">
-                                                        <i class="bi bi-exclamation-circle-fill"></i> Cek Bukti
-                                                    </button>
-                                                    <span v-else-if="p.validationStatus === 'Valid'" class="px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-200 font-bold flex items-center gap-1">
-                                                        <i class="bi bi-check-circle-fill"></i> Lunas
-                                                    </span>
-                                                    <span v-else class="px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200 font-bold">{{ p.paymentStatus }}</span>
+                                                <div>
+                                                    <a :href="getWaLink(p.passengerPhone)" target="_blank" class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors"><i class="bi bi-whatsapp"></i></a>
                                                 </div>
                                             </div>
-                                            <div class="flex flex-col gap-1">
-                                                <a :href="getWaLink(p.passengerPhone)" target="_blank" class="w-7 h-7 flex items-center justify-center rounded bg-green-50 text-green-600 hover:bg-green-100 border border-green-100"><i class="bi bi-whatsapp"></i></a>
-                                                <button @click="viewTicket(p)" class="w-7 h-7 flex items-center justify-center rounded bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100"><i class="bi bi-ticket-perforated"></i></button>
+                                            <div class="mt-2 flex gap-2">
+                                                <span v-if="p.validationStatus==='Valid'" class="px-2 py-0.5 bg-green-100 text-green-700 rounded-lg text-[10px] font-bold flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Lunas</span>
+                                                <span v-else class="px-2 py-0.5 bg-red-100 text-red-700 rounded-lg text-[10px] font-bold flex items-center gap-1"><i class="bi bi-exclamation-circle-fill"></i> Cek Bukti</span>
+                                                <button @click="viewTicket(p)" class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold"><i class="bi bi-ticket-detailed-fill"></i></button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                                    <div class="text-xs text-gray-500">Total Muatan: <strong class="text-gray-900 text-sm">{{ group.totalPassengers }}</strong></div>
-                                    <button @click="openDispatchModal(group)" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-800 shadow-lg active:scale-95 transition-all">Berangkatkan</button>
+                                    
+                                    <!-- Assignment Info using computed assignment from groupedBookings -->
+                                    <div v-if="group.assignment && group.assignment.fleet && group.assignment.driver" class="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
+                                        <div class="text-[10px] font-bold text-blue-400 uppercase mb-2">Armada Terjadwal</div>
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-car-front-fill"></i></div>
+                                            <div>
+                                                <div class="text-xs font-bold text-blue-900">{{ group.assignment.fleet.name }}</div>
+                                                <div class="text-[10px] text-blue-600">{{ group.assignment.fleet.plate }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-person-fill"></i></div>
+                                            <div>
+                                                <div class="text-xs font-bold text-blue-900">{{ group.assignment.driver.name }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="mb-4 bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                                        <div>
+                                            <div class="text-xs font-bold text-yellow-800">Belum Ada Jadwal</div>
+                                            <div class="text-[10px] text-yellow-600">Atur armada & supir dulu.</div>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- End of scrollable content -->
+                                
+                                <!-- Fixed Footer (Outside scroll) -->
+                                <div class="p-4 border-t border-gray-100 bg-gray-50/50">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] uppercase font-bold text-gray-400">Total Muatan</span>
+                                            <span class="text-sm font-extrabold text-gray-900">{{ group.totalPassengers }} <span class="text-[10px] font-normal text-gray-500">Orang</span></span>
+                                        </div>
+                                        
+                                        <button v-if="group.assignment && group.assignment.fleet && group.assignment.driver" 
+                                                @click="openDispatchModal(group)" 
+                                                class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-green-200 transition-all active:scale-95 flex items-center gap-2">
+                                            <span>Berangkatkan</span> <i class="bi bi-send-fill"></i>
+                                        </button>
+                                        <button v-else 
+                                                @click="openScheduleModal(group.routeConfig, group.time)" 
+                                                class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-yellow-200 transition-all active:scale-95 flex items-center gap-2">
+                                            <span>Atur Jadwal</span> <i class="bi bi-gear-fill"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     <div v-if="activeTrips.length > 0">
                         <h2 class="font-bold text-gray-700 mb-4 text-lg flex items-center"><i class="bi bi-broadcast mr-2 text-green-500"></i> Sedang Berjalan</h2>
@@ -457,7 +496,36 @@
                     </div>
                 </div>
 
-                <div v-if="isDispatchModalVisible" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fade-in"><div class="text-center mb-6"><h3 class="text-xl font-bold text-gray-900">Dispatch Armada</h3></div><div class="space-y-4"><div><label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Armada</label><select v-model="dispatchForm.fleetId" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700"><option value="" disabled>-- Pilih Mobil --</option><option v-for="f in fleet.filter(x=>x.status==='Tersedia')" :value="f.id">{{ f.name }} ({{f.plate}})</option></select></div><div><label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Supir</label><select v-model="dispatchForm.driverId" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700"><option value="" disabled>-- Pilih Supir --</option><option v-for="d in drivers.filter(x=>x.status==='Standby')" :value="d.id">{{ d.name }}</option></select></div></div><div class="mt-8 flex gap-3"><button @click="isDispatchModalVisible=false" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold">Batal</button><button @click="processDispatch" class="flex-1 bg-sr-blue hover:bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg">Proses</button></div></div></div>
+                <div v-if="isDispatchModalVisible" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fade-in">
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-900">Dispatch Armada</h3>
+                            <div v-if="dispatchForm.isLocked" class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold mt-2 inline-block">
+                                <i class="bi bi-lock-fill mr-1"></i> {{ dispatchForm.assignmentReason }}
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Armada</label>
+                                <select v-model="dispatchForm.fleetId" :disabled="dispatchForm.isLocked" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700 transition-colors disabled:bg-gray-100 disabled:text-gray-500">
+                                    <option value="" disabled>-- Pilih Mobil --</option>
+                                    <option v-for="f in fleet.filter(x=>x.status==='Tersedia' || x.id === dispatchForm.fleetId)" :value="f.id">{{ f.name }} ({{f.plate}})</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block">Supir</label>
+                                <select v-model="dispatchForm.driverId" :disabled="dispatchForm.isLocked" class="w-full border-gray-200 p-3 rounded-xl bg-white outline-none font-semibold text-gray-700 transition-colors disabled:bg-gray-100 disabled:text-gray-500">
+                                    <option value="" disabled>-- Pilih Supir --</option>
+                                    <option v-for="d in drivers.filter(x=>x.status==='Standby' || x.id === dispatchForm.driverId)" :value="d.id">{{ d.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-8 flex gap-3">
+                            <button @click="isDispatchModalVisible=false" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold">Batal</button>
+                            <button @click="processDispatch" class="flex-1 bg-sr-blue hover:bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg">Proses</button>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </main>

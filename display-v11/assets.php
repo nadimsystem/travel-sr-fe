@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sutan Raya - Business OS V8.5</title>
+    <title>Sutan Raya - Business OS V11</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -66,7 +67,7 @@
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shadow-sm z-10 flex-shrink-0 transition-colors duration-300">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 dark:text-white">{{ currentViewTitle }}</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V8.5 Ultimate</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V11 Ultimate</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">

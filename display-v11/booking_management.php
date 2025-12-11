@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sutan Raya - Business OS V8.5</title>
+    <title>Sutan Raya - Business OS V11</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -66,7 +67,7 @@
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shadow-sm z-10 flex-shrink-0 transition-colors duration-300">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 dark:text-white">{{ currentViewTitle }}</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V8.5 Ultimate</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V11 Ultimate</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
@@ -105,12 +106,17 @@
                     
                     <div class="flex-1 overflow-y-auto custom-scrollbar relative">
                         <table v-if="bookingManagementTab === 'travel' || busViewMode === 'list'" class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 uppercase text-[10px] sticky top-0 z-10 font-bold"><tr><th class="p-4">Waktu</th><th class="p-4">Penumpang</th><th class="p-4">Layanan</th><th class="p-4">Status</th><th class="p-4 text-right">Aksi</th></tr></thead>
+                            <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 uppercase text-[10px] sticky top-0 z-10 font-bold"><tr><th class="p-4">Waktu</th><th class="p-4">Penumpang</th><th class="p-4">Kategori</th><th class="p-4">Layanan</th><th class="p-4">Status</th><th class="p-4 text-right">Aksi</th></tr></thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                                 <tr v-for="b in getManagedBookings" :key="b.id" class="hover:bg-blue-50/30 dark:hover:bg-slate-700/50 transition-colors">
                                     <td class="p-4"><div class="font-bold text-slate-800 dark:text-white">{{ formatDate(b.date) }}</div><div class="text-xs text-slate-500 dark:text-slate-400">{{ b.time || b.duration + ' Hari' }}</div></td>
                                     <td class="p-4"><div class="font-bold text-slate-800 dark:text-white">{{ b.passengerName }}</div><div class="text-xs text-slate-500 dark:text-slate-400">{{ b.passengerPhone }}</div></td>
-                                    <td class="p-4"><span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300 uppercase">{{ b.serviceType }}</span><div class="text-[10px] text-slate-400 mt-1">{{ b.routeId || b.routeName }}</div></td>
+                                    <td class="p-4">
+                                        <span v-if="b.passengerType === 'Pelajar' || b.passengerType === 'Mahasiswa / Pelajar'" class="text-[10px] font-bold px-2 py-0.5 rounded bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-400 uppercase">Pelajar</span>
+                                        <span v-else class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300 uppercase">Umum</span>
+                                    </td>
+                                    <td class="p-4"><span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300 uppercase">{{ b.serviceType }}</span>
+                                        <div class="text-[10px] text-slate-400 mt-1">{{ b.routeId || b.routeName }}</div></td>
                                     <td class="p-4">
                                         <span v-if="b.validationStatus === 'Valid'" class="text-xs font-bold text-green-600 flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Lunas</span>
                                         <span v-else-if="b.paymentStatus === 'DP'" class="text-xs font-bold text-yellow-600 flex items-center gap-1"><i class="bi bi-hourglass-split"></i> DP</span>
@@ -118,6 +124,7 @@
                                     </td>
                                     <td class="p-4 text-right space-x-1">
                                         <button @click="printTicket(b)" class="text-xs font-bold bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300 px-2 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-500 transition-colors" title="Cetak Tiket"><i class="bi bi-printer"></i></button>
+                                        <button v-if="(b.passengerType === 'Pelajar' || b.passengerType === 'Mahasiswa / Pelajar') && b.ktmProof" @click="viewKtm(b)" class="text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-2 py-1.5 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors" title="Cek KTM"><i class="bi bi-card-image"></i> KTM</button>
                                         <button v-if="b.validationStatus !== 'Valid'" @click="validatePaymentModal(b)" class="text-xs font-bold bg-white border border-red-200 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors">Validasi</button>
                                         <button v-else-if="b.status === 'Pending' && b.serviceType !== 'Bus Pariwisata'" @click="changeView('dispatcher')" class="text-xs font-bold bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 shadow-sm transition-transform active:scale-95">🚀 Dispatch</button>
                                         <button v-else-if="['Assigned','On Trip','Tiba'].includes(b.status)" @click="changeView('dashboard')" class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 shadow-sm transition-colors">📍 Lacak</button>
@@ -126,6 +133,20 @@
                             </tbody>
                         </table>
                         <div v-if="getManagedBookings.length === 0" class="p-8 text-center text-slate-400 italic">Tidak ada data.</div>
+
+                        <!-- KTM View Modal -->
+                        <div v-if="isKtmModalVisible" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click.self="isKtmModalVisible = false">
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-fade-in relative">
+                                <button @click="isKtmModalVisible = false" class="absolute top-4 right-4 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"><i class="bi bi-x-lg"></i></button>
+                                <div class="p-1 bg-slate-100 dark:bg-slate-700">
+                                    <img :src="activeKtmImage" class="w-full h-auto rounded-xl shadow-inner">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h3 class="font-bold text-slate-800 dark:text-white">Bukti KTM / Kartu Pelajar</h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ activeBookingName }}</p>
+                                </div>
+                            </div>
+                        </div>
 
                         <div v-if="bookingManagementTab === 'bus' && busViewMode === 'calendar'" class="p-4 h-full flex flex-col">
                             <div class="flex justify-between items-center mb-4">
