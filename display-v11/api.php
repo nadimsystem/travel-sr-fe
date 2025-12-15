@@ -134,9 +134,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $routeId = $_GET['routeId'];
         $date = $_GET['date'];
         $time = $_GET['time'];
+        $excludeId = isset($_GET['excludeId']) ? $_GET['excludeId'] : null;
 
-        $stmt = $conn->prepare("SELECT seatNumbers, seatCount FROM bookings WHERE routeId=? AND date=? AND time=? AND status != 'Cancelled'");
-        $stmt->bind_param("sss", $routeId, $date, $time);
+        $sql = "SELECT seatNumbers, seatCount FROM bookings WHERE routeId=? AND date=? AND time=? AND status != 'Cancelled'";
+        $params = "sss";
+        $args = [$routeId, $date, $time];
+
+        if ($excludeId) {
+            $sql .= " AND id != ?";
+            $params .= "s";
+            $args[] = $excludeId;
+        }
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($params, ...$args);
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -153,17 +164,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($action === 'get_reports') {
         $period = isset($_GET['period']) ? $_GET['period'] : 'daily';
         
-        // Default: Daily (Last 30 days)
+        // Default: Daily (Filtered by Month)
         // Group bookings by Date
-        $sql = "SELECT date, SUM(totalPrice) as revenue, SUM(seatCount) as pax, COUNT(id) as bookingCount,
-                SUM(CASE WHEN paymentMethod = 'Cash' THEN totalPrice ELSE 0 END) as revenueCash,
-                SUM(CASE WHEN paymentMethod = 'Transfer' OR paymentMethod = 'DP' THEN totalPrice ELSE 0 END) as revenueTransfer
-                FROM bookings WHERE status != 'Cancelled' GROUP BY date ORDER BY date DESC LIMIT 30";
+        $monthFilter = (!empty($_GET['month'])) ? $_GET['month'] : date('Y-m');
+        
+        $sql = "SELECT date, SUM(totalPrice * seatCount) as revenue, SUM(seatCount) as pax, COUNT(id) as bookingCount,
+                SUM(CASE WHEN paymentMethod = 'Cash' THEN totalPrice * seatCount ELSE 0 END) as revenueCash,
+                SUM(CASE WHEN paymentMethod = 'Transfer' OR paymentMethod = 'DP' THEN totalPrice * seatCount ELSE 0 END) as revenueTransfer
+                FROM bookings 
+                WHERE status != 'Cancelled' AND DATE_FORMAT(date, '%Y-%m') = '$monthFilter'
+                GROUP BY date ORDER BY date DESC";
         
         if ($period === 'monthly') {
-            $sql = "SELECT DATE_FORMAT(date, '%Y-%m') as date, SUM(totalPrice) as revenue, SUM(seatCount) as pax, COUNT(id) as bookingCount,
-                    SUM(CASE WHEN paymentMethod = 'Cash' THEN totalPrice ELSE 0 END) as revenueCash,
-                    SUM(CASE WHEN paymentMethod = 'Transfer' OR paymentMethod = 'DP' THEN totalPrice ELSE 0 END) as revenueTransfer
+            $sql = "SELECT DATE_FORMAT(date, '%Y-%m') as date, SUM(totalPrice * seatCount) as revenue, SUM(seatCount) as pax, COUNT(id) as bookingCount,
+                    SUM(CASE WHEN paymentMethod = 'Cash' THEN totalPrice * seatCount ELSE 0 END) as revenueCash,
+                    SUM(CASE WHEN paymentMethod = 'Transfer' OR paymentMethod = 'DP' THEN totalPrice * seatCount ELSE 0 END) as revenueTransfer
                     FROM bookings WHERE status != 'Cancelled' GROUP BY DATE_FORMAT(date, '%Y-%m') ORDER BY date DESC LIMIT 12";
         }
 
@@ -184,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $pax[] = (int)$row['pax'];
             
             // Detailed breakdown: Time, Route, Pax, Revenue
-            $detailSql = "SELECT time, routeName, COUNT(id) as count, SUM(seatCount) as seats, SUM(totalPrice) as tripRevenue FROM bookings WHERE date='$dateKey' AND status != 'Cancelled' GROUP BY time, routeName";
+            $detailSql = "SELECT time, routeName, COUNT(id) as count, SUM(seatCount) as seats, SUM(totalPrice * seatCount) as tripRevenue FROM bookings WHERE date='$dateKey' AND status != 'Cancelled' GROUP BY time, routeName";
             $detailRes = $conn->query($detailSql);
             $dayDetails = [];
             while ($d = $detailRes->fetch_assoc()) {
@@ -207,6 +222,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit;
     }
 
+    // --- E. GET REPORT DETAILS (List of Transactions) ---
+    if ($action === 'get_report_details') {
+        $date = isset($_GET['date']) ? $_GET['date'] : null;
+        if (!$date) {
+            echo json_encode(['error' => 'Date required']);
+            exit;
+        }
+
+        // Fetch bookings for this date
+        // Note: For monthly view date input might be 'YYYY-MM', so we use LIKE
+        if (strlen($date) === 7) {
+             // Monthly
+             $where = "DATE_FORMAT(date, '%Y-%m') = '$date'";
+        } else {
+             // Daily
+             $where = "date = '$date'";
+        }
+
+        $sql = "SELECT id, time, routeName, passengerName, seatCount, seatNumbers, selectedSeats, totalPrice, paymentMethod, status 
+                FROM bookings 
+                WHERE $where AND status != 'Cancelled' 
+                ORDER BY time ASC, id ASC";
+        
+        $result = $conn->query($sql);
+        $bookings = [];
+        while($row = $result->fetch_assoc()) {
+            $row['id'] = (float)$row['id'];
+            $row['seatCount'] = (int)$row['seatCount'];
+            $row['totalPrice'] = (double)$row['totalPrice'];
+            
+            // Fallback for seatNumbers if empty
+            if (empty($row['seatNumbers']) && !empty($row['selectedSeats'])) {
+                $seats = json_decode($row['selectedSeats'], true);
+                if (is_array($seats)) {
+                    $row['seatNumbers'] = implode(', ', $seats);
+                }
+            }
+            unset($row['selectedSeats']); // Clean up to reduce payload
+            
+            $bookings[] = $row;
+        }
+
+        echo json_encode(['bookings' => $bookings]);
+        exit;
+    }
+
+    // --- F. GET USERS ---
+    if ($action === 'get_users') {
+        $sql = "SELECT id, username, name, position, placement, created_at FROM users ORDER BY created_at DESC";
+        $result = $conn->query($sql);
+        $users = [];
+        while($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        echo json_encode(['users' => $users]);
+        exit;
+    }
+
+    // --- G. GET CRM DATA ---
+    if ($action === 'get_crm_data') {
+        // Group by Phone Number
+        $sql = "SELECT passengerPhone as phone, 
+                       MAX(passengerName) as name, 
+                       COUNT(id) as totalTrips, 
+                       SUM(totalPrice) as totalRevenue, 
+                       MAX(date) as lastTrip 
+                FROM bookings 
+                WHERE status != 'Cancelled' AND passengerPhone != '' 
+                GROUP BY passengerPhone 
+                ORDER BY lastTrip DESC";
+        
+        $result = $conn->query($sql);
+        $customers = [];
+        while($row = $result->fetch_assoc()) {
+            $customers[] = $row;
+        }
+        echo json_encode(['customers' => $customers]);
+        exit;
+    }
+
+    // --- H. GET CUSTOMER HISTORY ---
+    if ($action === 'get_customer_history') {
+        $phone = $conn->real_escape_string($_GET['phone']);
+        $sql = "SELECT id, date, time, routeName, seatCount, totalPrice, status 
+                FROM bookings 
+                WHERE passengerPhone = '$phone' 
+                ORDER BY date DESC";
+        
+        $result = $conn->query($sql);
+        $history = [];
+        while($row = $result->fetch_assoc()) {
+            $history[] = $row;
+        }
+        echo json_encode(['history' => $history]);
+        exit;
+    }
+
     echo json_encode($data);
     exit;
 }
@@ -220,6 +332,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Cek Action
     $action = isset($input['action']) ? $input['action'] : '';
+
+
+
+    if ($action == 'save_user') {
+        $data = $input;
+        
+        $mode = $data['mode']; // 'add' or 'edit'
+        $username = $conn->real_escape_string($data['username']);
+        $name = $conn->real_escape_string($data['name']);
+        
+        // New Fields
+        $position = isset($data['position']) ? $conn->real_escape_string($data['position']) : '-';
+        $placement = isset($data['placement']) ? $conn->real_escape_string($data['placement']) : '-';
+
+        $password = isset($data['password']) && !empty($data['password']) ? $data['password'] : '';
+        
+        if ($mode == 'add') {
+            // Check username exists
+            $check = $conn->query("SELECT id FROM users WHERE username = '$username'");
+            if ($check->num_rows > 0) {
+                echo json_encode(['success' => false, 'message' => 'Username sudah digunakan']);
+                exit;
+            }
+            
+            $id = time() . rand(100,999);
+            // Default password if empty
+            if (empty($password)) {
+                $password = '123456';
+            }
+            $passHash = password_hash($password, PASSWORD_DEFAULT);
+            
+            $sql = "INSERT INTO users (id, username, password, name, position, placement) VALUES ('$id', '$username', '$passHash', '$name', '$position', '$placement')";
+            
+        } else {
+            $id = $data['id'];
+            if (!empty($password)) {
+                $passHash = password_hash($password, PASSWORD_DEFAULT);
+                $sql = "UPDATE users SET username='$username', name='$name', position='$position', placement='$placement', password='$passHash' WHERE id='$id'";
+            } else {
+                $sql = "UPDATE users SET username='$username', name='$name', position='$position', placement='$placement' WHERE id='$id'";
+            }
+        }
+        
+        if ($conn->query($sql)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => $conn->error]);
+        }
+        exit;
+    }
+
+    if ($action == 'delete_user') {
+        $data = $input;
+        $id = $conn->real_escape_string($data['id']);
+        
+        // Prevent deleting last admin if needed, but for now simple delete
+        if ($conn->query("DELETE FROM users WHERE id='$id'")) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => $conn->error]);
+        }
+        exit;
+    }
 
     // --- A. SAVE BOOKING BARU (Single Insert) ---
     if ($action === 'create_booking') {
@@ -344,41 +519,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    // --- E. SAVE TRIP (Create/Update) ---
+    // --- D. MANAJEMEN TRIP (PENUGASAN HARIAN) ---
     if ($action === 'save_trip') {
-        $t = $input['data'];
-        
-        $conn->begin_transaction();
-        try {
-            $routeJson = json_encode($t['routeConfig']);
-            $fleetJson = json_encode($t['fleet']);
-            $driverJson = json_encode($t['driver']);
-            $passJson = json_encode($t['passengers']);
-            $now = date('Y-m-d H:i:s');
-            
-            // Check if trip exists
-            $check = $conn->query("SELECT id FROM trips WHERE id='{$t['id']}'");
-            if ($check->num_rows > 0) {
-                // Update
-                $stmt = $conn->prepare("UPDATE trips SET routeConfig=?, fleet=?, driver=?, passengers=?, status=? WHERE id=?");
-                $stmt->bind_param("ssssss", $routeJson, $fleetJson, $driverJson, $passJson, $t['status'], $t['id']);
-                $stmt->execute();
-            } else {
-                // Insert
-                $stmt = $conn->prepare("INSERT INTO trips (id, routeConfig, fleet, driver, passengers, status, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("sssssss", $t['id'], $routeJson, $fleetJson, $driverJson, $passJson, $t['status'], $now);
-                $stmt->execute();
-            }
+        $data = $input['data'];
+        $id = $data['id'];
+        $routeConfig = json_encode($data['routeConfig']);
+        $fleet = json_encode($data['fleet']);
+        $driver = json_encode($data['driver']);
+        $passengers = json_encode($data['passengers']);
+        $status = $data['status'];
+        $date = $data['date'];
+        $time = $data['time'];
+        $note = isset($data['note']) ? $data['note'] : '';
+        $createdAt = date('Y-m-d H:i:s');
 
-            // Optional: Update Fleet/Driver status if needed
-            // For now, we just save the assignment.
-            
-            $conn->commit();
-            echo json_encode(['status' => 'success']);
-        } catch (Exception $e) {
-            $conn->rollback();
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        // Check if exists
+        $check = $conn->query("SELECT id FROM trips WHERE id='$id'");
+        if ($check->num_rows > 0) {
+            $stmt = $conn->prepare("UPDATE trips SET routeConfig=?, fleet=?, driver=?, passengers=?, status=?, date=?, time=?, note=? WHERE id=?");
+            $stmt->bind_param("sssssssss", $routeConfig, $fleet, $driver, $passengers, $status, $date, $time, $note, $id);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO trips (id, routeConfig, fleet, driver, passengers, status, date, time, note, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssssss", $id, $routeConfig, $fleet, $driver, $passengers, $status, $date, $time, $note, $createdAt);
         }
+
+        if ($stmt->execute()) echo json_encode(['status' => 'success']);
+        else echo json_encode(['status' => 'error', 'message' => $conn->error]);
         exit;
     }
 
@@ -514,6 +680,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("s", $id);
         if ($stmt->execute()) echo json_encode(['status' => 'success']);
         else echo json_encode(['status' => 'error', 'message' => $conn->error]);
+        exit;
+    }
+
+    // --- I. UPDATE BOOKING FULL (EDIT BOOKING) ---
+    if ($action === 'update_booking_full') {
+        $id = $input['id'];
+        $adminName = $input['adminName'];
+        
+        // Data to update
+        $date = $input['date'];
+        $time = $input['time'];
+        $routeId = isset($input['routeId']) ? $input['routeId'] : null;
+        $passengerName = $input['passengerName'];
+        $passengerPhone = $input['passengerPhone'];
+        $passengerType = $input['passengerType'];
+        $seatNumbers = $input['seatNumbers']; // String "1, 2"
+        $seatCount = $input['seatCount'];
+        $selectedSeats = json_encode($input['selectedSeats']); // Array [1, 2]
+        $totalPrice = $input['totalPrice'];
+        $pickupAddress = $input['pickupAddress'];
+        $dropoffAddress = $input['dropoffAddress'];
+        
+        $conn->begin_transaction();
+        try {
+            // 1. Get Previous Data
+            $prev = $conn->query("SELECT * FROM bookings WHERE id='$id'")->fetch_assoc();
+            $prevJson = json_encode($prev);
+            
+            // 2. Update Booking
+            $sql = "UPDATE bookings SET 
+                    date=?, time=?, routeId=?, 
+                    passengerName=?, passengerPhone=?, passengerType=?,
+                    seatNumbers=?, seatCount=?, selectedSeats=?,
+                    totalPrice=?, pickupAddress=?, dropoffAddress=?
+                    WHERE id=?";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssssssisssss", 
+                $date, $time, $routeId, 
+                $passengerName, $passengerPhone, $passengerType,
+                $seatNumbers, $seatCount, $selectedSeats,
+                $totalPrice, $pickupAddress, $dropoffAddress,
+                $id
+            );
+            $stmt->execute();
+            
+            // 3. Insert Log
+            $logId = time() . rand(100,999);
+            $actionLog = 'Edit Full Data';
+            
+            // New Value Snapshot
+            $newVal = $conn->query("SELECT * FROM bookings WHERE id='$id'")->fetch_assoc();
+            $newJson = json_encode($newVal);
+            
+            $stmtLog = $conn->prepare("INSERT INTO booking_logs (id, booking_id, action, admin_name, prev_value, new_value) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmtLog->bind_param("ssssss", $logId, $id, $actionLog, $adminName, $prevJson, $newJson);
+            $stmtLog->execute();
+            
+            $conn->commit();
+            echo json_encode(['status' => 'success']);
+            
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    // --- J. GET BOOKING LOGS ---
+    if ($action === 'get_booking_logs') {
+        $id = $conn->real_escape_string($input['id']);
+        $sql = "SELECT * FROM booking_logs WHERE booking_id='$id' ORDER BY timestamp DESC";
+        $result = $conn->query($sql);
+        $logs = [];
+        while($row = $result->fetch_assoc()) {
+            $logs[] = $row;
+        }
+        echo json_encode(['status' => 'success', 'logs' => $logs]);
+        exit;
+    }
+    // --- K. MOVE BOOKING SCHEDULE (DRAG & DROP) ---
+    if ($action === 'move_booking_schedule') {
+        $id = $input['id'];
+        $date = $input['date'];
+        $time = $input['time'];
+        $clearSeat = isset($input['clear_seat']) && $input['clear_seat'];
+        
+        $conn->begin_transaction();
+        try {
+            // Update Booking
+            if ($clearSeat) {
+                $stmt = $conn->prepare("UPDATE bookings SET date=?, time=?, seatNumbers=NULL WHERE id=?");
+                $stmt->bind_param("sss", $date, $time, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE bookings SET date=?, time=? WHERE id=?");
+                $stmt->bind_param("sss", $date, $time, $id);
+            }
+            $stmt->execute();
+            
+            $conn->commit();
+            echo json_encode(['status' => 'success']);
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
         exit;
     }
 }

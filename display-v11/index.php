@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -63,6 +64,22 @@
 
     <div id="app" class="flex h-full w-full" v-cloak>
         
+        <!-- Lock Screen -->
+        <div v-if="isLocked" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-100 dark:bg-slate-900 px-4">
+            <div class="w-full max-w-sm bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden text-center p-8 animate-fade-in border border-slate-200 dark:border-slate-700">
+                <div class="w-16 h-16 bg-blue-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400">
+                    <i class="bi bi-shield-lock-fill text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Akses Terbatas</h2>
+                <p class="text-sm text-slate-500 mb-6">Masukkan Kode Akses untuk melanjutkan.</p>
+                
+                <form @submit.prevent="unlockPage">
+                    <input type="password" v-model="accessCode" placeholder="Kode Akses" class="w-full text-center text-lg tracking-widest p-3 border rounded-xl bg-slate-50 dark:bg-slate-900 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-4 transition-all">
+                    <button type="submit" class="w-full py-3 bg-sr-blue dark:bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-transform active:scale-95">Buka Akses</button>
+                </form>
+            </div>
+        </div>
+
         <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-20 flex-shrink-0 h-full shadow-sm transition-colors duration-300">
             <div class="h-16 flex items-center justify-center border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
                 <div class="text-xl font-extrabold text-sr-blue dark:text-white tracking-tight flex items-center gap-2">
@@ -105,7 +122,18 @@
                     <i class="bi bi-collection-fill w-6"></i> Armada & Supir
                 </a>
                 <a href="#" @click.prevent="changeView('routeManagement')" :class="view==='routeManagement'?'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold':'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors">
+                <a href="#" @click.prevent="changeView('routeManagement')" :class="view==='routeManagement'?'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold':'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors">
                     <i class="bi bi-map-fill w-6"></i> Kelola Rute
+                </a>
+                
+                <!-- <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Pengaturan</div>
+                <a href="admin_staff.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="bi bi-people-fill w-6"></i> Admin & Staff
+                </a> -->
+                
+                <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">CRM</div>
+                <a href="CRM/index.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="bi bi-person-lines-fill w-6"></i> Data Konsumen
                 </a>
             </nav>
         </aside>
@@ -360,7 +388,13 @@
                                 </div>
                                 <div v-if="currentPaymentMethod === 'Cash'" class="space-y-2 animate-fade-in">
                                     <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Lokasi</label><input type="text" v-model="tempPayment.loc" placeholder="Loket / Mobil" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
-                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label><input type="text" v-model="tempPayment.recv" placeholder="Nama Staf" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label>
+                                        <select v-model="tempPayment.recv" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white">
+                                            <option value="" disabled>-- Pilih Staf --</option>
+                                            <option v-for="s in staffList" :value="s.name">{{ s.name }}</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div v-else-if="currentPaymentMethod === 'Transfer'" class="space-y-2 animate-fade-in">
                                     <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (Sutan Raya)</div>
@@ -378,7 +412,13 @@
                                     </div>
                                     <div v-if="tempPayment.dpMethod === 'Cash'" class="space-y-2 animate-fade-in">
                                         <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Lokasi</label><input type="text" v-model="tempPayment.loc" placeholder="Loket / Mobil" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
-                                        <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label><input type="text" v-model="tempPayment.recv" placeholder="Nama Staf" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
+                                        <div>
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label>
+                                            <select v-model="tempPayment.recv" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white">
+                                                <option value="" disabled>-- Pilih Staf --</option>
+                                                <option v-for="s in staffList" :value="s.name">{{ s.name }}</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div v-else class="space-y-2 animate-fade-in">
                                         <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (Sutan Raya)</div>

@@ -1,3 +1,9 @@
 [09-Dec-2025 08:29:57 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 39
 [09-Dec-2025 08:29:57 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 46
 [09-Dec-2025 08:29:57 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 215
+[13-Dec-2025 06:05:25 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 41
+[13-Dec-2025 06:05:25 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 48
+[13-Dec-2025 06:05:25 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 318
+[13-Dec-2025 06:06:56 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 41
+[13-Dec-2025 06:06:56 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 48
+[13-Dec-2025 06:06:56 Europe/Berlin] PHP Warning:  Undefined array key "REQUEST_METHOD" in /Applications/XAMPP/xamppfiles/htdocs/travel-sr-fe/display-v11/api.php on line 318

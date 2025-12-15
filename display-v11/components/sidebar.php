@@ -1,6 +1,6 @@
 <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-20 flex-shrink-0 h-full shadow-sm transition-colors duration-300">
     <div class="h-16 flex items-center justify-center border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
-        <div class="text-xl font-extrabold text-sr-blue dark:text-white tracking-tight flex items-center gap-2">
+        <div class="text-xl font-bold text-sr-blue dark:text-white tracking-tight flex items-center gap-2">
             <img src="../image/logo.png" alt="Sutan Raya" class="w-8 h-8 object-contain"> SutanRaya
         </div>
     </div>
@@ -25,7 +25,7 @@
 
         <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Operasional</div>
         <a href="dispatcher.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors justify-between <?= $currentPage == 'dispatcher' ? 'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700' ?>">
-            <div class="flex items-center"><i class="bi bi-kanban-fill w-6"></i> Dispatcher</div>
+            <div class="flex items-center"><i class="bi bi-kanban-fill w-6"></i> Keberangkatan</div>
             <span id="pendingDispatchCount" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
         </a>
         <a href="schedule.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors <?= $currentPage == 'schedule' ? 'bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700' ?>">

@@ -159,21 +159,21 @@
                                         <div class="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1 bg-slate-100 dark:bg-slate-700 rounded-full"></div>
                                         <div class="flex flex-col items-center gap-3 mt-4">
                                             <div class="flex gap-6">
-                                                <button id="seat-1" onclick="toggleSeat('1')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">1</button>
+                                                <button id="seat-CC" onclick="toggleSeat('CC')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">CC</button>
                                                 <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-[10px] font-bold border border-slate-200 dark:border-slate-600">SUPIR</div>
                                             </div>
                                             <div class="flex gap-6">
+                                                <button id="seat-1" onclick="toggleSeat('1')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">1</button>
                                                 <button id="seat-2" onclick="toggleSeat('2')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">2</button>
-                                                <button id="seat-3" onclick="toggleSeat('3')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">3</button>
                                             </div>
                                             <div class="flex gap-6">
+                                                <button id="seat-3" onclick="toggleSeat('3')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">3</button>
                                                 <button id="seat-4" onclick="toggleSeat('4')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">4</button>
-                                                <button id="seat-5" onclick="toggleSeat('5')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">5</button>
                                             </div>
                                             <div class="flex gap-3">
+                                                <button id="seat-5" onclick="toggleSeat('5')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">5</button>
                                                 <button id="seat-6" onclick="toggleSeat('6')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">6</button>
                                                 <button id="seat-7" onclick="toggleSeat('7')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">7</button>
-                                                <button id="seat-8" onclick="toggleSeat('8')" class="w-10 h-10 rounded-xl font-bold text-sm border transition-all bg-white dark:bg-slate-700 hover:bg-blue-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 shadow-sm">8</button>
                                             </div>
                                         </div>
                                     </div>

@@ -121,3 +121,1406 @@ Array
     [fleetId] => 1765185000022
     [driverId] => 1765185000003
 )
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765426299120
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => SR 007 TRAVEL
+                    [plate] => BA 7053 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765182953107
+                    [name] => RAFI
+                    [phone] => 085363660336
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 06:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765426329958
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000020
+                    [name] => SR 006 TRAVEL
+                    [plate] => Z 7431 DA
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000001
+                    [name] => DEFRI ANDIKA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 06:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765430154884
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => SR 007 TRAVEL
+                    [plate] => BA 7053 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000001
+                    [name] => DEFRI ANDIKA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 06:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765430331829
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000025
+                    [name] => SR 010 TRAVEL
+                    [plate] => BA 7049 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000002
+                    [name] => AFRIANTO
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 06:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 10:00
+    [fleetId] => 1765182765547
+    [driverId] => 1765185000002
+    [unitNumber] => 2
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765430810980
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765182765547
+                    [name] => Hiace Premio SR1
+                    [plate] => BA 7083 AU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-bus-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000003
+                    [name] => RAFI RAIHAN MAULANA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 10:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765430847635
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765182765547
+                    [name] => Hiace Premio SR1
+                    [plate] => BA 7083 AU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-bus-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000003
+                    [name] => RAFI RAIHAN MAULANA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 10:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765430880320
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => SR 007 TRAVEL
+                    [plate] => BA 7053 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000003
+                    [name] => RAFI RAIHAN MAULANA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 10:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765431095982
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765182765547
+                    [name] => Hiace Premio SR1
+                    [plate] => BA 7083 AU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-bus-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000003
+                    [name] => RAFI RAIHAN MAULANA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 10:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765431160046
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000020
+                    [name] => SR 006 TRAVEL
+                    [plate] => Z 7431 DA
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000009
+                    [name] => RIKI PUTRA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-11
+            [time] => 06:00
+            [unitNumber] => 2
+        )
+
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 10:00
+    [fleetId] => 1765182765547
+    [driverId] => 1765185000003
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 10:00
+    [fleetId] => 1765182765547
+    [driverId] => 1765185000003
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 10:00
+    [fleetId] => 1765182765547
+    [driverId] => 1765185000003
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 10:00
+    [fleetId] => 1765182765547
+    [driverId] => 1765185000003
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 06:00
+    [fleetId] => 1765185000022
+    [driverId] => 1765185000004
+)
+Array
+(
+    [id] => 
+    [name] => Salma
+    [username] => Salma
+    [password] => 
+    [position] => Admin Travel
+    [placement] => Padang
+    [action] => save_user
+    [mode] => add
+)
+Array
+(
+    [id] => 
+    [name] => Salma
+    [username] => Salma
+    [password] => 
+    [position] => Admin Travel
+    [placement] => Padang
+    [action] => save_user
+    [mode] => add
+)
+Array
+(
+    [id] => 1765435014677
+    [action] => delete_user
+)
+Array
+(
+    [action] => update_trip_status
+    [tripId] => 1765440382812
+    [status] => Tiba
+    [fleetId] => 1765185000029
+    [driverId] => 1765423308327
+    [passengers] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 1765432626815
+                    [serviceType] => Travel
+                    [routeId] => BKT-PDG-2
+                    [date] => 2025-12-01
+                    [time] => 04:00
+                    [passengerName] => Khairunnisa 
+                    [passengerPhone] => 082384927675
+                    [passengerType] => Umum
+                    [seatCount] => 1
+                    [selectedSeats] => Array
+                        (
+                            [0] => 6
+                        )
+
+                    [duration] => 1
+                    [totalPrice] => 250000
+                    [paymentMethod] => Transfer
+                    [paymentStatus] => Lunas
+                    [validationStatus] => Valid
+                    [paymentLocation] => 
+                    [paymentReceiver] => 
+                    [paymentProof] => image/proofs/proof_1765432626815.jpeg
+                    [status] => Pending
+                    [seatNumbers] => 6
+                    [ktmProof] => 
+                    [downPaymentAmount] => 0
+                    [type] => Unit
+                    [seatCapacity] => 1
+                    [priceType] => Kantor
+                    [packageType] => Unit
+                    [routeName] => Bukittinggi Via Sitinjau - Padang
+                    [pickupAddress] => Pakan kurai 
+                    [dropoffAddress] => Pasar baru 
+                )
+
+            [1] => Array
+                (
+                    [id] => 1765432374356
+                    [serviceType] => Travel
+                    [routeId] => BKT-PDG-2
+                    [date] => 2025-12-01
+                    [time] => 04:00
+                    [passengerName] => Hengky 
+                    [passengerPhone] => 082297483787
+                    [passengerType] => Umum
+                    [seatCount] => 3
+                    [selectedSeats] => Array
+                        (
+                            [0] => 2
+                            [1] => 3
+                            [2] => 4
+                        )
+
+                    [duration] => 1
+                    [totalPrice] => 250000
+                    [paymentMethod] => Transfer
+                    [paymentStatus] => Lunas
+                    [validationStatus] => Valid
+                    [paymentLocation] => 
+                    [paymentReceiver] => 
+                    [paymentProof] => image/proofs/proof_1765432374356.jpeg
+                    [status] => Pending
+                    [seatNumbers] => 2, 3, 4
+                    [ktmProof] => 
+                    [downPaymentAmount] => 0
+                    [type] => Unit
+                    [seatCapacity] => 1
+                    [priceType] => Kantor
+                    [packageType] => Unit
+                    [routeName] => Bukittinggi Via Sitinjau - Padang
+                    [pickupAddress] => Garegeh
+                    [dropoffAddress] => BIM 
+                )
+
+        )
+
+)
+Array
+(
+    [action] => update_booking_schedule
+    [id] => 1765602416
+    [date] => 2023-01-02
+    [time] => 10:00
+    [adminName] => Tester
+)
+Array
+(
+    [action] => get_booking_logs
+    [id] => 1765602416
+)
+Array
+(
+    [action] => get_booking_logs
+    [id] => 1765440821642
+)
+Array
+(
+    [action] => get_booking_logs
+    [id] => 1765440821642
+)
+Array
+(
+    [action] => update_booking_full
+    [id] => 1765440821642
+    [adminName] => Salma
+    [date] => 2025-12-01
+    [time] => 06:00
+    [routeId] => PYK-PDG-2
+    [passengerName] => Mia Khaira
+    [passengerPhone] => 085229090313
+    [passengerType] => Umum
+    [seatNumbers] => 4
+    [seatCount] => 1
+    [selectedSeats] => Array
+        (
+            [0] => 4
+        )
+
+    [totalPrice] => 250000
+    [pickupAddress] => Padang Data
+    [dropoffAddress] => BIM
+)
+Array
+(
+    [action] => get_booking_logs
+    [id] => 1765440727821
+)
+Array
+(
+    [action] => update_booking_full
+    [id] => 1765440727821
+    [adminName] => salma
+    [date] => 2025-12-04
+    [time] => 08:00
+    [routeId] => BKT-PDG-2
+    [passengerName] => Fadila ryaz
+    [passengerPhone] => 082386684585
+    [passengerType] => Umum
+    [seatNumbers] => 5
+    [seatCount] => 1
+    [selectedSeats] => Array
+        (
+            [0] => 5
+        )
+
+    [totalPrice] => 250000
+    [pickupAddress] => Simpang bukik
+    [dropoffAddress] => Arai pinang
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => 1765610361529
+            [serviceType] => Travel
+            [routeId] => PDG-BKT-2
+            [date] => 2025-12-13
+            [time] => 08:00
+            [passengerName] => Naaas
+            [passengerPhone] => 082282425862
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                    [0] => CC
+                )
+
+            [duration] => 1
+            [totalPrice] => 120000
+            [paymentMethod] => Cash
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Padang
+            [paymentReceiver] => Salma
+            [paymentProof] => 
+            [seatNumbers] => CC
+            [ktmProof] => 
+            [downPaymentAmount] => 0
+            [type] => Unit
+            [seatCapacity] => 1
+            [priceType] => Kantor
+            [packageType] => Unit
+            [routeName] => Padang - Bukittinggi (normal)
+            [pickupAddress] => BIM
+            [dropoffAddress] => Jam gadang
+        )
+
+)
+Array
+(
+    [action] => save_schedule_default
+    [routeId] => BKT-PDG
+    [time] => 06:00
+    [fleetId] => 1765185000022
+    [driverId] => 1765185000002
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765612049821
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => SR 007 TRAVEL
+                    [plate] => BA 7053 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000004
+                    [name] => HERU GUNAWAN
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-13
+            [time] => 06:00
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765615358153
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => SR 007 TRAVEL
+                    [plate] => BA 7053 OAU
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000003
+                    [name] => RAFI RAIHAN MAULANA
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-13
+            [time] => 06:00
+        )
+
+)
+Array
+(
+    [action] => save_trip
+    [data] => Array
+        (
+            [id] => 1765615370570
+            [routeConfig] => Array
+                (
+                    [id] => BKT-PDG
+                    [origin] => Bukittinggi
+                    [destination] => Padang
+                    [schedules] => Array
+                        (
+                            [0] => 06:00
+                            [1] => 08:00
+                            [2] => 10:00
+                            [3] => 13:00
+                            [4] => 15:00
+                            [5] => 17:00
+                            [6] => 18:00
+                            [7] => 19:00
+                        )
+
+                    [prices] => Array
+                        (
+                            [umum] => 120000
+                            [pelajar] => 100000
+                            [dropping] => 900000
+                            [carter] => 1500000
+                        )
+
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000020
+                    [name] => SR 006 TRAVEL
+                    [plate] => Z 7431 DA
+                    [capacity] => 8
+                    [status] => Tersedia
+                    [icon] => bi-car-front-fill
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765185000011
+                    [name] => KHAIRUL FAHMI
+                    [phone] => -
+                    [status] => Standby
+                    [licenseType] => B1 Umum
+                )
+
+            [passengers] => Array
+                (
+                )
+
+            [status] => Scheduled
+            [date] => 2025-12-13
+            [time] => 10:00
+        )
+
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440727821
+    [date] => 2025-12-11
+    [time] => 08:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765429124185
+    [date] => 2025-12-03
+    [time] => 18:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-11
+    [time] => 08:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-11
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440821642
+    [date] => 2025-12-01
+    [time] => 05:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440727821
+    [date] => 2025-12-11
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 18:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 18:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440727821
+    [date] => 2025-12-03
+    [time] => 18:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 1
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438489682
+    [date] => 2025-12-03
+    [time] => 09:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438489682
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438489682
+    [date] => 2025-12-03
+    [time] => 09:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => get_booking_logs
+    [id] => 1765610361529
+)
+Array
+(
+    [action] => delete_booking
+    [id] => 1765610361529
+    [adminName] => Salma
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440727821
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765437037185
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765437037185
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438267202
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765437037185
+    [date] => 2025-12-03
+    [time] => 09:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765429124185
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438489682
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765433587725
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 1
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440300599
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765436443143
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438267202
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765437037185
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438267202
+    [date] => 2025-12-03
+    [time] => 09:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438267202
+    [date] => 2025-12-03
+    [time] => 12:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765440727821
+    [date] => 2025-12-03
+    [time] => 09:00
+    [clear_seat] => 
+)
+Array
+(
+    [action] => move_booking_schedule
+    [id] => 1765438640054
+    [date] => 2025-12-03
+    [time] => 18:00
+    [clear_seat] => 
+)

@@ -280,28 +280,30 @@ function handleSeatOptionChange() {
 
 function renderSeatAvailability() {
     // Reset all seats
-    for (let i = 1; i <= 8; i++) {
-        const btn = document.getElementById(`seat-${i}`);
-        if (!btn) continue;
+    // Reset all seats
+    const seatIds = ['CC', '1', '2', '3', '4', '5', '6', '7'];
+    seatIds.forEach(id => {
+        const btn = document.getElementById(`seat-${id}`);
+        if (!btn) return;
         
         // Check if occupied
-        if (occupiedSeats.includes(i.toString())) {
+        if (occupiedSeats.includes(id)) {
             btn.disabled = true;
             btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300', 'bg-sr-blue', 'text-white', 'scale-105');
             btn.classList.add('bg-black', 'text-gray-500', 'cursor-not-allowed', 'opacity-50');
             // If it was selected, deselect it
-            if (selectedSeats.includes(i.toString())) {
-                toggleSeat(i.toString()); // This will remove it
+            if (selectedSeats.includes(id)) {
+                toggleSeat(id); // This will remove it
             }
         } else {
             btn.disabled = false;
             btn.classList.remove('bg-black', 'text-gray-500', 'cursor-not-allowed', 'opacity-50');
             // Restore normal style if not selected
-            if (!selectedSeats.includes(i.toString())) {
+            if (!selectedSeats.includes(id)) {
                 btn.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
             }
         }
-    }
+    });
 }
 
 // --- END SEAT AVAILABILITY LOGIC ---
@@ -458,6 +460,7 @@ function setupEventListeners() {
     const routeSelect = document.getElementById('routeSelect');
     if (routeSelect) {
         routeSelect.addEventListener('change', () => {
+            updateTimeOptions();
             fetchOccupiedSeats();
             calculatePrice();
         });
@@ -595,6 +598,25 @@ function toggleSeat(seatId) {
     calculatePrice();
 }
 
+// function to update time options based on route
+function updateTimeOptions() {
+    const routeId = document.getElementById('routeSelect').value;
+    const route = routes.find(r => r.id === routeId);
+    const timeSelect = document.getElementById('timeInput');
+    
+    if (timeSelect) {
+        timeSelect.innerHTML = '';
+        if (route && route.schedules) {
+            route.schedules.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = time;
+                timeSelect.appendChild(option);
+            });
+        }
+    }
+}
+
 function calculatePrice() {
     const routeId = document.getElementById('routeSelect').value;
     const route = routes.find(r => r.id === routeId);
@@ -624,17 +646,7 @@ function calculatePrice() {
         }
     }
     
-    // Update Schedule Options
-    const timeSelect = document.getElementById('timeInput');
-    if (route && route.schedules) {
-        timeSelect.innerHTML = '';
-        route.schedules.forEach(time => {
-            const option = document.createElement('option');
-            option.value = time;
-            option.textContent = time;
-            timeSelect.appendChild(option);
-        });
-    }
+
 
     updatePriceDisplay();
 }

@@ -10,7 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -99,99 +98,90 @@
                             <i class="bi bi-check-circle-fill text-4xl mb-2 block text-green-200"></i>
                             <p>Semua jadwal sudah di-dispatch atau belum ada booking.</p>
                         </div>
+                        
 
-                        <div v-for="(batches, routeName) in groupedDispatcherViews" :key="routeName" class="mb-10">
-                            <h3 class="font-bold text-gray-600 dark:text-gray-300 text-sm uppercase tracking-wider mb-4 pl-2 border-l-4 border-orange-500">{{ routeName }}</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                <div v-for="group in batches" :key="group.key" 
-                                     class="bg-white rounded-2xl shadow-sm border border-gray-200 p-0 relative overflow-hidden hover:shadow-lg transition-all group flex flex-col"
-                                     @dragover.prevent 
-                                     @drop="onDrop($event, group)"
-                                     @dragenter.prevent="onDragEnter($event)"
-                                     @dragleave.prevent="onDragLeave($event)">
-                                    <div class="p-5 border-b border-gray-50 bg-gray-50/50 flex justify-between items-start relative">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-500"></div>
-                                        <div>
-                                            <div class="text-3xl font-bold text-gray-900">{{ group.time }}</div>
-                                            <div class="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wide">{{ formatDate(group.date) }}</div>
-                                            <div class="text-xs font-semibold text-gray-600 mt-1 flex items-center gap-1"><span class="bg-white px-1 rounded border">{{ group.routeConfig?.origin || 'Custom' }}</span> <i class="bi bi-arrow-right text-gray-400"></i> <span class="bg-white px-1 rounded border">{{ group.routeConfig?.destination || group.routeConfig?.name }}</span></div>
-                                        </div>
-                                        <div class="flex flex-col items-end gap-1">
-                                            <span class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Pending</span>
-                                            <span v-if="group.batchNumber" class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Armada {{ group.batchNumber }}</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div v-for="group in groupedBookings" :key="group.key" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-0 relative overflow-hidden hover:shadow-lg transition-all group flex flex-col">
+                                <div class="p-5 border-b border-gray-50 bg-gray-50/50 flex justify-between items-start relative">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-500"></div>
+                                    <div>
+                                        <div class="text-3xl font-bold text-gray-900">{{ group.time }}</div>
+                                        <div class="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wide">{{ formatDate(group.date) }}</div>
+                                        <div class="text-xs font-semibold text-gray-600 mt-1 flex items-center gap-1"><span class="bg-white px-1 rounded border">{{ group.routeConfig?.origin || 'Custom' }}</span> <i class="bi bi-arrow-right text-gray-400"></i> <span class="bg-white px-1 rounded border">{{ group.routeConfig?.destination || group.routeConfig?.name }}</span></div>
+                                    </div>
+                                    <div class="flex flex-col items-end gap-1">
+                                        <span class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Pending</span>
+                                        <span v-if="group.batchNumber" class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Armada {{ group.batchNumber }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-[16rem] max-h-[28rem] bg-white relative">
+                                    <div class="space-y-3 mb-6">
+                                        <div v-for="p in group.passengers" class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <div class="font-bold text-gray-800 text-sm flex items-center gap-2">
+                                                        {{ p.passengerName }}
+                                                        <span v-if="p.seatNumbers" class="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold">{{ p.seatNumbers }}</span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-400 mt-1"><i class="bi bi-whatsapp mr-1"></i> {{ p.passengerPhone }}</div>
+                                                </div>
+                                                <div>
+                                                    <a :href="getWaLink(p.passengerPhone)" target="_blank" class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors"><i class="bi bi-whatsapp"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 flex gap-2">
+                                                <span v-if="p.validationStatus==='Valid'" class="px-2 py-0.5 bg-green-100 text-green-700 rounded-lg text-[10px] font-bold flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Lunas</span>
+                                                <span v-else class="px-2 py-0.5 bg-red-100 text-red-700 rounded-lg text-[10px] font-bold flex items-center gap-1"><i class="bi bi-exclamation-circle-fill"></i> Cek Bukti</span>
+                                                <button @click="viewTicket(p)" class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold"><i class="bi bi-ticket-detailed-fill"></i></button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-[16rem] max-h-[28rem] bg-white relative">
-                                        <div class="space-y-3 mb-6">
-                                            <div v-for="p in group.passengers" :key="p.id" 
-                                                 class="bg-slate-50 border border-slate-100 p-3 rounded-xl cursor-move active:cursor-grabbing hover:bg-slate-100 transition-colors"
-                                                 draggable="true" 
-                                                 @dragstart="onDragStart($event, p, group)">
-                                                <div class="flex justify-between items-start">
-                                                    <div>
-                                                        <div class="font-bold text-gray-800 text-sm flex items-center gap-2">
-                                                            {{ p.passengerName }}
-                                                            <span v-if="p.seatNumbers" class="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold">{{ p.seatNumbers }}</span>
-                                                        </div>
-                                                        <div class="text-xs text-gray-400 mt-1"><i class="bi bi-whatsapp mr-1"></i> {{ p.passengerPhone }}</div>
-                                                    </div>
-                                                    <div>
-                                                        <a :href="getWaLink(p.passengerPhone)" target="_blank" class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors"><i class="bi bi-whatsapp"></i></a>
-                                                    </div>
-                                                </div>
-                                                <div class="mt-2 flex gap-2">
-                                                    <span v-else class="px-2 py-0.5 bg-red-100 text-red-700 rounded-lg text-[10px] font-bold flex items-center gap-1"><i class="bi bi-exclamation-circle-fill"></i> Cek Bukti</span>
-                                                    <button @click="viewTicket(p)" class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold"><i class="bi bi-ticket-detailed-fill"></i></button>
-                                                </div>
+                                    
+                                    <!-- Assignment Info using computed assignment from groupedBookings -->
+                                    <div v-if="group.assignment && group.assignment.fleet && group.assignment.driver" class="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
+                                        <div class="text-[10px] font-bold text-blue-400 uppercase mb-2">Armada Terjadwal</div>
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-car-front-fill"></i></div>
+                                            <div>
+                                                <div class="text-xs font-bold text-blue-900">{{ group.assignment.fleet.name }}</div>
+                                                <div class="text-[10px] text-blue-600">{{ group.assignment.fleet.plate }}</div>
                                             </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-person-fill"></i></div>
+                                            <div>
+                                                <div class="text-xs font-bold text-blue-900">{{ group.assignment.driver.name }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="mb-4 bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                                        <div>
+                                            <div class="text-xs font-bold text-yellow-800">Belum Ada Jadwal</div>
+                                            <div class="text-[10px] text-yellow-600">Atur armada & supir dulu.</div>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- End of scrollable content -->
+                                
+                                <!-- Fixed Footer (Outside scroll) -->
+                                <div class="p-4 border-t border-gray-100 bg-gray-50/50">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] uppercase font-bold text-gray-400">Total Muatan</span>
+                                            <span class="text-sm font-extrabold text-gray-900">{{ group.totalPassengers }} <span class="text-[10px] font-normal text-gray-500">Orang</span></span>
                                         </div>
                                         
-                                        <!-- Assignment Info using computed assignment from groupedBookings -->
-                                        <div v-if="group.assignment && group.assignment.fleet && group.assignment.driver" class="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
-                                            <div class="text-[10px] font-bold text-blue-400 uppercase mb-2">Armada Terjadwal</div>
-                                            <div class="flex items-center gap-3 mb-2">
-                                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-car-front-fill"></i></div>
-                                                <div>
-                                                    <div class="text-xs font-bold text-blue-900">{{ group.assignment.fleet.name }}</div>
-                                                    <div class="text-[10px] text-blue-600">{{ group.assignment.fleet.plate }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm"><i class="bi bi-person-fill"></i></div>
-                                                <div>
-                                                    <div class="text-xs font-bold text-blue-900">{{ group.assignment.driver.name }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div v-else class="mb-4 bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
-                                            <div>
-                                                <div class="text-xs font-bold text-yellow-800">Belum Ada Jadwal</div>
-                                                <div class="text-[10px] text-yellow-600">Atur armada & supir dulu.</div>
-                                            </div>
-                                        </div>
-
-                                    </div> <!-- End of scrollable content -->
-                                    
-                                    <!-- Fixed Footer (Outside scroll) -->
-                                    <div class="p-4 border-t border-gray-100 bg-gray-50/50">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex flex-col">
-                                                <span class="text-[10px] uppercase font-bold text-gray-400">Total Muatan</span>
-                                                <span class="text-sm font-extrabold text-gray-900">{{ group.totalPassengers }} <span class="text-[10px] font-normal text-gray-500">Orang</span></span>
-                                            </div>
-                                            
-                                            <button v-if="group.assignment && group.assignment.fleet && group.assignment.driver" 
-                                                    @click="openDispatchModal(group)" 
-                                                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-green-200 transition-all active:scale-95 flex items-center gap-2">
-                                                <span>Berangkatkan</span> <i class="bi bi-send-fill"></i>
-                                            </button>
-                                            <button v-else 
-                                                    @click="openScheduleModal(group.routeConfig, group.time)" 
-                                                    class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-yellow-200 transition-all active:scale-95 flex items-center gap-2">
-                                                <span>Atur Jadwal</span> <i class="bi bi-gear-fill"></i>
-                                            </button>
-                                        </div>
+                                        <button v-if="group.assignment && group.assignment.fleet && group.assignment.driver" 
+                                                @click="openDispatchModal(group)" 
+                                                class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-green-200 transition-all active:scale-95 flex items-center gap-2">
+                                            <span>Berangkatkan</span> <i class="bi bi-send-fill"></i>
+                                        </button>
+                                        <button v-else 
+                                                @click="openScheduleModal(group.routeConfig, group.time)" 
+                                                class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-yellow-200 transition-all active:scale-95 flex items-center gap-2">
+                                            <span>Atur Jadwal</span> <i class="bi bi-gear-fill"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -217,37 +207,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <div v-if="debugHiddenBookings.length > 0" class="mt-8 bg-red-50 border border-red-200 rounded-xl p-6">
-                        <h3 class="font-bold text-red-700 flex items-center gap-2 mb-4"><i class="bi bi-bug-fill"></i> Data Tersembunyi (Debug Mode)</h3>
-                        <p class="text-xs text-red-600 mb-4">Data berikut ada di Kelola Booking tapi tidak muncul di Dispatcher karena status tidak valid.</p>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="text-xs uppercase text-red-800 border-b border-red-200">
-                                        <th class="py-2">Nama</th>
-                                        <th class="py-2">Tanggal</th>
-                                        <th class="py-2">Status</th>
-                                        <th class="py-2">Alasan Hidden</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="b in debugHiddenBookings" :key="b.id" class="text-sm text-red-700 border-b border-red-100 last:border-0 hover:bg-red-100/50">
-                                        <td class="py-2 font-bold">{{ b.name }}</td>
-                                        <td class="py-2">{{ b.date }}</td>
-                                        <td class="py-2 font-mono">{{ b.status || '(Kosong)' }}</td>
-                                        <td class="py-2 italic">{{ b.reason }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                 </div>
 
-
-            </div>
-        </main>
 
                 <!-- Vehicle Modal -->
                 <div v-if="isVehicleModalVisible" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
@@ -404,196 +365,104 @@
                     <div class="w-full max-w-sm transform transition-all scale-100 animate-fade-in">
                         <div class="text-white/70 text-center mb-4 text-sm font-medium cursor-pointer hover:text-white" @click="isTicketModalVisible=false">Klik area gelap untuk tutup</div>
                         
-                        <div id="ticketContent" class="bg-white rounded-[1.5rem] overflow-hidden shadow-2xl relative">
-                            <!-- Header Ticket: Maroon to Red Gradient -->
-                            <div class="bg-gradient-to-br from-red-900 to-red-700 p-6 text-white relative overflow-hidden">
-                                <div class="absolute top-0 right-0 w-40 h-40 bg-yellow-400 opacity-10 rounded-full -mr-10 -mt-10"></div>
-                                <div class="flex justify-between items-start mb-6 relative z-10">
+                        <div id="ticketContent" class="shadow-2xl rounded-[1.5rem] overflow-hidden relative">
+                            <div class="bg-gradient-to-br from-blue-800 to-blue-600 p-8 text-white relative overflow-hidden rounded-t-[1.5rem]">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10"></div>
+                                <div class="flex justify-between items-start mb-8 relative z-10">
                                     <div>
-                                        <div class="text-2xl font-extrabold tracking-tight flex items-center gap-2">
-                                            <img src="../image/logo.png" alt="Sutan Raya" class="w-8 h-8 object-contain brightness-0 invert"> 
-                                            <span>Sutan<span class="font-light text-yellow-400">Raya</span></span>
-                                        </div>
-                                        <div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold text-yellow-400">Official E-Ticket</div>
+                                        <div class="text-3xl font-bold tracking-tight">Sutan<span class="font-light">Raya</span></div>
+                                        <div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold">E-Ticket</div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-[10px] opacity-60 uppercase font-bold text-yellow-100">Booking ID</div>
-                                        <div class="font-mono text-lg font-bold tracking-wider text-yellow-400">#{{ ticketData.id.toString().slice(-6) }}</div>
+                                        <div class="text-[10px] opacity-60 uppercase font-bold">Booking ID</div>
+                                        <div class="font-mono text-lg font-bold">#{{ ticketData.id.toString().slice(-6) }}</div>
                                     </div>
                                 </div>
                                 <div class="flex justify-between items-end relative z-10">
                                     <div>
-                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1 text-yellow-100">Penumpang</div>
-                                        <div class="text-xl font-bold truncate max-w-[200px] text-white">{{ ticketData.passengerName }}</div>
-                                        <div class="text-xs opacity-80 text-yellow-50">{{ ticketData.passengerPhone }}</div>
+                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Penumpang</div>
+                                        <div class="text-xl font-bold truncate max-w-[160px]">{{ ticketData.passengerName }}</div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1 text-yellow-100">Keberangkatan</div>
-                                        <div class="text-2xl font-bold text-white">{{ ticketData.time || 'Bus' }}</div>
+                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Waktu</div>
+                                        <div class="text-xl font-bold">{{ ticketData.time || 'Bus' }}</div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Body -->
-                            <div class="p-6 relative bg-white">
-                                <!-- Rip Effect -->
+                            <div class="bg-white p-8 pt-10 relative rounded-b-[1.5rem]">
                                 <div class="absolute top-0 left-0 w-full h-4 -mt-2 bg-white" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 1rem 0.5rem, 2rem 0, 3rem 0.5rem, 4rem 0, 5rem 0.5rem, 6rem 0, 7rem 0.5rem, 8rem 0, 9rem 0.5rem, 10rem 0, 11rem 0.5rem, 12rem 0, 13rem 0.5rem, 14rem 0, 15rem 0.5rem, 16rem 0, 17rem 0.5rem, 18rem 0, 19rem 0.5rem, 20rem 0, 21rem 0.5rem, 22rem 0, 23rem 0.5rem, 24rem 0);"></div>
-                                
-                                <div class="grid grid-cols-2 gap-6 mb-6 mt-2">
-                                    <div>
-                                        <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Rute Perjalanan</div>
-                                        <div class="font-bold text-gray-800 text-sm flex items-center gap-2">
-                                            <span class="bg-red-50 text-red-900 px-2 py-0.5 rounded">{{ ticketData.routeConfig?.origin || 'Asal' }}</span>
-                                            <i class="bi bi-arrow-right text-gray-300"></i>
-                                            <span class="bg-red-50 text-red-900 px-2 py-0.5 rounded">{{ ticketData.routeConfig?.destination || 'Tujuan' }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Tanggal</div>
-                                        <div class="font-bold text-gray-800 text-sm">{{ ticketData.formattedDate }}</div>
-                                    </div>
+                                <div class="flex justify-between mb-5 border-b border-dashed border-gray-200 pb-5">
+                                    <div><div class="text-xs text-gray-400 uppercase font-bold">Rute</div><div class="font-bold text-gray-800 text-sm">{{ ticketData.routeId }}</div></div>
+                                    <div class="text-right"><div class="text-xs text-gray-400 uppercase font-bold">Tanggal</div><div class="font-bold text-gray-800 text-sm">{{ formatDate(ticketData.date) }}</div></div>
                                 </div>
-
-                                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-6 space-y-3">
-                                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                        <span class="text-xs text-gray-500 font-bold">Armada</span>
-                                        <span class="text-xs font-bold text-gray-800">{{ ticketData.fleetName }} <span v-if="ticketData.fleetPlate !== '-'" class="text-[10px] bg-gray-200 px-1 rounded ml-1">{{ ticketData.fleetPlate }}</span></span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                        <span class="text-xs text-gray-500 font-bold">Supir</span>
-                                        <span class="text-xs font-bold text-gray-800">{{ ticketData.driverName }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                        <span class="text-xs text-gray-500 font-bold">Kursi</span>
-                                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ ticketData.seatNumbers || 'UNIT' }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs text-gray-500 font-bold">Total Harga</span>
-                                        <span class="text-sm font-extrabold text-green-600">{{ ticketData.formattedPrice }}</span>
-                                    </div>
+                                <div class="grid grid-cols-3 gap-2 mb-6">
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Kursi</div><div class="font-bold text-gray-800 text-sm">{{ ticketData.seatNumbers || 'UNIT' }}</div></div>
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Layanan</div><div class="font-bold text-blue-600 text-sm">{{ ticketData.serviceType }}</div></div>
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Validasi</div><div class="font-bold text-sm" :class="ticketData.validationStatus==='Valid'?'text-green-600':(ticketData.validationStatus==='Menunggu Validasi'?'text-red-500':'text-gray-600')">{{ ticketData.validationStatus === 'Valid' ? 'VALID' : 'WAIT' }}</div></div>
                                 </div>
-
-                                <div class="flex gap-4 mb-2">
-                                    <div class="flex-1">
-                                        <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Jemput</div>
-                                        <div class="text-xs font-bold text-gray-700 leading-tight">{{ ticketData.pickupAddress || 'Sesuai Titik Kumpul' }}</div>
-                                    </div>
-                                    <div class="flex-1 text-right">
-                                        <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Antar</div>
-                                        <div class="text-xs font-bold text-gray-700 leading-tight">{{ ticketData.dropoffAddress || '-' }}</div>
-                                    </div>
+                                <div class="space-y-3 mb-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                    <div class="flex gap-3"><i class="bi bi-geo-alt-fill text-blue-300"></i> <div><div class="text-[10px] text-gray-400 uppercase font-bold">Jemput</div><div class="text-xs font-bold text-gray-700">{{ ticketData.pickupAddress || 'Sesuai Maps' }}</div></div></div>
+                                    <div class="flex gap-3"><i class="bi bi-flag-fill text-blue-300"></i> <div><div class="text-[10px] text-gray-400 uppercase font-bold">Tujuan</div><div class="text-xs font-bold text-gray-700">{{ ticketData.dropoffAddress || '-' }}</div></div></div>
                                 </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 text-center" v-if="ticketData.isDispatched || ticketData.driverName !== 'Belum Ditentukan'">
+                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Armada & Driver</div>
+                                    <div class="font-bold text-slate-800">{{ ticketData.fleetName }} ({{ ticketData.fleetPlate }})</div>
+                                    <div class="text-xs text-slate-500">{{ ticketData.driverName }}</div>
+                                </div>
+                                <button @click="printTicket(ticketData)" class="w-full py-3 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 hover:text-gray-800 transition-colors flex items-center justify-center gap-2"><i class="bi bi-printer"></i> Cetak Tiket</button>
                             </div>
-                            
-                            <!-- Footer -->
-                            <div class="bg-gray-50 p-4 border-t border-gray-100 text-center">
-                                <div class="text-[10px] text-gray-400 mb-2">Simpan tiket ini sebagai bukti perjalanan yang sah.</div>
-                                <div class="flex justify-center">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://sutanraya.com" class="w-16 h-16 mix-blend-multiply opacity-80">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4">
-                            <button @click="printTicket(ticketData)" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
-                                <i class="bi bi-file-earmark-pdf-fill"></i> Download
-                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hidden Template for Auto-Printing (Exact Replica) -->
-                <!-- Positioned behind app (z-index -100) but fully visible for html2canvas -->
-                <div id="ticketTemplate" class="fixed top-0 left-0 w-[380px] bg-white" style="z-index: -100; visibility: visible;">
-                    <div v-if="ticketData" class="bg-white rounded-[1.5rem] overflow-hidden relative shadow-none border border-slate-100">
-                        <!-- Header Ticket: Maroon to Red Gradient -->
-                        <div class="bg-gradient-to-br from-red-900 to-red-700 p-6 text-white relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-40 h-40 bg-yellow-400 opacity-10 rounded-full -mr-10 -mt-10"></div>
-                            <div class="flex justify-between items-start mb-6 relative z-10">
-                                <div>
-                                    <div class="text-2xl font-extrabold tracking-tight flex items-center gap-2">
-                                        <img src="../image/logo.png" alt="Sutan Raya" class="w-8 h-8 object-contain brightness-0 invert"> 
-                                        <span>Sutan<span class="font-light text-yellow-400">Raya</span></span>
+                <!-- Hidden Template for Auto-Printing -->
+                <div id="ticketTemplate" class="fixed top-0 left-0 w-[380px] bg-white pointer-events-none opacity-0" style="z-index: -9999;">
+                     <div v-if="ticketData" class="bg-white rounded-[1.5rem] overflow-hidden relative shadow-none border border-slate-100">
+                            <div class="bg-gradient-to-br from-blue-800 to-blue-600 p-8 text-white relative overflow-hidden rounded-t-[1.5rem]">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10"></div>
+                                <div class="flex justify-between items-start mb-8 relative z-10">
+                                    <div>
+                                        <div class="text-3xl font-bold tracking-tight">Sutan<span class="font-light">Raya</span></div>
+                                        <div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold">E-Ticket</div>
                                     </div>
-                                    <div class="text-[10px] opacity-80 uppercase tracking-widest mt-1 font-bold text-yellow-400">Official E-Ticket</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-[10px] opacity-60 uppercase font-bold text-yellow-100">Booking ID</div>
-                                    <div class="font-mono text-lg font-bold tracking-wider text-yellow-400">#{{ ticketData.id.toString().slice(-6) }}</div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-end relative z-10">
-                                <div>
-                                    <div class="text-[10px] opacity-60 uppercase font-bold mb-1 text-yellow-100">Penumpang</div>
-                                    <div class="text-xl font-bold truncate max-w-[200px] text-white">{{ ticketData.passengerName }}</div>
-                                    <div class="text-xs opacity-80 text-yellow-50">{{ ticketData.passengerPhone }}</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-[10px] opacity-60 uppercase font-bold mb-1 text-yellow-100">Keberangkatan</div>
-                                    <div class="text-2xl font-bold text-white">{{ ticketData.time || 'Bus' }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Body -->
-                        <div class="p-6 relative bg-white">
-                            <!-- Rip Effect -->
-                            <div class="absolute top-0 left-0 w-full h-4 -mt-2 bg-white" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 1rem 0.5rem, 2rem 0, 3rem 0.5rem, 4rem 0, 5rem 0.5rem, 6rem 0, 7rem 0.5rem, 8rem 0, 9rem 0.5rem, 10rem 0, 11rem 0.5rem, 12rem 0, 13rem 0.5rem, 14rem 0, 15rem 0.5rem, 16rem 0, 17rem 0.5rem, 18rem 0, 19rem 0.5rem, 20rem 0, 21rem 0.5rem, 22rem 0, 23rem 0.5rem, 24rem 0);"></div>
-                            
-                            <div class="grid grid-cols-2 gap-6 mb-6 mt-2">
-                                <div>
-                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Rute Perjalanan</div>
-                                    <div class="font-bold text-gray-800 text-sm flex items-center gap-2">
-                                        <span class="bg-red-50 text-red-900 px-2 py-0.5 rounded">{{ ticketData.routeConfig?.origin || 'Asal' }}</span>
-                                        <i class="bi bi-arrow-right text-gray-300"></i>
-                                        <span class="bg-red-50 text-red-900 px-2 py-0.5 rounded">{{ ticketData.routeConfig?.destination || 'Tujuan' }}</span>
+                                    <div class="text-right">
+                                        <div class="text-[10px] opacity-60 uppercase font-bold">Booking ID</div>
+                                        <div class="font-mono text-lg font-bold">#{{ ticketData?.id?.toString().slice(-6) }}</div>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Tanggal</div>
-                                    <div class="font-bold text-gray-800 text-sm">{{ ticketData.formattedDate }}</div>
+                                <div class="flex justify-between items-end relative z-10">
+                                    <div>
+                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Penumpang</div>
+                                        <div class="text-xl font-bold truncate max-w-[160px]">{{ ticketData?.passengerName }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[10px] opacity-60 uppercase font-bold mb-1">Waktu</div>
+                                        <div class="text-xl font-bold">{{ ticketData?.time || 'Bus' }}</div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-6 space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                    <span class="text-xs text-gray-500 font-bold">Armada</span>
-                                    <span class="text-xs font-bold text-gray-800">{{ ticketData.fleetName }} <span v-if="ticketData.fleetPlate !== '-'" class="text-[10px] bg-gray-200 px-1 rounded ml-1">{{ ticketData.fleetPlate }}</span></span>
+                            <div class="bg-white p-8 pt-10 relative rounded-b-[1.5rem]">
+                                <div class="absolute top-0 left-0 w-full h-4 -mt-2 bg-white" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 1rem 0.5rem, 2rem 0, 3rem 0.5rem, 4rem 0, 5rem 0.5rem, 6rem 0, 7rem 0.5rem, 8rem 0, 9rem 0.5rem, 10rem 0, 11rem 0.5rem, 12rem 0, 13rem 0.5rem, 14rem 0, 15rem 0.5rem, 16rem 0, 17rem 0.5rem, 18rem 0, 19rem 0.5rem, 20rem 0, 21rem 0.5rem, 22rem 0, 23rem 0.5rem, 24rem 0);"></div>
+                                <div class="flex justify-between mb-5 border-b border-dashed border-gray-200 pb-5">
+                                    <div><div class="text-xs text-gray-400 uppercase font-bold">Rute</div><div class="font-bold text-gray-800 text-sm">{{ ticketData?.routeId }}</div></div>
+                                    <div class="text-right"><div class="text-xs text-gray-400 uppercase font-bold">Tanggal</div><div class="font-bold text-gray-800 text-sm">{{ formatDate(ticketData?.date) }}</div></div>
                                 </div>
-                                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                    <span class="text-xs text-gray-500 font-bold">Supir</span>
-                                    <span class="text-xs font-bold text-gray-800">{{ ticketData.driverName }}</span>
+                                <div class="grid grid-cols-3 gap-2 mb-6">
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Kursi</div><div class="font-bold text-gray-800 text-sm">{{ ticketData?.seatNumbers || 'UNIT' }}</div></div>
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Layanan</div><div class="font-bold text-blue-600 text-sm">{{ ticketData?.serviceType }}</div></div>
+                                    <div class="bg-gray-50 p-2 rounded text-center"><div class="text-[10px] text-gray-400 uppercase font-bold">Validasi</div><div class="font-bold text-sm" :class="ticketData?.validationStatus==='Valid'?'text-green-600':(ticketData?.validationStatus==='Menunggu Validasi'?'text-red-500':'text-gray-600')">{{ ticketData?.validationStatus === 'Valid' ? 'VALID' : 'WAIT' }}</div></div>
                                 </div>
-                                <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                                    <span class="text-xs text-gray-500 font-bold">Kursi</span>
-                                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ ticketData.seatNumbers || 'UNIT' }}</span>
+                                <div class="space-y-3 mb-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                    <div class="flex gap-3"><i class="bi bi-geo-alt-fill text-blue-300"></i> <div><div class="text-[10px] text-gray-400 uppercase font-bold">Jemput</div><div class="text-xs font-bold text-gray-700">{{ ticketData?.pickupAddress || 'Sesuai Maps' }}</div></div></div>
+                                    <div class="flex gap-3"><i class="bi bi-flag-fill text-blue-300"></i> <div><div class="text-[10px] text-gray-400 uppercase font-bold">Tujuan</div><div class="text-xs font-bold text-gray-700">{{ ticketData?.dropoffAddress || '-' }}</div></div></div>
                                 </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xs text-gray-500 font-bold">Total Harga</span>
-                                    <span class="text-sm font-extrabold text-green-600">{{ ticketData.formattedPrice }}</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-4 mb-2">
-                                <div class="flex-1">
-                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Jemput</div>
-                                    <div class="text-xs font-bold text-gray-700 leading-tight">{{ ticketData.pickupAddress || 'Sesuai Titik Kumpul' }}</div>
-                                </div>
-                                <div class="flex-1 text-right">
-                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Antar</div>
-                                    <div class="text-xs font-bold text-gray-700 leading-tight">{{ ticketData.dropoffAddress || '-' }}</div>
+                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 text-center" v-if="ticketData?.isDispatched || ticketData?.driverName !== 'Belum Ditentukan'">
+                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-1">Armada & Driver</div>
+                                    <div class="font-bold text-slate-800">{{ ticketData?.fleetName }} ({{ ticketData?.fleetPlate }})</div>
+                                    <div class="text-xs text-slate-500">{{ ticketData?.driverName }}</div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Footer -->
-                        <div class="bg-gray-50 p-4 border-t border-gray-100 text-center">
-                            <div class="text-[10px] text-gray-400 mb-2">Simpan tiket ini sebagai bukti perjalanan yang sah.</div>
-                            <div class="flex justify-center">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://sutanraya.com" class="w-16 h-16 mix-blend-multiply opacity-80">
-                            </div>
-                        </div>
-                    </div>
+                     </div>
                 </div>
 
                 <!-- Manual Assignment Modal -->
@@ -625,7 +494,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div v-if="isProofModalVisible" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
                     <div class="bg-white p-6 rounded-2xl text-center max-w-lg w-full shadow-2xl animate-fade-in">
                         <h3 class="text-xl font-bold text-gray-800 mb-1">Validasi Pembayaran</h3>
@@ -703,7 +572,8 @@
                     </div>
                 </div>
 
-
+            </div>
+        </main>
     </div>
     <script src="js/ticket_printer.js?v=<?= time() ?>"></script>
     <script src="app.js?v=<?= time() ?>"></script>
