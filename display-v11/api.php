@@ -328,7 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 // ---------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
-    file_put_contents('debug_log.txt', print_r($input, true), FILE_APPEND);
+    // file_put_contents('debug_log.txt', print_r($input, true), FILE_APPEND);
     
     // Cek Action
     $action = isset($input['action']) ? $input['action'] : '';
@@ -350,8 +350,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($mode == 'add') {
             // Check username exists
-            $check = $conn->query("SELECT id FROM users WHERE username = '$username'");
-            if ($check->num_rows > 0) {
+            $stmtCheck = $conn->prepare("SELECT id FROM users WHERE username = ?");
+            $stmtCheck->bind_param("s", $username);
+            $stmtCheck->execute();
+            if ($stmtCheck->get_result()->num_rows > 0) {
                 echo json_encode(['success' => false, 'message' => 'Username sudah digunakan']);
                 exit;
             }
@@ -363,19 +365,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $passHash = password_hash($password, PASSWORD_DEFAULT);
             
-            $sql = "INSERT INTO users (id, username, password, name, position, placement) VALUES ('$id', '$username', '$passHash', '$name', '$position', '$placement')";
+            $stmt = $conn->prepare("INSERT INTO users (id, username, password, name, position, placement) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $id, $username, $passHash, $name, $position, $placement);
             
         } else {
             $id = $data['id'];
             if (!empty($password)) {
                 $passHash = password_hash($password, PASSWORD_DEFAULT);
-                $sql = "UPDATE users SET username='$username', name='$name', position='$position', placement='$placement', password='$passHash' WHERE id='$id'";
+                $stmt = $conn->prepare("UPDATE users SET username=?, name=?, position=?, placement=?, password=? WHERE id=?");
+                $stmt->bind_param("ssssss", $username, $name, $position, $placement, $passHash, $id);
             } else {
-                $sql = "UPDATE users SET username='$username', name='$name', position='$position', placement='$placement' WHERE id='$id'";
+                $stmt = $conn->prepare("UPDATE users SET username=?, name=?, position=?, placement=? WHERE id=?");
+                $stmt->bind_param("sssss", $username, $name, $position, $placement, $id);
             }
         }
         
-        if ($conn->query($sql)) {
+        if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => $conn->error]);
@@ -502,12 +507,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
 
             // 2. Update Status Armada & Driver
-            $conn->query("UPDATE fleet SET status='On Trip' WHERE id='{$t['fleet']['id']}'"); // Quote ID
-            $conn->query("UPDATE drivers SET status='Jalan' WHERE id='{$t['driver']['id']}'"); // Quote ID
+            // 2. Update Status Armada & Driver
+            $stmtFleet = $conn->prepare("UPDATE fleet SET status='On Trip' WHERE id=?");
+            $stmtFleet->bind_param("s", $t['fleet']['id']);
+            $stmtFleet->execute();
+
+            $stmtDriver = $conn->prepare("UPDATE drivers SET status='Jalan' WHERE id=?");
+            $stmtDriver->bind_param("s", $t['driver']['id']);
+            $stmtDriver->execute();
 
             // 3. Update Status Booking Penumpang
-            foreach ($t['passengers'] as $p) {
-                $conn->query("UPDATE bookings SET status='On Trip' WHERE id='{$p['id']}'"); // Quote ID
+            $stmtPsg = $conn->prepare("UPDATE bookings SET status='On Trip' WHERE id=?");
+            if (count($t['passengers']) > 0) {
+                 foreach ($t['passengers'] as $p) {
+                    $stmtPsg->bind_param("s", $p['id']);
+                    $stmtPsg->execute();
+                }
             }
 
             $conn->commit();
@@ -534,8 +549,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $createdAt = date('Y-m-d H:i:s');
 
         // Check if exists
-        $check = $conn->query("SELECT id FROM trips WHERE id='$id'");
-        if ($check->num_rows > 0) {
+        // Check if exists
+        $stmtCheck = $conn->prepare("SELECT id FROM trips WHERE id=?");
+        $stmtCheck->bind_param("s", $id);
+        $stmtCheck->execute();
+        
+        if ($stmtCheck->get_result()->num_rows > 0) {
             $stmt = $conn->prepare("UPDATE trips SET routeConfig=?, fleet=?, driver=?, passengers=?, status=?, date=?, time=?, note=? WHERE id=?");
             $stmt->bind_param("sssssssss", $routeConfig, $fleet, $driver, $passengers, $status, $date, $time, $note, $id);
         } else {
@@ -559,18 +578,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->begin_transaction();
         try {
             // Update Trip
-            $conn->query("UPDATE trips SET status='$status' WHERE id='$tripId'"); // Quote ID
+            // Update Trip
+            $stmtTrip = $conn->prepare("UPDATE trips SET status=? WHERE id=?");
+            $stmtTrip->bind_param("ss", $status, $tripId);
+            $stmtTrip->execute();
 
             if ($status === 'Tiba') {
                 // Release Assets
-                $conn->query("UPDATE fleet SET status='Tersedia' WHERE id='$fleetId'"); // Quote ID
-                $conn->query("UPDATE drivers SET status='Standby' WHERE id='$driverId'"); // Quote ID
+                $stmtFleet = $conn->prepare("UPDATE fleet SET status='Tersedia' WHERE id=?");
+                $stmtFleet->bind_param("s", $fleetId);
+                $stmtFleet->execute();
+
+                $stmtDriver = $conn->prepare("UPDATE drivers SET status='Standby' WHERE id=?");
+                $stmtDriver->bind_param("s", $driverId);
+                $stmtDriver->execute();
+
                 // Update Bookings
-                foreach($passengers as $p) {
-                     $conn->query("UPDATE bookings SET status='Tiba' WHERE id='{$p['id']}'"); // Quote ID
+                if (count($passengers) > 0) {
+                    $stmtPsg = $conn->prepare("UPDATE bookings SET status='Tiba' WHERE id=?");
+                    foreach($passengers as $p) {
+                         $stmtPsg->bind_param("s", $p['id']);
+                         $stmtPsg->execute();
+                    }
                 }
             } elseif ($status === 'Kendala') {
-                $conn->query("UPDATE fleet SET status='Perbaikan' WHERE id='$fleetId'"); // Quote ID
+                $stmtFleet = $conn->prepare("UPDATE fleet SET status='Perbaikan' WHERE id=?");
+                $stmtFleet->bind_param("s", $fleetId);
+                $stmtFleet->execute();
             }
 
             $conn->commit();

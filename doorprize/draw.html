@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Doorprize - Sutan Raya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        
+        /* Apple-style Gradient Text */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFECC7 0%, #D4AF37 50%, #996515 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glass Panel - Light Mode Default */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Overrides */
+        .dark .glass-panel {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+    <script>
+        // Security: Disable Right Click & DevTools Shortcuts
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+            }
+        });
+    </script>     
+        /* Animations */
+        .transition-apple {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center overflow-hidden relative selection:bg-yellow-500/30 bg-white text-gray-900 dark:bg-black dark:text-white transition-colors duration-300">
+
+    <!-- Ambient Background -->
+    <div class="ambient-glow animate-pulse" style="animation-duration: 4s;"></div>
+
+    <!-- Theme Toggle -->
+    <div class="absolute top-4 right-4 z-50">
+        <button id="themeToggle" class="p-2 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-all shadow-sm backdrop-blur-sm">
+            <!-- Sun Icon -->
+            <svg id="sunIcon" class="w-5 h-5 text-yellow-500 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <!-- Moon Icon -->
+            <svg id="moonIcon" class="w-5 h-5 text-gray-600 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 24.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Pimpinan Login Overlay -->
+    <div id="loginOverlay" class="fixed inset-0 z-50 bg-white dark:bg-black flex items-center justify-center transition-colors duration-300">
+        <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center">
+            <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">Akses Pimpinan</h2>
+            <form id="pimpinanForm" class="space-y-4">
+                <input type="password" id="pimpinanPass" class="w-full px-4 py-3 bg-gray-50 dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-xl focus:border-yellow-500 outline-none text-gray-900 dark:text-white text-center placeholder-gray-500 transition-colors" placeholder="Masukkan Kode Akses" required>
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-yellow-500/30">
+                    Buka Undian
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="z-10 w-full max-w-4xl px-6 flex flex-col items-center relative hidden" id="mainContent">
+        
+        <!-- Header -->
+        <div class="mb-12 text-center scale-in" style="animation-delay: 0.1s;">
+            <div class="inline-flex items-center justify-center mb-6">
+                <img src="../image/logo.webp" alt="Sutan Raya" class="h-12 opacity-90">
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white transition-colors">
+                Grand Doorprize
+            </h1>
+            <p class="text-xl text-gray-500 dark:text-gray-400 font-medium tracking-wide transition-colors">Sutan Raya 2025</p>
+        </div>
+
+        <!-- Main Display Card -->
+        <div class="glass-panel rounded-[32px] p-12 w-full text-center mb-12 scale-in relative overflow-hidden group transition-colors" style="animation-delay: 0.2s;">
+            <!-- Shine Effect -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-apple duration-1000"></div>
+            
+            <div class="relative z-10">
+                <div class="text-sm font-semibold text-yellow-600 dark:text-yellow-500/80 uppercase tracking-[0.2em] mb-8">Winning Coupon</div>
+                
+                <div id="displayNumber" class="text-7xl md:text-9xl font-bold tracking-tighter text-gray-900 dark:text-white tabular-nums leading-none mb-4 transition-apple">
+                    ????
+                </div>
+                
+                <div id="displayName" class="h-12 text-2xl md:text-3xl text-gradient-gold font-semibold opacity-0 transform translate-y-4 transition-apple">
+                    <!-- Winner Name -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="scale-in" style="animation-delay: 0.3s;">
+            <button id="spinBtn" onclick="startDraw()" class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white transition-all duration-200 bg-black dark:bg-white dark:text-black rounded-full hover:scale-105 focus:outline-none shadow-lg">
+                <span class="relative">Putar Undian</span>
+                <svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            </button>
+        </div>
+
+        <div id="resultActions" class="mt-8 hidden scale-in">
+            <button onclick="resetDisplay()" class="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Reset Tampilan</button>
+        </div>
+
+    </div>
+
+    <!-- Winner Modal (Apple Style) -->
+    <div id="winnerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-xl transition-opacity duration-500" onclick="closeModal()"></div>
+        
+        <div class="relative glass-panel rounded-[32px] p-10 max-w-xl w-full text-center transform scale-95 opacity-0 transition-all duration-500 bg-white dark:bg-gray-900" id="modalContent">
+            
+            <div class="mb-8">
+                <div class="w-20 h-20 bg-yellow-100 dark:bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-4xl">🎉</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Selamat!</h3>
+                <p class="text-gray-500 dark:text-gray-400">Pemenang Grand Doorprize terpilih.</p>
+            </div>
+
+            <div class="py-8 border-t border-b border-gray-100 dark:border-white/10 mb-8">
+                <div id="modalName" class="text-4xl md:text-5xl font-bold text-gradient-gold mb-2 tracking-tight">
+                    Nama Pemenang
+                </div>
+                <div id="modalNumber" class="text-xl text-gray-500 dark:text-gray-400 font-medium font-mono">
+                    SR-XXXX
+                </div>
+            </div>
+            
+            <button onclick="closeModal()" class="w-full bg-black dark:bg-white text-white dark:text-black font-semibold py-4 rounded-2xl hover:opacity-90 transition-colors shadow-lg">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const API_URL = 'api.php';
+        let isSpinning = false;
+        let coupons = [];
+
+        // Theme Logic
+        const themeToggle = document.getElementById('themeToggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        async function loadCoupons() {
+            try {
+                const res = await fetch(`${API_URL}?action=get_coupons`);
+                coupons = await res.json();
+            } catch (e) { console.error(e); }
+        }
+        loadCoupons();
+
+        // --- Auth Logic ---
+        
+        // Check if already logged in
+        fetch('api.php?action=check_auth&role=pimpinan')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showMainContent();
+                }
+            });
+
+        document.getElementById('pimpinanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('pimpinanPass').value;
+            
+            try {
+                const response = await fetch('api.php?action=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'pimpinan', password: password, role: 'pimpinan' })
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showMainContent();
+                } else {
+                    alert('Kode Akses Salah!');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error connecting to server');
+            }
+        });
+
+        function showMainContent() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+        }
+
+        async function startDraw() {
+            if (isSpinning) return;
+            
+            const btn = document.getElementById('spinBtn');
+            const displayNum = document.getElementById('displayNumber');
+            const displayName = document.getElementById('displayName');
+            
+            // Reset UI
+            displayName.style.opacity = '0';
+            displayName.classList.remove('translate-y-0');
+            displayName.classList.add('translate-y-4');
+            displayNum.classList.remove('text-gradient-gold');
+            displayNum.classList.add('text-gray-900', 'dark:text-white');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="relative">Mengundi...</span>';
+            isSpinning = true;
+
+            // Smooth Random Animation
+            let duration = 3000;
+            const startTime = Date.now();
+
+            function animate() {
+                const now = Date.now();
+                const elapsed = now - startTime;
+
+                if (coupons.length > 0) {
+                    const random = coupons[Math.floor(Math.random() * coupons.length)];
+                    displayNum.textContent = random.coupon_number;
+                } else {
+                    displayNum.textContent = Math.floor(Math.random() * 1000);
+                }
+
+                if (elapsed < duration) {
+                    requestAnimationFrame(() => setTimeout(animate, 50));
+                } else {
+                    finalizeDraw();
+                }
+            }
+            animate();
+        }
+
+        async function finalizeDraw() {
+            try {
+                const response = await fetch(`${API_URL}?action=draw_winner`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const winner = result.winner;
+                    const displayNum = document.getElementById('displayNumber');
+                    const displayName = document.getElementById('displayName');
+
+                    // Reveal
+                    displayNum.textContent = winner.coupon_number;
+                    displayNum.classList.remove('text-gray-900', 'dark:text-white');
+                    displayNum.classList.add('text-gradient-gold');
+                    
+                    setTimeout(() => {
+                        displayName.textContent = winner.name;
+                        displayName.classList.remove('translate-y-4');
+                        displayName.classList.add('translate-y-0');
+                        displayName.style.opacity = '1';
+                        
+                        celebrate(winner);
+                    }, 400);
+
+                } else {
+                    alert(result.message);
+                    document.getElementById('displayNumber').textContent = 'ERROR';
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Gagal mengundi.');
+            } finally {
+                isSpinning = false;
+                const btn = document.getElementById('spinBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<span class="relative">Putar Undian</span><svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>';
+            }
+        }
+
+        function celebrate(winner) {
+            // Elegant Confetti
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#D4AF37', '#ffffff', '#000000']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#D4AF37', '#ffffff', '#000000']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Show Modal
+            setTimeout(() => {
+                document.getElementById('modalName').textContent = winner.name;
+                document.getElementById('modalNumber').textContent = winner.coupon_number;
+                
+                const modal = document.getElementById('winnerModal');
+                const content = document.getElementById('modalContent');
+                
+                modal.classList.remove('hidden');
+                // Trigger reflow
+                void modal.offsetWidth;
+                
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 1200);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('winnerModal');
+            const content = document.getElementById('modalContent');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('resultActions').classList.remove('hidden');
+            }, 500);
+        }
+
+        function resetDisplay() {
+            const displayNum = document.getElementById('displayNumber');
+            displayNum.textContent = '????';
+            displayNum.classList.remove('text-gradient-gold');
+            displayNum.classList.add('text-gray-900', 'dark:text-white');
+            
+            const displayName = document.getElementById('displayName');
+            displayName.style.opacity = '0';
+            displayName.classList.add('translate-y-4');
+            
+            document.getElementById('resultActions').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

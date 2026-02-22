@@ -1566,7 +1566,7 @@ createApp({
                     // Jika tidak, cetak dari hidden template (Auto Print)
                     const sourceId = this.isTicketModalVisible ? 'ticketContent' : 'ticketTemplate';
                     
-                    console.log("Printing from source:", sourceId);
+
 
                     generateTicketPDF(sourceId, `Ticket-${data.id}.pdf`);
                 } else {

@@ -1524,3 +1524,393 @@ Array
     [time] => 18:00
     [clear_seat] => 
 )
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => TEST_B_1765797997
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Test User 1765797997
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => HACK_1765797997
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Hacker' OR '1'='1
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_trip
+    [data] => Array
+        (
+            [id] => TEST_T_1765797997
+            [routeConfig] => Array
+                (
+                    [origin] => A
+                    [destination] => B
+                )
+
+            [fleet] => Array
+                (
+                    [id] => INVALID_FLEET
+                    [name] => Test Fleet
+                    [plate] => BA 1234
+                )
+
+            [driver] => Array
+                (
+                    [id] => INVALID_DRIVER
+                    [name] => Test Driver
+                )
+
+            [passengers] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => TEST_B_1765797997
+                            [seatCount] => 1
+                        )
+
+                )
+
+            [status] => On Trip
+        )
+
+)
+Array
+(
+    [action] => update_trip_status
+    [tripId] => TEST_T_1765797997
+    [status] => Tiba
+    [fleetId] => INVALID_FLEET
+    [driverId] => INVALID_DRIVER
+    [passengers] => Array
+        (
+            [0] => Array
+                (
+                    [id] => TEST_B_1765797997
+                )
+
+        )
+
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => TEST_B_1765798079
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Test User 1765798079
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => HACK_1765798079
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Hacker' OR '1'='1
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_trip
+    [data] => Array
+        (
+            [id] => TEST_T_1765798079
+            [routeConfig] => Array
+                (
+                    [origin] => A
+                    [destination] => B
+                )
+
+            [fleet] => Array
+                (
+                    [id] => INVALID_FLEET
+                    [name] => Test Fleet
+                    [plate] => BA 1234
+                )
+
+            [driver] => Array
+                (
+                    [id] => INVALID_DRIVER
+                    [name] => Test Driver
+                )
+
+            [passengers] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => TEST_B_1765798079
+                            [seatCount] => 1
+                        )
+
+                )
+
+            [status] => On Trip
+        )
+
+)
+Array
+(
+    [action] => update_trip_status
+    [tripId] => TEST_T_1765798079
+    [status] => Tiba
+    [fleetId] => INVALID_FLEET
+    [driverId] => INVALID_DRIVER
+    [passengers] => Array
+        (
+            [0] => Array
+                (
+                    [id] => TEST_B_1765798079
+                )
+
+        )
+
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => 1765798124
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Test User 1765798124
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_booking
+    [data] => Array
+        (
+            [id] => 1765798223
+            [serviceType] => Travel
+            [routeId] => R1
+            [date] => 2025-12-15
+            [time] => 10:00
+            [passengerName] => Hacker' OR '1'='1
+            [passengerPhone] => 08123456789
+            [passengerType] => Umum
+            [seatCount] => 1
+            [selectedSeats] => Array
+                (
+                )
+
+            [duration] => 120
+            [totalPrice] => 150000
+            [paymentMethod] => Transfer
+            [paymentStatus] => Lunas
+            [validationStatus] => Valid
+            [paymentLocation] => Office
+            [paymentReceiver] => Admin
+            [paymentProof] => 
+            [status] => Pending
+            [seatNumbers] => 
+            [ktmProof] => 
+            [type] => Reguler
+            [seatCapacity] => 7
+            [priceType] => Normal
+            [packageType] => Person
+            [routeName] => Padang - Bukittinggi
+        )
+
+)
+Array
+(
+    [action] => create_trip
+    [data] => Array
+        (
+            [id] => 1765798125
+            [routeConfig] => Array
+                (
+                    [origin] => A
+                    [destination] => B
+                )
+
+            [fleet] => Array
+                (
+                    [id] => 1765185000022
+                    [name] => Test Fleet
+                    [plate] => BA 1234
+                )
+
+            [driver] => Array
+                (
+                    [id] => 1765182953107
+                    [name] => Test Driver
+                )
+
+            [passengers] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => 1765798124
+                            [seatCount] => 1
+                        )
+
+                )
+
+            [status] => On Trip
+        )
+
+)
+Array
+(
+    [action] => update_trip_status
+    [tripId] => 1765798125
+    [status] => Tiba
+    [fleetId] => 1765185000022
+    [driverId] => 1765182953107
+    [passengers] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 1765798124
+                )
+
+        )
+
+)

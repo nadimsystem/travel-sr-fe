@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sutan Raya - Admin Inbox</title>
+    <title>Sutan Raya - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -34,95 +34,222 @@
             opacity: 0; 
             transform: scale(0.9); 
         }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
 <body class="overflow-hidden">
 
 <div id="app" class="flex h-screen bg-[#F3F4F8]">
-    <aside class="w-72 bg-white p-6 border-r flex-shrink-0 hidden lg:flex lg:flex-col">
-        <h1 class="text-3xl font-bold text-purple-600 mb-12">Sutan Raya</h1>
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white p-6 border-r flex-shrink-0 hidden lg:flex lg:flex-col shadow-sm z-10">
+        <h1 class="text-3xl font-bold text-purple-600 mb-12 flex items-center">
+            <i class="bi bi-robot mr-3"></i>Sutan Raya
+        </h1>
         <nav class="space-y-2">
-            <a href="#" class="flex items-center justify-between bg-purple-100 text-purple-700 font-bold p-3 rounded-xl">
-                <span><i class="bi bi-chat-dots-fill mr-3"></i>Messages</span>
-                <span class="bg-purple-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full">{{ activeConversations.length }}</span>
+            <a href="#" @click.prevent="currentView = 'inbox'" 
+               class="flex items-center justify-between font-bold p-3 rounded-xl transition-colors"
+               :class="currentView === 'inbox' ? 'bg-purple-100 text-purple-700' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'">
+                <div class="flex items-center"><i class="bi bi-chat-dots-fill mr-3"></i>Inbox</div>
+                <span v-if="activeConversations.length > 0" class="bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ activeConversations.length }}</span>
             </a>
-            <a href="#" class="flex items-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 font-bold p-3 rounded-xl">
+            <a href="#" @click.prevent="currentView = 'settings'" 
+               class="flex items-center font-bold p-3 rounded-xl transition-colors"
+               :class="currentView === 'settings' ? 'bg-purple-100 text-purple-700' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'">
                 <i class="bi bi-gear-fill mr-3"></i>Settings
             </a>
-            <a href="#" class="flex items-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 font-bold p-3 rounded-xl">
-                <i class="bi bi-bar-chart-fill mr-3"></i>Parameter
+            <a href="#" @click.prevent="currentView = 'params'" 
+               class="flex items-center font-bold p-3 rounded-xl transition-colors"
+               :class="currentView === 'params' ? 'bg-purple-100 text-purple-700' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'">
+                <i class="bi bi-sliders mr-3"></i>Parameter
             </a>
         </nav>
-        <div class="mt-auto">
-             <button @click="resetAll" class="w-full flex items-center text-red-500 hover:text-red-800 hover:bg-red-50 font-bold p-3 rounded-xl">
+        <div class="mt-auto pt-6 border-t">
+             <button @click="resetAll" class="w-full flex items-center text-red-500 hover:text-red-700 hover:bg-red-50 font-bold p-3 rounded-xl transition-colors">
                 <i class="bi bi-trash-fill mr-3"></i>Reset All Data
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
-        <h2 class="text-4xl font-bold mb-8 text-gray-800">Inbox</h2>
-        <div class="masonry-container">
-            
-            <transition-group name="chat-window">
-                <div v-for="convo in activeConversations" :key="convo.userId"
-                     class="chat-window bg-white rounded-2xl shadow-md flex flex-col overflow-hidden border">
-                    
-                    <div class="p-4 border-b flex justify-between items-center flex-shrink-0">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center font-bold text-gray-600">{{ convo.userId }}</div>
-                            <div>
-                                <h3 class="font-bold">User {{ convo.userId }}</h3>
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto bg-[#F3F4F8]">
+        
+        <!-- INBOX VIEW -->
+        <div v-if="currentView === 'inbox'">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-800">Inbox</h2>
+                    <p class="text-gray-500 mt-2">Memantau {{ activeConversations.length }} percakapan aktif</p>
+                </div>
+            </div>
+
+            <div class="masonry-container">
+                <transition-group name="chat-window">
+                    <div v-for="convo in activeConversations" :key="convo.userId"
+                         class="chat-window bg-white rounded-2xl shadow-sm flex flex-col overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                        
+                        <div class="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full mr-3 flex items-center justify-center font-bold text-purple-700">
+                                    {{ convo.userId }}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">User {{ convo.userId }}</h3>
+                                    <p class="text-xs text-gray-500" v-if="convo.state && convo.state.current">Status: {{ convo.state.current }}</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button @click="toggleSummary(convo.userId)" class="p-2 rounded-full hover:bg-gray-100 text-gray-400" title="Info">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                </button>
+                                <button @click="deleteConversation(convo.userId)" class="p-2 rounded-full hover:bg-red-50 text-gray-300 hover:text-red-500" title="Hapus Chat">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="flex-grow overflow-y-auto p-4 h-96 bg-gray-50" :ref="el => { if (el) chatAreas[convo.userId] = el }">
-                        <div v-for="msg in convo.messages" :key="msg.id">
-                            <div class="flex mb-3" :class="isMyMessage(msg) ? 'justify-end' : 'justify-start'">
-                                <div class="max-w-[85%] px-4 py-3 rounded-2xl" :class="isMyMessage(msg) ? 'bg-gray-200 text-gray-800' : 'bg-purple-600 text-white'">
-                                    <p class="text-sm" v-html="msg.text"></p>
+                        <div class="flex-grow overflow-y-auto p-4 h-80 bg-slate-50 relative" :ref="el => { if (el) chatAreas[convo.userId] = el }">
+                             <div v-if="convo.showSummary" class="absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 border-b text-sm text-gray-600 z-10 shadow-sm">
+                                <p><strong>Data Booking Sementara:</strong></p>
+                                <pre class="text-xs mt-1 bg-gray-100 p-2 rounded">{{ JSON.stringify(convo.state?.data || {}, null, 2) }}</pre>
+                            </div>
+
+                            <div v-for="msg in convo.messages" :key="msg.id">
+                                <div class="flex mb-3" :class="isMyMessage(msg) ? 'justify-end' : 'justify-start'">
+                                    <div class="max-w-[85%] px-4 py-2.5 rounded-2xl shadow-sm text-sm" 
+                                         :class="getBubbleClass(msg)">
+                                        <p class="whitespace-pre-line" v-html="msg.text"></p>
+                                        <div class="text-[10px] opacity-70 mt-1 text-right">{{ msg.timestamp }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="p-3 bg-white border-t">
+                             <form @submit.prevent="sendAdminMessage(convo.userId)" class="flex items-center gap-2">
+                                <button @click.prevent="toggleBot(convo.userId)" type="button" 
+                                        class="w-10 h-10 rounded-full flex items-center justify-center transition-all bg-gray-100 hover:bg-gray-200"
+                                        :class="convo.botActive ? 'text-green-500 ring-2 ring-green-500 bg-green-50' : 'text-amber-500 ring-2 ring-amber-500 bg-amber-50'" 
+                                        :title="convo.botActive ? 'Bot: ON (Klik untuk matikan)' : 'Bot: OFF (Klik untuk aktifkan)'">
+                                    <i class="bi text-lg" :class="convo.botActive ? 'bi-robot' : 'bi-person-fill'"></i>
+                                </button>
+                                <input v-model="adminMessages[convo.userId]" :disabled="convo.botActive" 
+                                       type="text" :placeholder="convo.botActive ? 'Matikan bot untuk mengetik...' : 'Ketik balasan admin...'" 
+                                       class="flex-1 text-sm px-4 py-2.5 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                <button type="submit" 
+                                        :disabled="convo.botActive || !adminMessages[convo.userId]"
+                                        class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+                                    <i class="bi bi-send-fill pl-0.5"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    
-                    <div class="p-3 bg-white border-t flex-shrink-0">
-                         <form @submit.prevent="sendAdminMessage(convo.userId)" class="flex items-center space-x-2">
-                            <button @click.prevent="toggleBot(convo.userId)" type="button" class="p-2 rounded-full text-xl" :class="convo.botActive ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'" :title="convo.botActive ? 'Bot Aktif' : 'Admin Mengambil Alih'">
-                                <i class="bi" :class="convo.botActive ? 'bi-robot' : 'bi-person-fill'"></i>
-                            </button>
-                            <input v-model="adminMessages[convo.userId]" :disabled="convo.botActive" type="text" placeholder="Ketik balasan admin..." 
-                                   class="w-full text-sm p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:bg-gray-200 disabled:placeholder-gray-400">
-                        </form>
+                </transition-group>
+                
+                <div v-if="activeConversations.length === 0" class="text-center text-gray-400 col-span-full pt-32 pb-20">
+                    <div class="bg-white p-8 rounded-full inline-block shadow-sm mb-4">
+                        <i class="bi bi-chat-square-dots text-4xl text-purple-200"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-gray-600">Belum ada pesan</h3>
+                    <p class="mt-2 text-gray-400">Pesan dari pelanggan akan muncul di sini secara realtime.</p>
                 </div>
-            </transition-group>
-            
-            <div v-if="activeConversations.length === 0" class="text-center text-gray-400 col-span-full mt-20">
-                <i class="bi bi-moon-stars text-6xl"></i>
-                <p class="mt-4">Menunggu chat pertama masuk...</p>
             </div>
         </div>
+
+        <!-- SETTINGS VIEW -->
+        <div v-if="currentView === 'settings'" class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">Bot Settings</h2>
+            <p class="text-gray-500 mb-8">Konfigurasi respon otomatis untuk setiap menu dan skenario.</p>
+
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Menu Configuration -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-purple-700 mb-4 flex items-center"><i class="bi bi-menu-button-wide mr-2"></i>Main Menu Responses</h3>
+                    <div class="space-y-5">
+                        <div v-for="(response, key) in botResponses" :key="key" v-show="['1','2','3','4','5'].includes(key)">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-500 mr-2">Option {{ key }}</span> 
+                                {{ getMenuLabel(key) }}
+                            </label>
+                            <textarea v-model="botResponses[key]" rows="3" 
+                                      class="w-full bg-gray-50 text-gray-800 rounded-lg p-3 text-sm border-0 ring-1 ring-gray-200 focus:ring-2 focus:ring-purple-500 transition-all cursor-pointer hover:bg-white"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fallback & Others -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-purple-700 mb-4 flex items-center"><i class="bi bi-chat-quote-fill mr-2"></i>Other Responses</h3>
+                    <div class="space-y-5">
+                         <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Greeting (Halo)</label>
+                            <textarea v-model="botResponses.greeting" rows="2" class="w-full bg-gray-50 rounded-lg p-3 text-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-purple-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Fallback (Tidak Mengerti)</label>
+                            <textarea v-model="botResponses.fallback" rows="2" class="w-full bg-gray-50 rounded-lg p-3 text-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-purple-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Action -->
+                 <div class="flex justify-end sticky bottom-6">
+                    <button @click="saveSettings" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-purple-200 flex items-center transition-all transform hover:-translate-y-1">
+                        <i class="bi bi-check-lg mr-2"></i> Simpan Perubahan
+                    </button>
+                    <!-- Success indicator -->
+                    <transition name="fade">
+                         <span v-if="saveSuccess" class="ml-4 flex items-center text-green-600 font-bold bg-green-50 px-4 rounded-xl border border-green-100">
+                            <i class="bi bi-check-circle-fill mr-2"></i> Tersimpan!
+                        </span>
+                    </transition>
+                </div>
+            </div>
+             <br><br><!-- spacer -->
+        </div>
+
+         <!-- PARAMETER VIEW (Placeholder) -->
+        <div v-if="currentView === 'params'" class="max-w-4xl mx-auto text-center pt-20">
+             <i class="bi bi-cone-striped text-6xl text-orange-200"></i>
+             <h2 class="text-2xl font-bold mt-6 text-gray-700">Parameter Configuration</h2>
+             <p class="text-gray-500 mt-2">Pengaturan harga dan parameter teknis lainnya akan ada di sini.</p>
+        </div>
+
     </main>
     
-     <aside class="w-80 bg-white p-6 border-l flex-shrink-0 hidden xl:flex xl:flex-col">
-        <h3 class="text-xl font-bold mb-6">Online Users</h3>
-        <div class="space-y-4 overflow-y-auto">
-            <div v-for="convo in onlineUsers" :key="convo.userId" class="flex items-center p-2 rounded-lg hover:bg-gray-100">
-                <div class="w-10 h-10 bg-gray-200 rounded-full mr-4 flex items-center justify-center font-bold text-gray-600 relative">
+    <!-- Right Sidebar: Online Users -->
+    <aside class="w-80 bg-white p-6 border-l flex-shrink-0 hidden xl:flex xl:flex-col shadow-sm">
+        <h3 class="text-lg font-bold mb-6 text-gray-800 flex items-center justify-between">
+            Online Users 
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">{{ onlineUsers.length }}</span>
+        </h3>
+        <div class="space-y-3 overflow-y-auto flex-1 pr-2">
+            <div v-for="convo in onlineUsers" :key="convo.userId" 
+                 class="flex items-center p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group"
+                 @click="scrollToChat(convo.userId)">
+                <div class="w-10 h-10 bg-gray-100 rounded-full mr-4 flex items-center justify-center font-bold text-gray-500 relative group-hover:bg-white group-hover:shadow-sm">
                     {{ convo.userId }}
                     <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white" :class="convo.isActive ? 'bg-green-500' : 'bg-gray-400'"></div>
                 </div>
-                <span class="font-semibold">User {{ convo.userId }}</span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline">
+                        <span class="font-semibold text-gray-700 truncate">User {{ convo.userId }}</span>
+                        <span class="text-xs text-gray-400">{{ formatTime(convo.lastActivity) }}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 truncate">{{ convo.messages.length > 0 ? convo.messages[convo.messages.length-1].text : 'Belum ada pesan' }}</p>
+                </div>
             </div>
         </div>
-         <div class="mt-auto border-t pt-4">
-             <h3 class="text-xl font-bold mb-4">Admin Action</h3>
-             <div class="flex space-x-4 text-2xl text-gray-600 justify-center">
-                 <i class="bi bi-camera-video cursor-pointer hover:text-purple-600"></i>
-                 <i class="bi bi-mic cursor-pointer hover:text-purple-600"></i>
-                 <i class="bi bi-paperclip cursor-pointer hover:text-purple-600"></i>
+         <div class="mt-auto border-t pt-6 text-center">
+             <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-4">Quick Actions</p>
+             <div class="flex justify-center space-x-6">
+                 <button class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 flex items-center justify-center transition-colors"><i class="bi bi-camera-video"></i></button>
+                 <button class="w-12 h-12 rounded-full bg-green-50 text-green-500 hover:bg-green-100 flex items-center justify-center transition-colors"><i class="bi bi-whatsapp"></i></button>
+                 <button class="w-12 h-12 rounded-full bg-purple-50 text-purple-500 hover:bg-purple-100 flex items-center justify-center transition-colors"><i class="bi bi-envelope"></i></button>
              </div>
         </div>
     </aside>
@@ -131,188 +258,386 @@
 <script>
     const { createApp, ref, reactive, watch, onMounted, computed, nextTick } = Vue;
 
-    // --- BOT LOGIC (Lengkap dan tidak diubah) ---
-    function initializeBotLogic() {
-         const costs = {
-            driverMeal: 100000, driverLodge: 100000,
-            vehicles: [
-                { name: 'Hiace Premio / Commuter', pricePerDay: 1200000, pricePerSeat: 150000 },
-                { name: 'Medium Bus', pricePerDay: 2500000 }, { name: 'Big Bus', pricePerDay: 3500000 },
-            ]
+    // --- DEFAULT & CONFIGURATION ---
+    const defaultBotResponses = {
+        'greeting': `Halo, Kak! 😃 Selamat datang di Sutan Raya.<br><br>Saya asisten virtual yang siap membantu Anda. Silakan pilih layanan dengan mengetik nomornya:<br><br>• Ketik 1 untuk Pesan Travel Hiace<br>• Ketik 2 untuk Pesan Bus Pariwisata<br>• Ketik 3 untuk Info Tour & Travel<br>• Ketik 4 untuk Promo Shuttle<br>• Ketik 5 untuk Promo Pelajar`,
+        'fallback': `Maaf, saya tidak mengerti. Silakan ketik 'menu' untuk melihat pilihan bantuan.`,
+        '1': `Layanan Sewa Hiace Luxury Class kami sudah All-in (Mobil, Driver, BBM, Tol, Parkir).<br>Fasilitas: Captain Seat, Kursi Pijat, Karaoke, TV, AC, USB Charger, Coolbox.`,
+        '2': `Siap! Armada bus pariwisata kami (Medium & Big Bus) terbaru tahun 2025 siap melayani perjalanan wisata Anda.<br><br>Kapasitas 33-50 kursi, dilengkapi GPS & USB Port.`,
+        '3': `Kami menyediakan layanan Tour & Organizer yang lengkap:<br><br>• **Paket Kustom**: Anda tentukan destinasi, kami susunkan itinerary & biayanya.<br>• **Dokumentasi**: Tim profesional dengan Kamera, Drone, dan editor video.<br>• **Outbound**: Fun games untuk group/korporat.<br><br>Untuk membuat paket tur, silakan hubungi tim kami langsung melalui website atau ketik 'menu' untuk kembali.`,
+        '4': `Layanan shuttle antar jemput alamat rute Padang ⇄ Payakumbuh.<br><br>Harga: Rp 150.000.<br><br>Jadwal:<br>• PYK - Padang: 05.00, 10.00, 14.00, 17.00<br>• Padang - PYK: 08.00, 10.00, 14.00, 18.00`,
+        '5': `Promo spesial untuk Pelajar & Mahasiswa!<br><br>Harga khusus rute Padang-Payakumbuh (PP) hanya Rp 130.000. Wajib menunjukkan Kartu Tanda Mahasiswa / Pelajar aktif.`
+    };
+
+    // --- DYNAMIC BOT LOGIC ---
+    // (We pass 'responses' and 'routesRef' so the bot can see the latest settings/data)
+    function initializeBotLogic(responses, routesRef) {
+        const keywords = {
+            'menu': 'menu',
+            'pesan': 'menu',
+            'sewa': 'state_hiace_options',
+            'hiace': 'state_hiace_options',
+            'bus': 'state_bus',
+            'shuttle': 'state_shuttle',
+            'promo': 'state_promo',
+            'bantuan': 'help',
+            'operator': 'operator'
         };
-        const calculatePrice = (service, duration) => {
-            let total = 0; let breakdown = []; const nights = duration > 1 ? duration - 1 : 0;
-            const vehicle = costs.vehicles.find(v => service.toLowerCase().includes(v.name.split(' ')[0].toLowerCase()));
-            if(vehicle) {
-                const vehicleCost = vehicle.pricePerDay * duration;
-                breakdown.push(`• Sewa ${vehicle.name} (${duration} hari): Rp ${vehicleCost.toLocaleString('id-ID')}`);
-                total += vehicleCost;
-                if(duration > 0){
-                    const crewCost = (costs.driverMeal * duration) + (costs.driverLodge * nights);
-                    breakdown.push(`• Operasional Kru: Rp ${crewCost.toLocaleString('id-ID')}`);
-                    total += crewCost;
+
+        const states = {
+            'idle': (input, convo, sendMessage) => {
+                // Check for direct keyword matches first
+                if (responses[input]) {
+                    sendMessage(responses[input]);
+                    return true;
                 }
-            }
-            return { breakdown, total };
-        };
-        const responses = { menu: `• Ketik 1 untuk Pesan Travel Hiace<br>• Ketik 2 untuk Pesan Bus Pariwisata<br>• Ketik 3 untuk Info Tour & Travel<br>• Ketik 4 untuk Promo Shuttle<br>• Ketik 5 untuk Promo Pelajar` };
-        return {
-            keywords: {
-                'halo': (convo, sendMessage) => {
-                    convo.state = { current: 'idle', data: {} };
-                    sendMessage(`Halo, Kak! 😃 Selamat datang di Sutan Raya.<br><br>Saya asisten virtual, silakan pilih layanan:<br><br>${responses.menu}`);
-                },
-                '1': (convo, sendMessage) => {
-                    sendMessage(`Tentu. Untuk Hiace, kami ada 2 opsi:<br><br>• Ketik 'A' untuk Pesan Per Bangku.<br>• Ketik 'B' untuk Sewa Harian (Carter).`);
-                    convo.state.current = 'state_hiace_options';
-                },
-                '2': (convo, sendMessage) => {
-                     sendMessage(`Siap! Armada bus kami siap melayani.<br><br>Ketik 'pesan' untuk memulai booking & estimasi harga.`);
-                     convo.state.current = 'state_bus';
-                },
-                '3': (convo, sendMessage) => {
-                    sendMessage(`Kami menyediakan layanan Tour & Organizer lengkap:<br><br>• **Paket Kustom**: Anda tentukan destinasi, kami susunkan itinerary & biayanya.<br>• **Dokumentasi**: Tim profesional (Kamera, Drone, Video).<br>• **Outbound**: Fun games untuk group/korporat.<br><br>Untuk info lebih lanjut, ketik 'menu' untuk kembali.`);
-                    convo.state.current = 'idle';
-                },
-                '4': (convo, sendMessage) => {
-                    sendMessage(`Layanan shuttle rute Padang ⇄ Payakumbuh.<br><br>Harga: Rp 150.000.<br>Jadwal:<br>• PYK-PDG: 05.00, 10.00, 14.00, 17.00<br>• PDG-PYK: 08.00, 10.00, 14.00, 18.00<br><br>Ketik 'pesan' untuk booking.`);
-                    convo.state.current = 'state_shuttle';
-                },
-                '5': (convo, sendMessage) => {
-                    sendMessage(`Promo Pelajar & Mahasiswa!<br><br>Harga khusus rute Padang-Payakumbuh (PP) hanya Rp 130.000. Wajib menunjukkan kartu identitas aktif.<br><br>Ketik 'pesan' untuk booking promo ini.`);
-                    convo.state.current = 'state_promo';
-                },
-                'menu': (convo, sendMessage) => { convo.state.current = 'idle'; sendMessage(`Ada lagi yang bisa dibantu?<br><br>${responses.menu}`); }
-            },
-            states: {
-                'state_hiace_options': (input, convo, sendMessage) => {
-                    if (input === 'a') {
-                        convo.state.data = { service: 'Travel Hiace (Per Bangku)', price: costs.vehicles[0].pricePerSeat };
-                        convo.state.current = 'booking_ask_route';
-                        sendMessage(`Baik, pemesanan per bangku (Rp ${convo.state.data.price.toLocaleString('id-ID')}/orang).<br><br>Rute mana yang Anda inginkan? (Contoh: Padang ke Bukittinggi)`);
-                    } else if (input === 'b') {
-                        convo.state.data = { service: 'Sewa Harian Hiace' };
-                        convo.state.current = 'booking_ask_duration';
-                        sendMessage(`Siap! Untuk sewa harian (carter), perjalanannya untuk berapa hari?`);
-                    } else { sendMessage("Pilihan tidak valid. Silakan ketik 'A' atau 'B'."); }
-                    return true;
-                },
-                'state_bus': (input, convo, sendMessage) => {
-                    if (input === 'pesan') {
-                        sendMessage("Tentu. Pilih jenis bus:<br><br>• Ketik 'A' untuk Medium Bus (33 seat)<br>• Ketik 'B' untuk Big Bus (50 seat)");
-                        convo.state.current = 'booking_ask_bus_type';
-                    } else { botLogic.keywords['menu'](convo, sendMessage); }
-                    return true;
-                },
-                'state_shuttle': (input, convo, sendMessage) => {
-                    if (input === 'pesan') {
-                        convo.state.data = { service: 'Shuttle Padang-Payakumbuh', price: 150000 };
-                        convo.state.current = 'booking_ask_name';
-                        sendMessage(`Baik, untuk booking "${convo.state.data.service}", atas nama siapa?`);
-                    } else { botLogic.keywords['menu'](convo, sendMessage); }
-                    return true;
-                },
-                'state_promo': (input, convo, sendMessage) => {
-                    if (input === 'pesan') {
-                        convo.state.data = { service: 'Promo Pelajar', price: 130000 };
-                        convo.state.current = 'booking_ask_name';
-                        sendMessage(`Siap! Untuk booking "${convo.state.data.service}". Atas nama siapa? (Jangan lupa bawa kartu identitas pelajar/mahasiswa ya)`);
-                    } else { botLogic.keywords['menu'](convo, sendMessage); }
-                    return true;
-                },
-                'booking_ask_route': (input, convo, sendMessage) => {
-                    convo.state.data.route = input;
-                    convo.state.current = 'booking_ask_name';
-                    sendMessage(`Oke, rute ${convo.state.data.route}. Selanjutnya, pemesanan atas nama siapa?`);
-                    return true;
-                },
-                'booking_ask_bus_type': (input, convo, sendMessage) => {
-                    if (input === 'a') convo.state.data = { service: 'Sewa Medium Bus' };
-                    else if (input === 'b') convo.state.data = { service: 'Sewa Big Bus' };
-                    else { sendMessage("Pilihan tidak valid, silakan ketik 'A' atau 'B'."); return true; }
-                    convo.state.current = 'booking_ask_duration';
-                    sendMessage(`OK, ${convo.state.data.service}. Perjalanannya untuk berapa hari?`);
-                    return true;
-                },
-                'booking_ask_duration': (input, convo, sendMessage) => {
-                    const duration = parseInt(input);
-                    if (isNaN(duration) || duration <= 0) { sendMessage("Mohon masukkan jumlah hari yang valid (contoh: 3)."); return true; }
-                    convo.state.data.duration = duration;
-                    const { breakdown, total } = calculatePrice(convo.state.data.service, duration);
-                    const priceInfo = `Baik, Kak. Berikut estimasi biayanya:<br><br>${breakdown.join('<br>')}<br><br><b>Total Estimasi: Rp ${total.toLocaleString('id-ID')}</b>`;
-                    convo.state.data.estimatedPrice = total;
-                    sendMessage(priceInfo, 800);
-                    sendMessage("Jika setuju, silakan ketik nama Anda untuk membuat invoice.", 1800);
-                    convo.state.current = 'booking_ask_name';
-                    return true;
-                },
-                'booking_ask_name': (input, convo, sendMessage) => {
-                    convo.state.data.name = input.charAt(0).toUpperCase() + input.slice(1);
-                     if (!convo.state.data.duration) {
-                        convo.state.current = 'booking_shuttle_ask_pax';
-                        sendMessage(`Oke, Kak ${convo.state.data.name}. Untuk berapa orang?`);
-                    } else {
-                        convo.state.current = 'booking_ask_pax_rental';
-                        sendMessage(`Siap, Kak ${convo.state.data.name}. Rombongan berjumlah berapa orang?`);
+                for (let k in keywords) {
+                    if (input.includes(k)) {
+                        const target = keywords[k];
+                        if (states[target]) return states[target]('pesan', convo, sendMessage); // Trigger start
+                        if (target === 'help') { sendMessage(responses.help); return true; }
+                        if (target === 'menu') { sendMessage(responses.greeting); return true; }
                     }
-                    return true;
-                },
-                'booking_ask_pax_rental': (input, convo, sendMessage) => {
+                }
+                // Default fallback if nothing matches
+                sendMessage(responses.fallback);
+                return true;
+            },
+            'state_hiace_options': (input, convo, sendMessage) => {
+                if (input === 'a') {
+                    convo.state.data = { service: 'Travel Hiace (Per Bangku)', price: 0 }; 
+                    convo.state.current = 'booking_ask_date';
+                    
+                    // Generate Route List
+                    let routeList = "<b>Daftar Harga & Rute:</b><br>";
+                    const routes = routesRef.value || [];
+                    if (routes.length > 0) {
+                        routes.forEach(r => {
+                           routeList += `• ${r.origin} - ${r.destination}: Rp ${r.prices.umum.toLocaleString('id-ID')} (Umum) / Rp ${r.prices.pelajar.toLocaleString('id-ID')} (Pelajar)<br>`;
+                        });
+                    } else {
+                        routeList += "(Belum ada data rute)<br>";
+                    }
+
+                    sendMessage(`Baik, pemesanan per bangku.<br><br>${routeList}<br>Untuk keberangkatan tanggal berapa?`);
+                } else if (input === 'b') {
+                    convo.state.data = { service: 'Sewa Harian Hiace' };
+                    convo.state.current = 'booking_ask_duration';
+                    sendMessage(`Siap! Untuk sewa harian (carter), perjalanannya untuk berapa hari?`);
+                } else { sendMessage("Pilihan tidak valid. Silakan ketik 'A' atau 'B'."); }
+                return true;
+            },
+            'state_bus': (input, convo, sendMessage) => {
+                if (input === 'pesan') {
+                    sendMessage("Tentu. Pilih jenis bus:<br><br>• Ketik 'A' untuk Medium Bus (33 seat)<br>• Ketik 'B' untuk Big Bus (50 seat)");
+                    convo.state.current = 'booking_ask_bus_type';
+                } else { return false; }
+                return true;
+            },
+            'state_shuttle': (input, convo, sendMessage) => {
+                if (input === 'pesan') {
+                    convo.state.data = { service: 'Shuttle Padang-Payakumbuh', price: 150000 };
+                    convo.state.current = 'booking_ask_date';
+                    sendMessage(`Baik, untuk booking "${convo.state.data.service}". Untuk tanggal berapa?`);
+                } else { return false; }
+                return true;
+            },
+            'state_promo': (input, convo, sendMessage) => {
+                if (input === 'pesan') {
+                    convo.state.data = { service: 'Promo Pelajar', price: 130000 };
+                    convo.state.current = 'booking_ask_date';
+                    sendMessage(`Siap! Untuk booking "${convo.state.data.service}". Untuk tanggal berapa?`);
+                } else { return false; }
+                return true;
+            },
+            
+            // --- SHARED / GENERIC STEPS ---
+            'booking_ask_date': (input, convo, sendMessage) => {
+                convo.state.data.date = input;
+                // For Travel/Shuttle/Promo, we need Route next if not set, or Time.
+                if (convo.state.data.service.includes('Travel')) {
+                        convo.state.current = 'booking_ask_route';
+                        sendMessage(`Oke, tanggal ${input}.<br><br>Rute mana yang Anda inginkan? (Contoh: Padang ke Pekanbaru)`);
+                } else if (convo.state.data.service.includes('Shuttle')) {
+                    convo.state.data.route = 'Padang - Payakumbuh (Shuttle)';
+                    convo.state.current = 'booking_ask_time';
+                    sendMessage(`Oke, tanggal ${input}. Jam berapa? (Pagi/Siang/Sore)`);
+                } else {
+                        // Promo defaults? Or ask route? Let's ask route.
+                        convo.state.current = 'booking_ask_route';
+                        sendMessage(`Oke, tanggal ${input}. Mau berangkat dari mana ke mana?`);
+                }
+                return true;
+            },
+            'booking_ask_route': (input, convo, sendMessage) => {
+                // Fuzzy Match Logic
+                const userInput = input.toLowerCase();
+                const availableRoutes = routesRef.value || [];
+                
+                // Try to find a matching route
+                let foundRoute = null;
+                
+                // 1. Exact match or simple contains
+                foundRoute = availableRoutes.find(r => {
+                    const origin = r.origin.toLowerCase();
+                    const dest = r.destination.toLowerCase();
+                    const combined = `${origin} - ${dest}`.toLowerCase();
+                    const reversed = `${dest} - ${origin}`.toLowerCase(); // Just in case
+                    return combined.includes(userInput) || reversed.includes(userInput) || 
+                           (userInput.includes(origin) && userInput.includes(dest));
+                });
+                
+                if (foundRoute) {
+                    convo.state.data.route = `${foundRoute.origin} - ${foundRoute.destination}`;
+                    convo.state.data.routeId = foundRoute.id;
+                    convo.state.data.price = foundRoute.prices.umum;
+                    convo.state.data.pricePelajar = foundRoute.prices.pelajar;
+                    
+                    convo.state.current = 'booking_ask_time';
+                    sendMessage(`Siap, rute ${convo.state.data.route}.<br>Harga Tiket: <b>Rp ${foundRoute.prices.umum.toLocaleString('id-ID')}</b> (Umum) / <b>Rp ${foundRoute.prices.pelajar.toLocaleString('id-ID')}</b> (Pelajar).<br><br>Jam keberangkatan yang diinginkan?`);
+                    // We can also list schedules if we want: foundRoute.schedules
+                } else {
+                    // Fallback if no match found
+                    convo.state.data.route = input; // Use user input as is
+                    convo.state.data.price = 150000; // Default fallback
+                    convo.state.current = 'booking_ask_time';
+                    sendMessage(`Oke, rute ${input}.<br><br>Jam keberangkatan yang diinginkan?`);
+                }
+                return true;
+            },
+            'booking_ask_time': (input, convo, sendMessage) => {
+                convo.state.data.time = input;
+                convo.state.current = 'booking_ask_pax';
+                sendMessage(`Oke, jam ${input}.<br><br>Untuk berapa orang?`);
+                return true;
+            },
+            'booking_ask_pax': (input, convo, sendMessage) => {
+                const pax = parseInt(input);
+                if (isNaN(pax) || pax <= 0) { sendMessage("Mohon masukkan angka yang valid."); return true; }
+                convo.state.data.pax = pax;
+                
+                // Calc price
+                if (convo.state.data.price) {
+                    convo.state.data.estimatedPrice = convo.state.data.price * pax;
+                }
+
+                convo.state.current = 'booking_ask_name';
+                sendMessage(`Total ${pax} orang.<br><br>Booking atas nama siapa?`);
+                return true;
+            },
+            
+                'booking_ask_name': (input, convo, sendMessage) => {
+                convo.state.data.name = input.charAt(0).toUpperCase() + input.slice(1);
+                
+                // If 'Carter', we have different flow logic (Duration based).
+                // But for Travel/Shuttle, we continue to Phone/Address.
+                if (convo.state.data.service.includes('Sewa') || convo.state.data.service.includes('Carter')) {
+                        // Carter flow usually done here after name (calculated previously)
+                        convo.state.current = 'booking_ask_phone'; 
+                        sendMessage(`Baik, Kak ${convo.state.data.name}. Boleh minta No. HP/WA yang bisa dihubungi?`);
+                } else {
+                    // Travel Flow
+                    convo.state.current = 'booking_ask_phone';
+                    sendMessage(`Baik, Kak ${convo.state.data.name}. Boleh minta No. HP/WA yang aktif?`);
+                }
+                return true;
+            },
+            'booking_ask_phone': (input, convo, sendMessage) => {
+                convo.state.data.phone = input;
+                
+                if (convo.state.data.service.includes('Shuttle')) {
+                    // Shuttle usually pool to pool, or specific point. Let's ask generic "Pickup Addr"
+                    convo.state.current = 'booking_ask_pickup';
+                    sendMessage(`Nomor dicatat.<br><br>Alamat penjemputan di mana?`);
+                } else if (convo.state.data.service.includes('Sewa')) {
+                        // Carter finish
+                        convo.state.current = 'booking_finalize'; 
+                        // Trigger finalization immediately
+                        return states['booking_finalize'](input, convo, sendMessage); // Use local 'states' ref via closure or just recursive call if defined
+                } else {
+                    // Travel
+                    convo.state.current = 'booking_ask_pickup';
+                    sendMessage(`Siap. Alamat penjemputan di mana?`);
+                }
+                return true;
+            },
+            'booking_ask_pickup': (input, convo, sendMessage) => {
+                convo.state.data.pickup = input;
+                convo.state.current = 'booking_ask_dropoff';
+                sendMessage(`Oke. Alamat pengantaran (tujuan) di mana?`);
+                return true;
+            },
+            'booking_ask_dropoff': (input, convo, sendMessage) => {
+                convo.state.data.dropoff = input;
+                convo.state.current = 'booking_finalize';
+                // Trigger finalization immediately
+                return states['booking_finalize'](input, convo, sendMessage);
+            },
+
+            'booking_finalize': (input, convo, sendMessage) => {
+                const { name, service, pax, date, time, duration, estimatedPrice, route, phone, pickup, dropoff } = convo.state.data;
+                
+                const invoiceParams = new URLSearchParams({ 
+                    customerName: name, 
+                    service, 
+                    pax: pax || 'N/A', 
+                    duration: duration || 'N/A', 
+                    startDate: date, 
+                    time: time || 'N/A',
+                    total: estimatedPrice, 
+                    route: route || 'N/A',
+                    phone: phone || '',
+                    pickup: pickup || '',
+                    dropoff: dropoff || ''
+                }).toString();
+                
+                const invoiceURL = `user.html?id=${convo.userId}&invoice=true&${invoiceParams}`;
+                const summary = `Terima kasih, Kak ${name}!<br>Booking Anda sudah lengkap.<br><br>Rincian:<br>• Layanan: ${service}<br>• Rute: ${route}<br>• Tanggal: ${date}, Jam: ${time || '-'}<br>• Jemput: ${pickup || '-'}<br>• Antar: ${dropoff || '-'}<br>• <b>Total: Rp ${estimatedPrice.toLocaleString('id-ID')}</b><br><br>Silakan klik link di bawah untuk melihat invoice:<br><br><a href="${invoiceURL}" target="_blank" class="text-blue-500 underline font-bold bg-blue-50 px-2 py-1 rounded">Buka Invoice</a>`;
+                
+                sendMessage(summary);
+                setTimeout(() => { convo.state.current = 'idle'; sendMessage(`Ada lagi yang bisa dibantu? Ketik 'menu'.`); }, 3000);
+                return true;
+            },
+
+            // --- CARTER SPECIFIC ---
+            'booking_ask_bus_type': (input, convo, sendMessage) => {
+                if (input === 'a') convo.state.data = { service: 'Sewa Medium Bus' };
+                else if (input === 'b') convo.state.data = { service: 'Sewa Big Bus' };
+                else { sendMessage("Pilihan tidak valid, silakan ketik 'A' atau 'B'."); return true; }
+                convo.state.current = 'booking_ask_duration';
+                sendMessage(`OK, ${convo.state.data.service}. Perjalanannya untuk berapa hari?`);
+                return true;
+            },
+            'booking_ask_duration': (input, convo, sendMessage) => {
+                const duration = parseInt(input);
+                if (isNaN(duration) || duration <= 0) { sendMessage("Mohon masukkan jumlah hari yang valid (contoh: 3)."); return true; }
+                convo.state.data.duration = duration;
+                // simplified calc for carter
+                let pricePerDay = 1200000; // default
+                if (convo.state.data.service.includes('Medium Bus')) pricePerDay = 2500000;
+                if (convo.state.data.service.includes('Big Bus')) pricePerDay = 3500000;
+                
+                const total = pricePerDay * duration;
+                convo.state.data.estimatedPrice = total;
+                
+                sendMessage(`Baik, Kak. Estimasi sewa ${duration} hari sekitar Rp ${total.toLocaleString('id-ID')}.<br>Jika setuju, ketik nama Anda.`);
+                convo.state.current = 'booking_ask_name';
+                return true;
+            },
+            'booking_ask_pax_rental': (input, convo, sendMessage) => {
                     convo.state.data.pax = input;
                     convo.state.current = 'booking_ask_date';
                     sendMessage(`Dicatat, ${convo.state.data.pax} orang. Untuk tanggal berapa, Kak?`);
                     return true;
-                },
-                'booking_shuttle_ask_pax': (input, convo, sendMessage) => {
-                    const pax = parseInt(input);
-                    if (isNaN(pax) || pax <= 0) { sendMessage("Mohon masukkan jumlah orang yang valid (angka saja)."); return true; }
-                    convo.state.data.pax = pax;
-                    convo.state.data.estimatedPrice = convo.state.data.price * convo.state.data.pax;
-                    convo.state.current = 'booking_ask_date';
-                    sendMessage(`Total biaya untuk ${convo.state.data.pax} orang adalah Rp ${convo.state.data.estimatedPrice.toLocaleString('id-ID')}. Perjalanan untuk tanggal berapa, Kak?`);
+            },
+                // Helper for Carter date which loops back to finish
+            'booking_ask_date_carter': (input, convo, sendMessage) => {
                     return true;
-                },
-                'booking_ask_date': (input, convo, sendMessage) => {
-                    convo.state.data.date = input;
-                    const { name, service, pax, date, duration, estimatedPrice, route } = convo.state.data;
-                    const invoiceParams = new URLSearchParams({ customerName: name, service, pax: pax || 'N/A', duration: duration || 'N/A', startDate: date, total: estimatedPrice, route: route || 'N/A' }).toString();
-                    const invoiceURL = `user.html?invoice=true&${invoiceParams}`;
-                    const summary = `Terima kasih, Kak ${name}!<br><br>Silakan klik link di bawah untuk melihat invoice:<br><br><a href="${invoiceURL}" target="_blank" class="text-blue-400 underline font-bold">Buka Invoice</a>`;
-                    sendMessage(summary);
-                    setTimeout(() => { convo.state.current = 'idle'; sendMessage(`Ada lagi yang bisa dibantu? Ketik 'menu'.`); }, 2000);
-                    return true;
-                }
             }
         };
+
+        const evaluateInput = (input, convo, sendMessage) => {
+            const lower = input.toLowerCase();
+            
+            // Execute current state handler
+            const handler = states[convo.state.current];
+            if (handler) {
+                const proceed = handler(lower, convo, sendMessage); // Pass lowercased input
+                if (!proceed) sendMessage("Maaf, saya tidak mengerti. Silakan coba lagi.");
+            } else {
+                convo.state.current = 'idle';
+                sendMessage("Terjadi kesalahan teknis. Percakapan direset.");
+            }
+        };
+
+        return { evaluateInput, states }; // Return states if needed externally
     }
 
     createApp({
         setup() {
+            // VIEW STATE
+            const currentView = ref('inbox');
+            const saveSuccess = ref(false);
+
+            // DATA
             const conversations = reactive({});
             const adminMessages = reactive({});
-            const botLogic = ref(initializeBotLogic());
-            const chatAreas = ref({});
-
-            const activeConversations = computed(() => Object.values(conversations).sort((a, b) => a.createdAt - b.createdAt));
-            const onlineUsers = computed(() => Object.values(conversations).sort((a,b) => b.lastActivity - a.lastActivity));
-            const isMyMessage = (msg) => ['bot', 'admin'].includes(msg.sender);
-
-            const resetAll = () => { if(confirm("Yakin ingin mereset semua data simulasi?")){ localStorage.clear(); Object.keys(conversations).forEach(key => delete conversations[key]); } };
+            const botResponses = reactive({ ...defaultBotResponses });
             
+            // LOGIC REFERENCES
+            const botLogic = ref(null);
+            const chatAreas = ref({});
+            const availableRoutes = ref([]);
+
+            // COMPUTED
+            const activeConversations = computed(() => Object.values(conversations).sort((a, b) => b.lastActivity - a.lastActivity));
+            const onlineUsers = computed(() => activeConversations.value.filter(c => c.isActive));
+
+            // HELPERS
+            const isMyMessage = (msg) => ['bot', 'admin'].includes(msg.sender);
+            const getBubbleClass = (msg) => {
+                if (msg.sender === 'admin') return 'bg-purple-600 text-white bubble-admin';
+                if (msg.sender === 'bot') return 'bg-gray-200 text-gray-800 bubble-bot';
+                return 'bg-white border text-gray-800 bubble-user';
+            };
+            const formatTime = (timestamp) => {
+                 if (!timestamp) return '';
+                 return new Date(timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            };
+            const getMenuLabel = (key) => {
+                const labels = { '1': 'Pesan Hiace', '2': 'Pesan Bus', '3': 'Info Tour', '4': 'Shuttle', '5': 'Promo' };
+                return labels[key] || 'Menu';
+            };
+
+            // ACTIONS
+            const resetAll = () => { 
+                if(confirm("Yakin ingin mereset semua data simulasi? INI AKAN MENGHAPUS SEMUA CHAT USER.")){ 
+                    localStorage.clear(); 
+                    // Restore defaults
+                    Object.assign(botResponses, defaultBotResponses);
+                    saveSettings();
+                    window.location.reload(); 
+                } 
+            };
+            
+            const deleteConversation = (userId) => {
+                if(confirm(`Hapus chat dengan User ${userId}?`)) {
+                    delete conversations[userId];
+                    localStorage.removeItem(`sutanRayaChat_${userId}`);
+                }
+            };
+            
+            const saveSettings = () => {
+                localStorage.setItem('sutanRayaBotResponses', JSON.stringify(botResponses));
+                // Re-initialize bot logic with new responses
+                botLogic.value = initializeBotLogic(botResponses, availableRoutes);
+                saveSuccess.value = true;
+                setTimeout(() => saveSuccess.value = false, 2000);
+            };
+
             const sendAdminMessage = (userId) => {
                 const text = adminMessages[userId];
                 if (!text || !conversations[userId]) return;
                 const convo = conversations[userId];
                 const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
                 convo.messages.push({ id: Date.now(), text, sender: 'admin', timestamp });
                 convo.lastActivity = Date.now();
+                
+                // Admin talking automatically disables bot to prevent conflict usually, but let's keep it manual toggle purely
+                // convo.botActive = false; 
+                
                 localStorage.setItem(`sutanRayaChat_${userId}`, JSON.stringify(convo));
                 adminMessages[userId] = '';
+                nextTick(() => scrollToChat(userId));
             };
 
             const toggleBot = (userId) => {
                 const convo = conversations[userId];
-                if(convo) { convo.botActive = !convo.botActive; localStorage.setItem(`sutanRayaChat_${userId}`, JSON.stringify(convo)); }
+                if(convo) { 
+                    convo.botActive = !convo.botActive; 
+                    localStorage.setItem(`sutanRayaChat_${userId}`, JSON.stringify(convo)); 
+                }
             };
             
             const toggleSummary = (userId) => {
@@ -320,74 +645,169 @@
                 if(convo) convo.showSummary = !convo.showSummary;
             };
 
+            const scrollToChat = (userId) => {
+                const el = chatAreas.value[userId];
+                if (el) el.scrollTop = el.scrollHeight;
+            };
+
+            // SYSTEM
+            async function fetchRoutesData() {
+                try {
+                    const res = await fetch('../display-v11/api.php?action=get_data');
+                    const data = await res.json();
+                    if (data && data.routes) {
+                        availableRoutes.value = data.routes;
+                        console.log("Routes loaded:", availableRoutes.value);
+                    }
+                } catch (e) {
+                    console.error("Failed to load routes:", e);
+                }
+            }
+
             const runBot = (userId, userMessage) => {
                 const convo = conversations[userId];
                 if (!convo || !convo.botActive) return;
+
                 const userText = userMessage.text.toLowerCase().trim();
-                const currentStateHandler = botLogic.value.states[convo.state.current];
+                
                 const sendMessage = (text, delay = 800) => {
                      const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                      setTimeout(() => {
                         convo.messages.push({ id: Date.now() + Math.random(), text, sender: 'bot', timestamp });
                         localStorage.setItem(`sutanRayaChat_${userId}`, JSON.stringify(convo));
+                        nextTick(() => scrollToChat(userId));
                      }, delay);
                 };
-                if (currentStateHandler && currentStateHandler(userText, convo, sendMessage)) {} 
-                else if (botLogic.value.keywords[userText]) { botLogic.value.keywords[userText](convo, sendMessage); } 
-                else { sendMessage("Maaf, saya kurang mengerti. Coba ketik 'halo'."); }
-                 localStorage.setItem(`sutanRayaChat_${userId}`, JSON.stringify(convo));
+
+                // Logic Execution
+                if (botLogic.value && botLogic.value.evaluateInput) {
+                     botLogic.value.evaluateInput(userText, convo, sendMessage);
+                } else {
+                     console.error("Bot logic not initialized");
+                }
             };
 
             watch(conversations, () => {
-                nextTick(() => {
-                    for (const userId in chatAreas.value) {
-                        const el = chatAreas.value[userId];
-                        if (el) el.scrollTop = el.scrollHeight;
-                    }
-                });
+                // Auto scroll on new messages effectively handled by individual updates but good to have backup
             }, { deep: true });
 
             onMounted(() => {
+                // 1. Load Settings
+                const savedResponses = JSON.parse(localStorage.getItem('sutanRayaBotResponses'));
+                if (savedResponses) { Object.assign(botResponses, savedResponses); }
+                
+                // Fetch routes then init
+                fetchRoutesData().then(() => {
+                    botLogic.value = initializeBotLogic(botResponses, availableRoutes);
+                });
+
+
+                // 2. Load Chats
+                const loadChats = () => {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith('sutanRayaChat_')) {
+                            try {
+                                const convo = JSON.parse(localStorage.getItem(key));
+                                const userId = key.split('_')[1];
+                                
+                                // Migration/Safety: Ensure convo has necessary fields
+                                if(!convo.messages) convo.messages = [];
+                                if(!convo.state) convo.state = { current: 'idle', data: {} };
+                                if(convo.botActive === undefined) convo.botActive = true;
+                                if(convo.showSummary === undefined) convo.showSummary = false;
+                                if(!convo.createdAt) convo.createdAt = Date.now();
+                                if(!convo.lastActivity) convo.lastActivity = Date.now();
+                                
+                                // Merge into reactive state
+                                if(!conversations[userId]) {
+                                    conversations[userId] = convo; // Reactive auto-wrapping
+                                    adminMessages[userId] = '';
+                                } else {
+                                    // Update existing without breaking ref
+                                    Object.assign(conversations[userId], convo);
+                                }
+                            } catch(e) { console.error("Error loading chat", key, e); }
+                        }
+                    }
+                };
+                loadChats();
+
+                // 3. Listen for Storage Events (Realtime sync with User Tab)
+                window.addEventListener('storage', (event) => {
+                    if (event.key && event.key.startsWith('sutanRayaChat_')) {
+                        const userId = event.key.split('_')[1];
+                        
+                        // Handle formatting clear
+                        if (event.newValue === null) {
+                            delete conversations[userId];
+                            return;
+                        }
+
+                        const updatedConvo = JSON.parse(event.newValue);
+                        if (!updatedConvo) return;
+                        
+                        // First time seeing this user
+                        if (!conversations[userId]) {
+                           adminMessages[userId] = '';
+                           updatedConvo.showSummary = false;
+                           // Use existing createdAt if available
+                           if(!updatedConvo.createdAt) updatedConvo.createdAt = Date.now();
+                           conversations[userId] = updatedConvo;
+                        }
+
+                        const oldMessageCount = conversations[userId] ? conversations[userId].messages.length : 0;
+                        
+                        // Update local state
+                        Object.assign(conversations[userId], updatedConvo);
+                        
+                        // Check if new message came from USER, then trigger BOT
+                        if (updatedConvo.messages.length > oldMessageCount) {
+                            const lastMessage = updatedConvo.messages[updatedConvo.messages.length - 1];
+                            if(lastMessage.sender === 'user') {
+                                // Add small delay to feel natural and let Vue update
+                                setTimeout(() => runBot(userId, lastMessage), 500);
+                            }
+                            nextTick(() => scrollToChat(userId));
+                        }
+                    }
+                });
+
+                // 4. Online Status Interval
                 setInterval(() => {
                     const now = Date.now();
                     for(const userId in conversations){
                         const convo = conversations[userId];
-                        if(now - convo.lastActivity > 60000) convo.isActive = false;
+                        // Active if activity in last 60s
+                        convo.isActive = (now - convo.lastActivity < 60000); 
                     }
-                }, 5000);
-                window.addEventListener('storage', (event) => {
-                    if (event.key && event.key.startsWith('sutanRayaChat_')) {
-                        const updatedConvo = JSON.parse(event.newValue);
-                        if (!updatedConvo) return;
-                        const userId = event.key.split('_')[1];
-                        const isNewConvo = !conversations[userId];
-                        if (isNewConvo) {
-                           adminMessages[userId] = '';
-                           updatedConvo.showSummary = false;
-                           updatedConvo.createdAt = Date.now();
-                        }
-                        const oldMessageCount = conversations[userId] ? conversations[userId].messages.length : 0;
-                        conversations[userId] = { ...conversations[userId], ...updatedConvo };
-                        if (updatedConvo.messages.length > oldMessageCount) {
-                            const lastMessage = updatedConvo.messages[updatedConvo.messages.length - 1];
-                            if(lastMessage.sender === 'user') runBot(userId, lastMessage);
-                        }
-                    }
-                });
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('sutanRayaChat_')) {
-                        const convo = JSON.parse(localStorage.getItem(key));
-                        const userId = key.split('_')[1];
-                        convo.showSummary = false;
-                        if (!convo.createdAt) { convo.createdAt = Date.now() + i; }
-                        conversations[userId] = convo;
-                        adminMessages[userId] = '';
-                    }
-                }
+                }, 10000);
             });
 
-            return { conversations, activeConversations, onlineUsers, isMyMessage, adminMessages, sendAdminMessage, resetAll, toggleBot, toggleSummary, chatAreas };
+            return { 
+                currentView, 
+                conversations, 
+                activeConversations, 
+                onlineUsers, 
+                adminMessages, 
+                botResponses, 
+                saveSuccess,
+                // Actions
+                resetAll, 
+                sendAdminMessage, 
+                toggleBot, 
+                toggleSummary,
+                deleteConversation, 
+                saveSettings,
+                getMenuLabel,
+                // Refs
+                chatAreas, 
+                // Helpers
+                isMyMessage, 
+                getBubbleClass, 
+                formatTime,
+                scrollToChat
+            };
         }
     }).mount('#app');
 </script>

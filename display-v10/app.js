@@ -1,190 +1,151 @@
+// FILE: app.js
+// Display v10 - Frontend Logic
 const { createApp } = Vue;
 
 createApp({
     data() {
         return {
-            // UI State
-            ui: {
-                view: 'dashboard',
-                isDarkMode: false,
-                isFullscreen: false,
-                currentTime: "",
-                currentDate: "",
-                reportDate: new Date().toISOString().slice(0,10),
-                bookingManagementTab: 'travel',
-                busSearchTerm: '',
-                busViewMode: 'list', 
-                calendarMonth: new Date().getMonth(),
-                calendarYear: new Date().getFullYear(),
-            },
+            // -- State UI --
+            view: 'dashboard',
+            isDarkMode: false,
+            isLoading: false,
+            currentTime: "",
+            currentDate: "",
             
-            // Storage Keys
-            VIEW_KEY: 'sutan_v85_view',
-            THEME_KEY: 'sutan_v85_theme',
-
-            // Modals Visibility
-            modals: {
-                proof: false,
-                dispatch: false,
-                vehicle: false,
-                driver: false,
-                tripControl: false,
-                ticket: false,
-                route: false
-            },
-
-            // Forms & Active Data
+            // -- State Modals --
+            isProofModalVisible: false,
+            isDispatchModalVisible: false,
+            isVehicleModalVisible: false,
+            isDriverModalVisible: false,
+            isTripControlVisible: false,
+            isTicketModalVisible: false,
+            isRouteModalVisible: false,
+            
+            // -- Data Models --
+            activeTripControl: null,
+            validationData: null,
+            ticketData: null,
+            
+            // -- Forms --
+            bookingManagementTab: 'travel',
+            busSearchTerm: '',
             bookingForm: { 
-                data: { id: null, serviceType: 'Travel', routeId: '', date: '', time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1 },
+                data: { id: null, serviceType: 'Travel', routeId: '', date: '', time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1, isMultiStop: false },
                 selectedSeats: []
             },
             bookingBusForm: { type: 'Medium', routeId: '', seatCapacity: 33, duration: 1, date: '', passengerName: '', passengerPhone: '', totalPrice: 0, priceType: 'Kantor', packageType: 'Unit', paymentMethod: 'Cash', paymentLocation: '', paymentReceiver: '', paymentProof: '', downPaymentAmount: 0 },
+            
+            currentPaymentMethod: 'Cash',
+            tempPayment: { loc: '', recv: '', proof: '', dpAmount: 0, dpMethod: 'Cash' },
             dispatchForm: { group: null, fleetId: "", driverId: "" },
             vehicleModal: { mode: "add", data: null },
             driverModal: { mode: "add", data: null },
             routeModal: { mode: 'add', data: { id: '', origin: '', destination: '', schedulesInput: '', prices: { umum: 0, pelajar: 0, dropping: 0, carter: 0 } } },
-            
-            // Temporary & Active States
-            currentPaymentMethod: 'Cash',
-            tempPayment: { loc: '', recv: '', proof: '', dpAmount: 0, dpMethod: 'Cash' },
-            activeTripControl: null,
-            validationData: null,
-            ticketData: null,
 
-            // Main Data Containers
-            bookings: [], 
-            fleet: [], 
-            drivers: [], 
+            // -- Data from Server --
+            bookings: [],
+            fleet: [],
+            drivers: [],
             trips: [],
+            routeConfig: [],     // Akan di-load dari API
+            busRouteConfig: [],  // Akan di-load dari API
             
-            // Configs (Loaded from DB)
-            routeConfig: [],
-            busRouteConfig: [],
+            // -- Static Config --
             seatLayout: [
                 { row: 1, seats: [{id:"1", type:"seat"}, {id:"driver", type:"driver"}], label: "Depan" },
-                { row: 2, seats: [{id:"3", type:"seat"}, {id:"2", type:"seat"}], label: "Tengah 1" },
-                { row: 3, seats: [{id:"5", type:"seat"}, {id:"4", type:"seat"}], label: "Tengah 2" },
-                { row: 4, seats: [{id:"8", type:"seat"}, {id:"7", type:"seat"}, {id:"6", type:"seat"}], label: "Belakang" }
-            ]
+                { row: 2, seats: [{id:"2", type:"seat"}, {id:"3", type:"seat"}], label: "Tengah 1" },
+                { row: 3, seats: [{id:"4", type:"seat"}, {id:"5", type:"seat"}], label: "Tengah 2" },
+                { row: 4, seats: [{id:"6", type:"seat"}, {id:"7", type:"seat"}, {id:"8", type:"seat"}], label: "Belakang" }
+            ],
+            calendarMonth: new Date().getMonth(),
+            calendarYear: new Date().getFullYear(),
         };
     },
     created() {
         this.loadData();
+        // Auto-refresh setiap 30 detik agar data selalu update tanpa reload
+        setInterval(() => { this.loadData(true); }, 30000);
         
-        // Restore UI State
-        const savedView = localStorage.getItem(this.VIEW_KEY);
-        if(savedView) this.ui.view = savedView;
+        this.updateTime(); 
+        setInterval(this.updateTime, 1000);
         
-        const savedTheme = localStorage.getItem(this.THEME_KEY);
-        this.ui.isDarkMode = savedTheme === 'dark';
-        if(this.ui.isDarkMode) document.documentElement.classList.add('dark');
-        
-        this.updateTime(); setInterval(this.updateTime, 1000);
-        if(!savedView) this.openBookingModal();
-
-        // Register Watchers for Data Persistence
-        ['bookings', 'fleet', 'drivers', 'trips'].forEach(key => {
-            this.$watch(key, () => this.saveData(), { deep: true });
-        });
+        // Load view preference
+        const savedView = localStorage.getItem('sutan_v10_view');
+        if(savedView) this.view = savedView;
+        else this.openBookingModal();
     },
     watch: {
-        'ui.view'(val) { localStorage.setItem(this.VIEW_KEY, val); },
-        'ui.isDarkMode'(val) { 
-            localStorage.setItem(this.THEME_KEY, val ? 'dark' : 'light'); 
-            val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
-        },
-        'bookingForm.data.routeId': function(val) { console.log('Route ID Changed:', val); }
+        view(val) { localStorage.setItem('sutan_v10_view', val); },
     },
     computed: {
-        // UI Helpers
-        view() { return this.ui.view; }, // Alias for template compatibility
-        isDarkMode() { return this.ui.isDarkMode; }, // Alias
-        isFullscreen() { return this.ui.isFullscreen; }, // Alias
-        
-        // Modals Alias (for template compatibility if needed, or update template)
-        isProofModalVisible: { get() { return this.modals.proof; }, set(v) { this.modals.proof = v; } },
-        isDispatchModalVisible: { get() { return this.modals.dispatch; }, set(v) { this.modals.dispatch = v; } },
-        isVehicleModalVisible: { get() { return this.modals.vehicle; }, set(v) { this.modals.vehicle = v; } },
-        isDriverModalVisible: { get() { return this.modals.driver; }, set(v) { this.modals.driver = v; } },
-        isTripControlVisible: { get() { return this.modals.tripControl; }, set(v) { this.modals.tripControl = v; } },
-        isTicketModalVisible: { get() { return this.modals.ticket; }, set(v) { this.modals.ticket = v; } },
-        isRouteModalVisible: { get() { return this.modals.route; }, set(v) { this.modals.route = v; } },
-        
-        // Route Form Alias
-        routeForm: { get() { return this.routeModal.data; }, set(v) { this.routeModal.data = v; } },
-        routeModalMode() { return this.routeModal.mode; },
-
-        currentViewTitle() { return {dashboard:"Dashboard",bookingManagement:"Kelola Booking",dispatcher:"Dispatcher",bookingTravel:"Travel",bookingBus:"Bus",manifest:"Laporan",assets:"Aset"}[this.ui.view] || "Sutan Raya"; },
-        todayRevenue() { return (this.bookings||[]).filter(b => b.date === new Date().toISOString().slice(0,10)).reduce((a,b) => a + (b.totalPrice||0), 0); },
-        todayPax() { return (this.bookings||[]).filter(b => b.date === new Date().toISOString().slice(0,10)).length; },
-        pendingValidationCount() { return (this.bookings||[]).filter(b => b.validationStatus === 'Menunggu Validasi').length; },
-        activeTrips() { return (this.trips||[]).filter(t => !['Tiba', 'Batal'].includes(t.status)); },
-        outboundTrips() { 
-            return this.activeTrips.filter(t => {
-                const rid = t.routeConfig?.routeId;
-                const r = this.routeConfig.find(x=>x.id===rid) || this.busRouteConfig.find(x=>x.id===rid);
-                if(!r) return false;
-                const origin = r.origin || (r.name ? r.name.split(' - ')[0] : '');
-                return origin === 'Padang';
-            });
-        },
-        inboundTrips() { 
-            return this.activeTrips.filter(t => {
-                const rid = t.routeConfig?.routeId;
-                const r = this.routeConfig.find(x=>x.id===rid) || this.busRouteConfig.find(x=>x.id===rid);
-                if(!r) return false;
-                const dest = r.destination || (r.name ? r.name.split(' - ')[1] : '');
-                return dest === 'Padang';
-            });
-        },
+        currentViewTitle() { return {dashboard:"Dashboard",bookingManagement:"Kelola Booking",dispatcher:"Dispatcher",bookingTravel:"Travel",bookingBus:"Bus",manifest:"Laporan",assets:"Aset",routeManagement:"Rute"}[this.view] || "Sutan Raya"; },
+        todayRevenue() { return this.bookings.filter(b => b.date === new Date().toISOString().slice(0,10) && b.status !== 'Batal').reduce((a,b) => a + (b.totalPrice||0), 0); },
+        todayPax() { return this.bookings.filter(b => b.date === new Date().toISOString().slice(0,10) && b.status !== 'Batal').length; },
+        pendingValidationCount() { return this.bookings.filter(b => b.validationStatus === 'Menunggu Validasi').length; },
+        activeTrips() { return this.trips.filter(t => !['Tiba', 'Batal'].includes(t.status)); },
         
         groupedBookings() {
+            // Logic Dispatcher: Mengelompokkan booking Travel/Carter yang siap jalan
             const groups = {};
-            const pending = (this.bookings||[]).filter(b => b.status === 'Pending' && b.validationStatus === 'Valid' && (b.paymentStatus === 'Lunas' || b.paymentStatus === 'DP'));
-            pending.forEach(b => {
+            // Filter: Status Pending, Validasi Valid, dan Payment Lunas/DP
+            const ready = this.bookings.filter(b => 
+                b.status === 'Pending' && 
+                b.validationStatus === 'Valid' && 
+                ['Lunas', 'DP'].includes(b.paymentStatus)
+            );
+            
+            ready.forEach(b => {
                 const key = `${b.routeId}|${b.date}|${b.time||'Bus'}`;
                 if (!groups[key]) {
                     const r = this.routeConfig.find(x=>x.id===b.routeId) || this.busRouteConfig.find(x=>x.id===b.routeId);
-                    groups[key] = { key, routeId: b.routeId, routeConfig: r, date: b.date, time: b.time||'Flexible', totalPassengers: 0, passengers: [], serviceType: b.serviceType };
+                    groups[key] = { 
+                        key, routeId: b.routeId, 
+                        routeConfig: r, 
+                        date: b.date, 
+                        time: b.time||'Flexible', 
+                        totalPassengers: 0, 
+                        passengers: [], 
+                        serviceType: b.serviceType 
+                    };
                 }
                 groups[key].passengers.push(b);
                 groups[key].totalPassengers += (b.serviceType.includes('Bus') || b.serviceType==='Carter') ? 1 : (b.seatCount||1);
             });
             return Object.values(groups).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
         },
-        pendingGroupsCount() { return this.groupedBookings.length; },
-
+        
         getManagedBookings() {
-            let items = this.ui.view==='bookingManagement' && this.ui.bookingManagementTab==='bus' ? this.bookings.filter(b=>b.serviceType==='Bus Pariwisata') : this.bookings.filter(b=>['Travel','Carter','Dropping'].includes(b.serviceType));
-            if(this.ui.busSearchTerm) {
-                const term = this.ui.busSearchTerm.toLowerCase();
-                items = items.filter(b => (b.passengerName?.toLowerCase().includes(term)) || (b.routeId?.toLowerCase().includes(term)) || (b.passengerPhone?.includes(term)));
+            let items = this.view==='bookingManagement' && this.bookingManagementTab==='bus' 
+                ? this.bookings.filter(b=>b.serviceType==='Bus Pariwisata') 
+                : this.bookings.filter(b=>['Travel','Carter','Dropping'].includes(b.serviceType));
+            
+            if(this.busSearchTerm) {
+                const term = this.busSearchTerm.toLowerCase();
+                items = items.filter(b => (b.passengerName?.toLowerCase().includes(term)) || (b.passengerPhone?.includes(term)));
             }
             return items.sort((a,b) => new Date(b.id) - new Date(a.id));
         },
-        busBookings() { return (this.bookings||[]).filter(b => b.serviceType === 'Bus Pariwisata'); },
-        calendarDays() {
-            const year = this.ui.calendarYear; const month = this.ui.calendarMonth;
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay(); const startDay = firstDay === 0 ? 6 : firstDay - 1;
-            const days = [];
-            for (let i=startDay-1; i>=0; i--) days.push({date:'', isCurrentMonth:false, events:[]});
-            for (let i=1; i<=daysInMonth; i++) {
-                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                const dayEvents = this.busBookings.filter(b => b.date === dStr);
-                days.push({date:i, isCurrentMonth:true, isToday: new Date().toDateString() === new Date(year,month,i).toDateString(), events: dayEvents});
+        
+        selectedRoute() { return this.routeConfig.find(r => r.id === this.bookingForm.data.routeId); },
+        currentSchedules() { return this.selectedRoute ? (this.selectedRoute.schedules || []) : []; },
+        
+        currentTotalPrice() {
+            if(this.view==='bookingBus') return this.bookingBusForm.totalPrice;
+            const d = this.bookingForm.data; 
+            const r = this.selectedRoute; 
+            if(!r) return 0;
+            
+            if(d.serviceType === 'Dropping') {
+                let p = r.prices.dropping || 1000000;
+                // Logika harga khusus dropping jika ada
+                return p;
+            } else if(d.serviceType === 'Carter') {
+                return (r.prices.carter||1500000) * (d.duration||1);
             }
-            while(days.length < 42) days.push({date:'', isCurrentMonth:false, events:[]});
-            return days;
+            return (this.bookingForm.selectedSeats?.length||1) * (d.passengerType==='Umum' ? r.prices.umum : r.prices.pelajar);
         },
         
-        selectedRoute() { 
-            if(!this.bookingForm.data.routeId) return null;
-            return this.routeConfig.find(r => r.id === this.bookingForm.data.routeId); 
-        },
-        currentSchedules() {
-            return this.selectedRoute ? (this.selectedRoute.schedules || []) : [];
-        },
+        // Helpers Bus
         getBusRouteName() { const r = this.busRouteConfig.find(x=>x.id===this.bookingBusForm.routeId); return r ? r.name : '-'; },
         getBusDailyPrice() {
             const r = this.busRouteConfig.find(x=>x.id===this.bookingBusForm.routeId); if(!r) return 0;
@@ -193,195 +154,255 @@ createApp({
             if(isLong) return this.bookingBusForm.packageType==='AllIn' ? r.big.allin : r.big.base;
             return this.bookingBusForm.seatCapacity==45 ? (this.bookingBusForm.priceType==='Kantor'?r.big.s45.kantor:r.big.s45.agen) : (this.bookingBusForm.priceType==='Kantor'?r.big.s32.kantor:r.big.s32.agen);
         },
-        getBusMinDays() { return this.busRouteConfig.find(x=>x.id===this.bookingBusForm.routeId)?.minDays || 1; },
-        isLongTrip() { return this.busRouteConfig.find(x=>x.id===this.bookingBusForm.routeId)?.isLongTrip || false; },
 
-        currentTotalPrice() {
-            if(this.ui.view==='bookingBus') return this.bookingBusForm.totalPrice;
-            const d = this.bookingForm.data; const r = this.selectedRoute; if(!r) return 0;
-            if(d.serviceType === 'Dropping') {
-                let p = 1000000; if(r.id.includes('BKT')) p = d.isMultiStop ? 960000:900000; else if(r.id.includes('PYK')) p = d.isMultiStop ? 1200000:1100000;
-                return p;
-            } else if(d.serviceType === 'Carter') return (r.prices.carter||1500000) * (d.duration||1);
-            return (this.bookingForm.selectedSeats?.length||1) * (d.passengerType==='Umum'?r.prices.umum:r.prices.pelajar);
-        },
-        
-        dailyReportData() {
-            const date = this.ui.reportDate; const report = {};
-            this.routeConfig.forEach(route => {
-                report[route.id] = { route: route, schedules: [], total: { umumNom: 0, pelajarNom: 0, totalNom: 0 } };
-                route.schedules.forEach(time => {
-                    const bList = (this.bookings||[]).filter(b => b.routeId === route.id && b.date === date && b.time === time && b.status !== 'Batal');
-                    let row = { time: time, umumPax: 0, umumNom: 0, pelajarPax: 0, pelajarNom: 0, totalNom: 0 };
-                    bList.forEach(b => {
-                        if(b.passengerType === 'Umum' || b.serviceType === 'Dropping' || b.serviceType === 'Carter') { row.umumPax += (b.seatCount||1); row.umumNom += (b.totalPrice||0); }
-                        else { row.pelajarPax += (b.seatCount||1); row.pelajarNom += (b.totalPrice||0); }
-                    });
-                    row.totalNom = row.umumNom + row.pelajarNom;
-                    report[route.id].total.umumNom += row.umumNom;
-                    report[route.id].total.pelajarNom += row.pelajarNom;
-                    report[route.id].total.totalNom += row.totalNom;
-                    report[route.id].schedules.push(row);
-                });
-            });
-            return report;
-        }
+        // Route Form Alias
+        routeForm: { get() { return this.routeModal.data; }, set(v) { this.routeModal.data = v; } },
+        routeModalMode() { return this.routeModal.mode; },
     },
     methods: {
-        changeView(v) { this.ui.view = v; },
-        toggleDarkMode() { this.ui.isDarkMode = !this.ui.isDarkMode; },
-        toggleFullscreen() { this.ui.isFullscreen = !this.ui.isFullscreen; },
-        changeMonth(s) { this.ui.calendarMonth+=s; if(this.ui.calendarMonth>11){this.ui.calendarMonth=0;this.ui.calendarYear++} else if(this.ui.calendarMonth<0){this.ui.calendarMonth=11;this.ui.calendarYear--} },
-        getMonthName(m) { return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][m]; },
+        changeView(v) { this.view = v; },
+        toggleDarkMode() { this.isDarkMode = !this.isDarkMode; if(this.isDarkMode) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); },
+        
+        // --- API COMMUNICATION ---
+        async loadData(silent = false) {
+            if(!silent) this.isLoading = true;
+            try {
+                const res = await fetch('api.php');
+                const data = await res.json();
+                
+                this.bookings = data.bookings || [];
+                this.fleet = data.fleet || [];
+                this.drivers = data.drivers || [];
+                this.trips = data.trips || [];
+                
+                if(data.routes && data.routes.length > 0) this.routeConfig = data.routes;
+                if(data.busRoutes && data.busRoutes.length > 0) this.busRouteConfig = data.busRoutes;
+                
+            } catch (e) {
+                console.error("Load Failed:", e);
+                if(!silent) alert("Gagal mengambil data dari server.");
+            } finally {
+                if(!silent) this.isLoading = false;
+            }
+        },
 
+        async postToApi(action, data) {
+            try {
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, ...data })
+                });
+                return await res.json();
+            } catch (e) {
+                console.error("API Error", e);
+                return { status: 'error', message: e.message };
+            }
+        },
+
+        // --- BOOKING LOGIC ---
         openBookingModal() {
             const today = new Date().toISOString().slice(0,10);
-            Object.assign(this.bookingForm.data, { id: Date.now(), serviceType: 'Travel', routeId: '', date: today, time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1, isMultiStop: false });
+            Object.assign(this.bookingForm.data, { id: null, serviceType: 'Travel', routeId: '', date: today, time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1, isMultiStop: false });
             this.bookingForm.selectedSeats = [];
-            this.ui.view = 'bookingTravel';
+            this.view = 'bookingTravel';
         },
+        
         setServiceType(t) { this.bookingForm.data.serviceType = t; if(t!=='Travel') { this.bookingForm.data.time=''; this.bookingForm.selectedSeats=[]; } },
-        resetSeatSelection() { this.bookingForm.selectedSeats = []; },
         toggleSeat(id) { 
             if(this.isSeatOccupied(id)) return alert('Kursi Terisi'); 
             const s=this.bookingForm.selectedSeats; const i=s.indexOf(id); if(i===-1)s.push(id);else s.splice(i,1); 
         },
         isSeatOccupied(id) { 
             const d=this.bookingForm.data; if(!d.routeId||!d.date||!d.time) return false;
-            const ex=(this.bookings||[]).filter(b=>b.routeId===d.routeId && b.date===d.date && b.time===d.time && b.status!=='Batal');
+            const ex=this.bookings.filter(b=>b.routeId===d.routeId && b.date===d.date && b.time===d.time && b.status!=='Batal');
             if(ex.some(b=>b.serviceType!=='Travel')) return true;
             let occ=[]; ex.forEach(b=>{ if(b.seatNumbers) occ.push(...b.seatNumbers.split(', ')); });
             return occ.includes(id);
         },
         isSeatSelected(id) { return this.bookingForm.selectedSeats.includes(id); },
-        
-        calculatePrice() { 
-            // Handled by computed currentTotalPrice
-        }, 
-        
-        calculateBusPrice() { 
-            const r = this.busRouteConfig.find(x => x.id === this.bookingBusForm.routeId); 
-            if(!r) return;
-            const dailyPrice = this.getBusDailyPrice;
-            this.bookingBusForm.totalPrice = dailyPrice * (this.bookingBusForm.duration || 1);
-        },
-        
-        async uploadFile(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            try {
-                const res = await fetch('api.php', { method: 'POST', body: formData });
-                const data = await res.json();
-                if(data.status === 'success') return data.fileName;
-                else alert('Upload Gagal: ' + data.message);
-            } catch(e) { console.error(e); alert('Upload Error'); }
-            return null;
-        },
-        async handleKTMUpload(e) { 
-            if(e.target.files[0]) {
-                const fileName = await this.uploadFile(e.target.files[0]);
-                if(fileName) this.bookingForm.data.ktmProof = fileName;
-            }
-        },
-        async handlePaymentProofUpload(e) { 
-            if(e.target.files[0]) {
-                const fileName = await this.uploadFile(e.target.files[0]);
-                if(fileName) this.tempPayment.proof = fileName;
-            }
-        },
-        
-        saveBooking() {
+
+        async saveBooking() {
             const d = this.bookingForm.data;
-            if(!d.passengerName) return alert("Mohon isi Nama Penumpang!");
-            if(!d.passengerPhone) return alert("Mohon isi Nomor WhatsApp!");
-            if(!d.routeId) return alert("Mohon pilih Rute Perjalanan!");
-            if(!d.date) return alert("Mohon pilih Tanggal Keberangkatan!");
-            
+            if(!d.passengerName || !d.routeId || !d.date) return alert("Data Belum Lengkap!");
             if(d.serviceType === 'Travel' && (!d.time || this.bookingForm.selectedSeats.length === 0)) return alert("Pilih Jadwal & Kursi!");
             
+            // Payment Logic
             const pm = this.currentPaymentMethod;
             let pStat = 'Menunggu Validasi', vStat = 'Menunggu Validasi';
-            if(pm === 'Cash') { if(!this.tempPayment.loc) return alert("Info Cash!"); pStat = 'Lunas'; vStat = 'Valid'; } 
-            else if (pm === 'DP') { 
-                if(this.tempPayment.dpAmount < 100000) return alert("Min DP 100rb!"); 
-                pStat = 'DP'; 
-                if(this.tempPayment.dpMethod === 'Cash' && !this.tempPayment.loc) return alert("Info Lokasi DP!");
+            if(pm === 'Cash') { 
+                if(!this.tempPayment.loc) return alert("Isi Lokasi Penjemputan Cash!"); 
+                pStat = 'Lunas'; vStat = 'Valid'; 
+            } else if (pm === 'DP') {
+                 if(this.tempPayment.dpAmount < 50000) return alert("Minimal DP Rp 50.000");
+                 pStat = 'DP';
             }
-            
-            const newBooking = { id: Date.now(), ...d, totalPrice: this.currentTotalPrice, seatCount: d.serviceType==='Travel'?this.bookingForm.selectedSeats.length:1, seatNumbers: d.serviceType==='Travel'?this.bookingForm.selectedSeats.join(', ') : 'Full Unit', paymentMethod: pm, paymentStatus: pStat, validationStatus: vStat, paymentLocation: this.tempPayment.loc, paymentReceiver: this.tempPayment.recv, paymentProof: this.tempPayment.proof, status: 'Pending', serviceType: d.serviceType, routeId: d.routeId, downPaymentAmount: this.tempPayment.dpAmount };
-            this.bookings.push(newBooking);
-            // Watcher will save
-            alert("Booking Tersimpan!");
-            if(confirm("Lanjut Kelola?")) this.ui.view = 'bookingManagement';
-            
-            // Reset Form
-            const today = new Date().toISOString().slice(0,10);
-            Object.assign(this.bookingForm.data, { id: Date.now(), serviceType: 'Travel', routeId: '', date: today, time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1, isMultiStop: false });
-            this.bookingForm.selectedSeats = [];
-            this.tempPayment = { loc: '', recv: '', proof: '', dpAmount: 0, dpMethod: 'Cash' };
-        },
-        saveBusBooking() {
-            const r = this.busRouteConfig.find(x => x.id === this.bookingBusForm.routeId);
-            
-            // Validation
-            if(!this.bookingBusForm.passengerName) return alert("Mohon isi Nama Penumpang!");
-            if(!this.bookingBusForm.passengerPhone) return alert("Mohon isi Nomor WhatsApp!");
-            if(!this.bookingBusForm.date) return alert("Mohon pilih Tanggal Keberangkatan!");
-            if((this.bookingBusForm.duration||1) < (r?.minDays||1)) return alert(`Min. ${r.minDays} Hari`);
-            
-            const pm = this.bookingBusForm.paymentMethod;
-            let pStat = 'Menunggu Validasi', vStat = 'Menunggu Validasi';
-            if(pm === 'Cash') { pStat='Lunas'; vStat='Valid'; } else if(pm === 'DP') { pStat='DP'; }
-            
-            const newBus = { ...this.bookingBusForm, id: Date.now(), status: 'Pending', serviceType: 'Bus Pariwisata', routeName: r ? r.name : 'Custom', paymentStatus: pStat, validationStatus: vStat };
-            this.bookings.push(newBus);
-            // Watcher will save
-            alert("Booking Bus Tersimpan!");
-            if(confirm("Lanjut ke menu Kelola Booking?")) this.ui.view = 'bookingManagement';
+
+            const newBooking = { 
+                id: Date.now(), 
+                ...d, 
+                totalPrice: this.currentTotalPrice, 
+                seatCount: d.serviceType==='Travel'?this.bookingForm.selectedSeats.length:1, 
+                seatNumbers: d.serviceType==='Travel'?this.bookingForm.selectedSeats.join(', ') : 'Full Unit', 
+                paymentMethod: pm, paymentStatus: pStat, validationStatus: vStat, 
+                paymentLocation: this.tempPayment.loc, paymentReceiver: this.tempPayment.recv, paymentProof: this.tempPayment.proof, 
+                downPaymentAmount: this.tempPayment.dpAmount,
+                type: 'Unit' // Default
+            };
+
+            this.isLoading = true;
+            const res = await this.postToApi('create_booking', { data: newBooking });
+            this.isLoading = false;
+
+            if(res.status === 'success') {
+                alert("Booking Berhasil Disimpan!");
+                this.bookings.unshift(newBooking); // Update UI Instan
+                this.tempPayment = { loc: '', recv: '', proof: '', dpAmount: 0, dpMethod: 'Cash' };
+                if(confirm("Lanjut ke menu Kelola Booking?")) this.view = 'bookingManagement';
+            } else {
+                alert("Gagal Simpan: " + res.message);
+            }
         },
 
-        validatePaymentModal(b) { this.validationData = b; this.modals.proof = true; },
-        confirmValidation(b) { if(confirm("Validasi?")) { b.validationStatus='Valid'; if(b.paymentStatus!=='DP') b.paymentStatus='Lunas'; this.saveData(); this.modals.proof=false; } },
-        
-        openDispatchModal(g) { this.dispatchForm.group = g; this.dispatchForm.fleetId=""; this.dispatchForm.driverId=""; this.modals.dispatch=true; },
-        processDispatch() {
+        async saveBusBooking() {
+             const r = this.busRouteConfig.find(x => x.id === this.bookingBusForm.routeId);
+             if(!r) return alert("Pilih Rute");
+             
+             const pm = this.bookingBusForm.paymentMethod;
+             let pStat = pm==='Cash'?'Lunas':'Menunggu Validasi';
+             let vStat = pm==='Cash'?'Valid':'Menunggu Validasi';
+             if(pm==='DP') pStat = 'DP';
+
+             const newBus = { 
+                 ...this.bookingBusForm, 
+                 id: Date.now(), 
+                 serviceType: 'Bus Pariwisata', 
+                 routeName: r.name, 
+                 paymentStatus: pStat, 
+                 validationStatus: vStat,
+                 selectedSeats: [] // Bus pariwisata usually doesn't select seats individually here
+             };
+
+             this.isLoading = true;
+             const res = await this.postToApi('create_booking', { data: newBus });
+             this.isLoading = false;
+
+             if(res.status === 'success') {
+                 alert("Booking Bus Tersimpan!");
+                 this.bookings.unshift(newBus);
+                 this.view = 'bookingManagement';
+             } else {
+                 alert("Gagal: " + res.message);
+             }
+        },
+
+        // --- MANAJEMEN BOOKING ---
+        validatePaymentModal(b) { this.validationData = b; this.isProofModalVisible = true; },
+        async confirmValidation(b) {
+            if(!confirm("Validasi Pembayaran ini?")) return;
+            
+            const res = await this.postToApi('update_payment_status', { 
+                id: b.id, 
+                paymentStatus: 'Lunas', // Atau logic lain jika DP
+                validationStatus: 'Valid' 
+            });
+            
+            if(res.status === 'success') {
+                b.paymentStatus = 'Lunas';
+                b.validationStatus = 'Valid';
+                this.isProofModalVisible = false;
+                alert("Validasi Berhasil!");
+            }
+        },
+        async deleteBooking(b) {
+            if(!confirm("Hapus booking ini permanen?")) return;
+            const res = await this.postToApi('delete_booking', { id: b.id });
+            if(res.status === 'success') {
+                this.bookings = this.bookings.filter(x => x.id !== b.id);
+            }
+        },
+
+        // --- DISPATCHER ---
+        openDispatchModal(g) { this.dispatchForm.group = g; this.dispatchForm.fleetId=""; this.dispatchForm.driverId=""; this.isDispatchModalVisible=true; },
+        async processDispatch() {
             const { group, fleetId, driverId } = this.dispatchForm;
-            if(!fleetId || !driverId) return alert("Pilih Aset!");
-            const f = this.fleet.find(x=>x.id===fleetId); const d = this.drivers.find(x=>x.id===driverId);
-            if(group.serviceType==='Carter' && !f.name.toLowerCase().includes('hiace')) return alert("Carter wajib Hiace!");
-            this.trips.push({ id: Date.now(), routeConfig: group, fleet: f, driver: d, passengers: [...group.passengers], status: "On Trip" });
-            group.passengers.forEach(p => { const b = this.bookings.find(x=>x.id===p.id); if(b) b.status = 'On Trip'; });
-            f.status = "On Trip"; d.status = "Jalan";
-            // Watcher will save
-            this.modals.dispatch = false; this.ui.view = 'dashboard';
-        },
-        
-        openTripControl(t) { this.activeTripControl = t; this.modals.tripControl = true; },
-        updateTripStatus(t, s) {
-            t.status = s;
-            const f = this.fleet.find(x=>x.id===t.fleet.id);
-            const d = this.drivers.find(x=>x.id===t.driver.id);
-            if(s === 'Tiba') { 
-                if(confirm("Selesai?")) { 
-                    f.status = "Tersedia"; 
-                    d.status = "Standby"; 
-                    
-                    // Update Location
-                    const rid = t.routeConfig?.routeId;
-                    const r = this.routeConfig.find(x=>x.id===rid) || this.busRouteConfig.find(x=>x.id===rid);
-                    if(r) {
-                        const dest = r.destination || (r.name ? r.name.split(' - ')[1] : 'Pool');
-                        f.location = dest; // Assuming fleet has a location property
-                    }
+            if(!fleetId || !driverId) return alert("Pilih Armada & Driver!");
+            
+            const f = this.fleet.find(x=>x.id===fleetId);
+            const d = this.drivers.find(x=>x.id===driverId);
+            
+            const newTrip = {
+                id: Date.now(),
+                routeConfig: group.routeConfig, // Simpan config rute snapshot
+                fleet: f,
+                driver: d,
+                passengers: group.passengers,
+                status: 'On Trip'
+            };
 
-                    t.passengers.forEach(p => { const b = this.bookings.find(x=>x.id===p.id); if(b) b.status = 'Tiba'; }); 
-                } else t.status='On Trip'; 
-            } else if(s === 'Kendala') f.status = "Perbaikan";
-            // Watcher will save
-            this.modals.tripControl = false;
+            this.isLoading = true;
+            const res = await this.postToApi('create_trip', { data: newTrip });
+            this.isLoading = false;
+
+            if(res.status === 'success') {
+                alert("Trip Berhasil Diberangkatkan!");
+                this.isDispatchModalVisible = false;
+                this.loadData(); // Reload full data untuk update status booking & armada
+            } else {
+                alert("Gagal Dispatch: " + res.message);
+            }
         },
 
-        // ROUTE MANAGEMENT
+        openTripControl(t) { this.activeTripControl = t; this.isTripControlVisible = true; },
+        async updateTripStatus(t, s) {
+            if(s === 'Tiba' && !confirm("Trip Selesai? Armada akan tersedia kembali.")) return;
+            
+            const res = await this.postToApi('update_trip_status', {
+                tripId: t.id,
+                status: s,
+                fleetId: t.fleet.id,
+                driverId: t.driver.id,
+                passengers: t.passengers
+            });
+
+            if(res.status === 'success') {
+                this.isTripControlVisible = false;
+                this.loadData();
+            } else {
+                alert("Update Gagal");
+            }
+        },
+
+        // --- ASSETS (FLEET & DRIVER) ---
+        openVehicleModal(v) { this.vehicleModal = { mode: v?'edit':'add', data: v?{...v}:{id:Date.now(), name:"", plate:"", capacity:7, status:"Tersedia", icon:"bi-truck-front-fill"} }; this.isVehicleModalVisible=true; },
+        async saveVehicle() {
+            const v = this.vehicleModal.data;
+            if(!v.name || !v.plate) return alert("Lengkapi Data!");
+            const res = await this.postToApi('save_fleet', v);
+            if(res.status === 'success') { alert("Armada Disimpan"); this.isVehicleModalVisible=false; this.loadData(); }
+            else alert("Gagal: "+res.message);
+        },
+        async deleteVehicle(id) {
+            if(!confirm("Hapus Armada?")) return;
+            const res = await this.postToApi('delete_fleet', {id});
+            if(res.status === 'success') this.loadData();
+        },
+
+        openDriverModal(d) { this.driverModal = { mode: d?'edit':'add', data: d?{...d}:{id:Date.now(), name:"", phone:"", status:"Standby", licenseType: "A Umum"} }; this.isDriverModalVisible=true; },
+        async saveDriver() {
+            const d = this.driverModal.data;
+            if(!d.name || !d.phone) return alert("Lengkapi Data!");
+            const res = await this.postToApi('save_driver', d);
+            if(res.status === 'success') { alert("Driver Disimpan"); this.isDriverModalVisible=false; this.loadData(); }
+            else alert("Gagal: "+res.message);
+        },
+        async deleteDriver(id) {
+            if(!confirm("Hapus Driver?")) return;
+            const res = await this.postToApi('delete_driver', {id});
+            if(res.status === 'success') this.loadData();
+        },
+
+        // --- ROUTE MANAGEMENT ---
         openRouteModal(r = null) {
             this.routeModal.mode = r ? 'edit' : 'add';
             if (r) {
@@ -390,9 +411,9 @@ createApp({
             } else {
                 this.routeModal.data = { id: '', origin: '', destination: '', schedulesInput: '', prices: { umum: 0, pelajar: 0, dropping: 0, carter: 0 } };
             }
-            this.modals.route = true;
+            this.isRouteModalVisible = true; // Need to add this to data or use modals object
         },
-        saveRoute() {
+        async saveRoute() {
             const f = this.routeModal.data;
             if (!f.origin || !f.destination) return alert("Asal dan Tujuan wajib diisi!");
             
@@ -418,213 +439,58 @@ createApp({
                 prices: f.prices
             };
 
-            fetch('api.php?action=save_route', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Rute berhasil disimpan!");
-                    this.modals.route = false;
-                    this.loadData(); // Reload to get updates
-                } else {
-                    alert("Gagal menyimpan rute: " + data.message);
-                }
-            })
-            .catch(err => alert("Terjadi kesalahan: " + err));
+            const res = await this.postToApi('save_route', payload);
+            if(res.status === 'success') {
+                alert("Rute berhasil disimpan!");
+                this.isRouteModalVisible = false; // Assuming this property exists
+                this.loadData(); 
+            } else {
+                alert("Gagal menyimpan rute: " + res.message);
+            }
         },
-        deleteRoute(id) {
+        async deleteRoute(id) {
             if(!confirm("Yakin ingin menghapus rute ini?")) return;
-            fetch('api.php?action=delete_route', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Rute berhasil dihapus!");
-                    this.loadData();
-                } else {
-                    alert("Gagal menghapus rute: " + data.message);
-                }
-            });
+            const res = await this.postToApi('delete_route', { id: id });
+            if(res.status === 'success') {
+                alert("Rute berhasil dihapus!");
+                this.loadData();
+            } else {
+                alert("Gagal menghapus rute: " + res.message);
+            }
         },
 
-        // NEW DISPATCHER TOOLS
+        // --- UTILS ---
         copyWa(p) {
             const type = p.serviceType === 'Dropping' ? 'CHARTER' : 'TRAVEL';
             const txt = `*SUTAN RAYA - ${type}*\nJadwal: ${p.time}\nNama: ${p.passengerName}\nKursi: ${p.seatNumbers}\nHP: ${p.passengerPhone}\nJemput: ${p.pickupMapUrl||'-'} (${p.pickupAddress||'-'})\nAntar: ${p.dropoffAddress||'-'}`;
             navigator.clipboard.writeText(txt).then(() => alert("Data disalin ke Clipboard!"));
         },
-        viewTicket(p) { this.ticketData = p; this.modals.ticket = true; },
-        viewProof(p) { this.validationData = p; this.modals.proof = true; },
-
-        // PRINT TICKET LOGIC
-        printTicket(b) {
-            const printWindow = window.open('', '', 'width=300,height=600');
-            printWindow.document.write(`
-                <html><head><style>
-                    body{font-family:monospace;width:58mm;font-size:12px;margin:0;padding:10px}
-                    .header{text-align:center;font-weight:bold;font-size:14px;margin-bottom:5px}
-                    .divider{border-top:1px dashed #000;margin:5px 0}
-                    .item{display:flex;justify-content:space-between}
-                    .footer{text-align:center;margin-top:10px;font-size:10px}
-                </style></head><body>
-                <div class="header">SUTAN RAYA</div>
-                <div style="text-align:center">${b.serviceType.toUpperCase()}</div>
-                <div class="divider"></div>
-                <div class="item"><span>ID:</span><span>#${b.id.toString().slice(-6)}</span></div>
-                <div class="item"><span>Tgl:</span><span>${this.formatDate(b.date)}</span></div>
-                <div class="item"><span>Jam:</span><span>${b.time || '-'}</span></div>
-                <div class="divider"></div>
-                <div class="item"><span>Penumpang:</span><span>${b.passengerName}</span></div>
-                <div class="item"><span>Kursi:</span><span>${b.seatNumbers || '1 Unit'}</span></div>
-                <div class="divider"></div>
-                <div class="item" style="font-weight:bold;font-size:14px"><span>TOTAL:</span><span>${this.formatRupiah(b.totalPrice)}</span></div>
-                <div class="footer">Terima Kasih<br>Simpan struk ini sebagai bukti sah.</div>
-                </body></html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        },
-
-        // CRUD Assets
-        openVehicleModal(v) { this.vehicleModal = { mode: v?'edit':'add', data: v?{...v}:{id:Date.now(), name:"", plate:"", capacity:7, status:"Tersedia", icon:"bi-truck-front-fill"} }; this.modals.vehicle=true; },
-        
-        saveVehicle() {
-            const v = this.vehicleModal.data;
-            if(!v.name || !v.plate) return alert("Nama dan Plat wajib diisi!");
-            
-            fetch('api.php?action=save_fleet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(v)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Armada berhasil disimpan!");
-                    this.modals.vehicle = false;
-                    this.loadData();
-                } else {
-                    alert("Gagal menyimpan armada: " + data.message);
-                }
-            })
-            .catch(err => alert("Terjadi kesalahan: " + err));
-        },
-
-        deleteVehicle(id) {
-            if(!confirm('Yakin ingin menghapus armada ini?')) return;
-            
-            fetch('api.php?action=delete_fleet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Armada berhasil dihapus!");
-                    this.loadData();
-                } else {
-                    alert("Gagal menghapus armada: " + data.message);
-                }
-            })
-            .catch(err => alert("Terjadi kesalahan: " + err));
-        },
-
-        openDriverModal(d) { this.driverModal = { mode: d?'edit':'add', data: d?{...d}:{id:Date.now(), name:"", phone:"", status:"Standby", licenseType: "A Umum"} }; this.modals.driver=true; },
-        
-        saveDriver() {
-            const d = this.driverModal.data;
-            if(!d.name || !d.phone) return alert("Nama dan No HP wajib diisi!");
-            
-            fetch('api.php?action=save_driver', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(d)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Supir berhasil disimpan!");
-                    this.modals.driver = false;
-                    this.loadData();
-                } else {
-                    alert("Gagal menyimpan supir: " + data.message);
-                }
-            })
-            .catch(err => alert("Terjadi kesalahan: " + err));
-        },
-
-        deleteDriver(id) {
-            if(!confirm('Yakin ingin menghapus supir ini?')) return;
-            
-            fetch('api.php?action=delete_driver', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("Supir berhasil dihapus!");
-                    this.loadData();
-                } else {
-                    alert("Gagal menghapus supir: " + data.message);
-                }
-            })
-            .catch(err => alert("Terjadi kesalahan: " + err));
-        },
-
-        // System
-        saveData() { 
-            fetch('api.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bookings: this.bookings, fleet: this.fleet, drivers: this.drivers, trips: this.trips })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error(res.statusText);
-                return res.json();
-            })
-            .then(d => {
-                if(d.status === 'error') throw new Error(d.message);
-                console.log('Saved', d);
-            })
-            .catch(e => {
-                console.error('Save failed', e);
-                alert('Gagal menyimpan data ke server! Periksa koneksi atau hubungi admin.');
-            });
-        },
-        loadData() {
-            fetch('api.php')
-                .then(res => res.json())
-                .then(d => {
-                    this.bookings = d.bookings || [];
-                    this.fleet = d.fleet || [];
-                    this.drivers = d.drivers || [];
-                    this.trips = d.trips || [];
-                    if(d.routes) this.routeConfig = d.routes;
-                    if(d.busRoutes) this.busRouteConfig = d.busRoutes;
-                })
-                .catch(e => {
-                    console.error("Failed to load data", e);
-                    alert("Gagal memuat data! Periksa koneksi.");
-                });
-        },
-        
         formatRupiah(n) { return new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}).format(n||0); },
         formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : '-'; },
-        updateTime() { const n=new Date(); this.ui.currentTime=n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); this.ui.currentDate=n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'}); },
+        updateTime() { const n=new Date(); this.currentTime=n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); this.currentDate=n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'}); },
+        
+        // CSS Helpers
         getVehicleStatusClass(s) { return s==='Tersedia'?'bg-green-100 text-green-700':(s==='On Trip'?'bg-blue-100 text-blue-700':(s==='Perbaikan'?'bg-red-100 text-red-700':'bg-gray-100')); },
         getDriverStatusClass(s) { return s==='Standby'?'bg-green-100 text-green-700':(s==='Jalan'?'bg-blue-100 text-blue-700':'bg-gray-200'); },
         getTripCardClass(s) { if(s==='On Trip') return 'border-blue-200 bg-blue-50/30'; if(s==='Tiba') return 'border-green-200 bg-green-50/30'; if(s==='Kendala') return 'border-red-200 bg-red-50/30'; return 'border-gray-200'; },
-        getTripStatusBadge(s) { if(s==='On Trip') return 'bg-blue-500'; if(s==='Tiba') return 'bg-green-500'; if(s==='Kendala') return 'bg-red-500'; return 'bg-gray-400'; }
+        getTripStatusBadge(s) { if(s==='On Trip') return 'bg-blue-500'; if(s==='Tiba') return 'bg-green-500'; if(s==='Kendala') return 'bg-red-500'; return 'bg-gray-400'; },
+        
+        // --- PRINT TICKET ---
+        printTicket(b) {
+            const w = window.open('', '', 'width=300,height=600');
+            w.document.write(`<html><body style="font-family:monospace;width:58mm;font-size:12px">
+            <center><h3>SUTAN RAYA</h3></center>
+            <hr>
+            ID: #${b.id}<br>
+            Nama: ${b.passengerName}<br>
+            Rute: ${b.routeName || b.routeId}<br>
+            Tgl: ${this.formatDate(b.date)} - ${b.time}<br>
+            Kursi: ${b.seatNumbers}<br>
+            <hr>
+            <b>Total: ${this.formatRupiah(b.totalPrice)}</b><br>
+            Status: ${b.paymentStatus}
+            </body></html>`);
+            w.print();
+        }
     }
 }).mount("#app");

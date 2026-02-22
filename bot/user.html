@@ -52,11 +52,17 @@
         <h1 class="text-2xl font-bold text-center mb-6">Invoice Pemesanan</h1>
         <div class="space-y-3 text-gray-700 border-t border-b py-4">
             <p class="flex justify-between"><strong>Nama:</strong> <span>{{ invoiceData.customerName }}</span></p>
+            <p class="flex justify-between"><strong>No. HP:</strong> <span>{{ invoiceData.phone || '-' }}</span></p>
             <p class="flex justify-between"><strong>Layanan:</strong> <span>{{ invoiceData.service }}</span></p>
+            <p class="flex justify-between"><strong>Rute:</strong> <span>{{ invoiceData.route !== 'N/A' ? invoiceData.route : '-' }}</span></p>
             <p class="flex justify-between"><strong>Tanggal:</strong> <span>{{ invoiceData.startDate }}</span></p>
+            <p class="flex justify-between"><strong>Jam:</strong> <span>{{ invoiceData.time || '-' }}</span></p>
             <p class="flex justify-between"><strong>Jumlah:</strong> <span>{{ invoiceData.pax }} orang</span></p>
             <p class="flex justify-between"><strong>Durasi:</strong> <span>{{ invoiceData.duration }} hari</span></p>
-             <p v-if="invoiceData.route !== 'N/A'" class="flex justify-between"><strong>Rute:</strong> <span>{{ invoiceData.route }}</span></p>
+            <div class="border-t pt-2 mt-2">
+                <p class="flex flex-col text-sm mb-2"><strong class="mb-1">Jemput:</strong> <span class="text-gray-600">{{ invoiceData.pickup || '-' }}</span></p>
+                <p class="flex flex-col text-sm"><strong class="mb-1">Antar:</strong> <span class="text-gray-600">{{ invoiceData.dropoff || '-' }}</span></p>
+            </div>
         </div>
         <p class="text-xl font-bold pt-4 mt-4 flex justify-between"><strong>Total:</strong> <span>Rp {{ Number(invoiceData.total).toLocaleString('id-ID') }}</span></p>
         <button @click="closeInvoice" class="mt-8 w-full bg-blue-500 text-white p-3 rounded-lg font-bold hover:bg-blue-600">Tutup & Kembali ke Chat</button>

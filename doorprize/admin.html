@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sutan Raya Doorprize</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .dark .glass-header {
+            background: rgba(17, 24, 39, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+    <script>
+        // Security: Disable Right Click & DevTools Shortcuts
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+            }
+        });
+
+        // Check Auth
+        fetch('api.php?action=check_auth&role=admin')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(() => window.location.href = 'login.html');
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-black dark:text-white min-h-screen font-sans transition-colors duration-300">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <img src="../image/logo.webp" alt="Logo" class="h-8 w-auto">
+                    <span class="font-bold text-lg tracking-tight hidden sm:block">Admin Doorprize</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                        <svg id="sunIcon" class="w-5 h-5 text-yellow-500 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moonIcon" class="w-5 h-5 text-gray-600 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 24.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    
+                    <button onclick="logout()" class="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/10">
+                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Peserta</div>
+                <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalPeople">0</div>
+            </div>
+            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/10">
+                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Kupon</div>
+                <div class="text-3xl font-bold text-gray-900 dark:text-white" id="totalCoupons">0</div>
+            </div>
+            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/10 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Undian</div>
+                    <div class="text-lg font-semibold text-gray-900 dark:text-white">Siap Digelar</div>
+                </div>
+                <a href="draw.html" target="_blank" class="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg text-sm font-bold hover:opacity-80 transition-opacity">
+                    Buka Undian →
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Input Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/10 sticky top-24">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">Input Data</h2>
+                    <form id="couponForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor Kupon</label>
+                            <input type="text" id="couponNumber" class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white" placeholder="Contoh: SR-001" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white" placeholder="Nama Peserta" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor HP</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white" placeholder="0812..." required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Keberangkatan</label>
+                            <input type="date" id="departureDate" class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/20">
+                            Simpan Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Data Table -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/10">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Data Peserta</h2>
+                        <button onclick="fetchCoupons()" class="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="flex space-x-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+                        <button onclick="switchTab('active')" id="tabActive" class="pb-2 px-4 border-b-2 border-blue-600 font-semibold text-blue-600 dark:text-blue-400 transition-colors">
+                            Data Aktif
+                        </button>
+                        <button onclick="switchTab('trash')" id="tabTrash" class="pb-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors">
+                            Sampah (Trash)
+                        </button>
+                    </div>
+
+                    <!-- Table Card -->
+                    <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-sm uppercase tracking-wider">
+                                        <th class="p-4 font-semibold border-b border-gray-100 dark:border-white/10">Nama Peserta</th>
+                                        <th class="p-4 font-semibold border-b border-gray-100 dark:border-white/10">Nomor HP</th>
+                                        <th class="p-4 font-semibold border-b border-gray-100 dark:border-white/10">Total Kupon</th>
+                                        <th class="p-4 font-semibold border-b border-gray-100 dark:border-white/10">Daftar Kupon</th>
+                                        <th class="p-4 font-semibold border-b border-gray-100 dark:border-white/10 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="couponTableBody" class="text-sm divide-y divide-gray-100 dark:divide-white/10">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="emptyState" class="hidden p-12 text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 mb-4">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Belum ada data</h3>
+                            <p class="text-gray-500 dark:text-gray-400">Data peserta akan muncul di sini.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Coupon Modal -->
+    <div id="addCouponModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 relative z-10 transform transition-all scale-100 border dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambah Kupon</h3>
+            <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Peserta</div>
+                <div class="font-semibold text-gray-900 dark:text-white" id="modalPersonName">Nama Peserta</div>
+                <div class="text-sm text-gray-600 dark:text-gray-300" id="modalPersonPhone">0812...</div>
+            </div>
+            
+            <form id="addCouponForm" class="space-y-4">
+                <input type="hidden" id="modalNameInput">
+                <input type="hidden" id="modalPhoneInput">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Nomor Kupon Baru</label>
+                    <input type="text" id="modalCouponNumber" class="w-full px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm dark:text-white" placeholder="SR-XXX" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Tanggal Keberangkatan</label>
+                    <input type="date" id="modalDepartureDate" class="w-full px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm dark:text-white">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium">Batal</button>
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium shadow-lg shadow-blue-100 dark:shadow-none">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js?v=1"></script>
+    <script>
+        async function logout() {
+            if(!confirm('Yakin ingin keluar?')) return;
+            await fetch('api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

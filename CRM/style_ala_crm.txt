@@ -1,0 +1,67 @@
+STYLE ALA CRM (Sutan Raya Premium Soft)
+=======================================
+
+1. FILOSOFI DESAIN
+------------------
+- "Soft Contrast": Menggabungkan ketegasan Hitam/Putih dengan kelembutan Gold/Pastel.
+- "Premium & Friendly": Terlihat eksklusif tapi tidak kaku (rounded corners, soft shadows).
+- "Clean": Banyak whitespace, tidak padat.
+
+2. PALET WARNA (Tailwind / Hex)
+-------------------------------
+A. DOMINAN
+- Background App: #f8fafc (Slate-50 tone)
+- Card Background: #ffffff (White)
+- Primary Text: #1e293b (Slate-800) -- "Soft Black"
+- Secondary Text: #64748b (Slate-500)
+
+B. AKSEN UTAMA (SUTAN RAYA)
+- SR Gold (Primary): #d4af37 (Emas Mewah)
+- SR Gold Light (Bg): #fefce8 (Kuning Pastel Lembut)
+- SR Gold Dark: #854d0e (Emas Tua/Bronze untuk Text)
+
+C. WARNA PELENGKAP (PASTEL)
+- Emerald (Success): Bg #ecfdf5 (Emerald-50) / Text #059669 (Emerald-600)
+- Blue (Info): Bg #eff6ff (Blue-50) / Text #2563eb (Blue-600)
+- Purple (Stats): Bg #faf5ff (Purple-50) / Text #9333ea (Purple-600)
+
+3. TYPOGRAPHY
+-------------
+- Font Family: 'Plus Jakarta Sans', sans-serif
+- Headings: Font-extrabold / Font-black (Tracking-tight)
+- Body: Font-medium / Font-bold (untuk keterbacaan tinggi)
+- Numbers: Font-mono (untuk mata uang/angka)
+
+4. BENTUK & UI (SUDUT & BAYANGAN)
+---------------------------------
+- Cards: rounded-[2rem] atau rounded-[2.5rem] (Sangat bulat)
+- Buttons: rounded-2xl atau rounded-xl
+- Inputs: rounded-2xl
+- Shadows:
+  * Default: shadow-sm (border-slate-100)
+  * Hover: shadow-xl shadow-slate-200/50 (Bayangan lembut berwarna)
+  * Inner: box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05) (Untuk tombol aktif)
+
+5. GRADIENTS
+------------
+- Avatar Gold: from-[#fefce8] to-[#fde047] (Emas muda ke Emas terang)
+- Avatar Dark Gold: from-[#714d06] to-[#d4af37] (Emas tua ke Emas standar)
+- Soft Background Pattern: Radial gradient (#cbd5e1 1px, transparent 1px)
+
+6. TAILWIND CONFIG
+------------------
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: '#1e293b',
+                gold: '#d4af37',
+                'gold-light': '#fefce8',
+                'gold-dark': '#b45309',
+            },
+            fontFamily: {
+                sans: ['Plus Jakarta Sans', 'sans-serif'],
+            }
+        }
+    }
+}

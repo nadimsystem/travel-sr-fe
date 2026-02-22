@@ -18,7 +18,13 @@ const { createApp } = Vue;
                     originalScrollWidth: 0,
                     scrollSpeed: 1, // Kecepatan scroll (1px per frame)
                     isScrollingPaused: false, // Status untuk mouse hover
-                    observer: null // For scroll animations
+                    observer: null, // For scroll animations
+                    
+                    // [BARU] Doorprize Stats
+                    doorprizeStats: {
+                        participants: 0,
+                        coupons: 0
+                    }
                 };
             },
             methods: {
@@ -95,6 +101,20 @@ const { createApp } = Vue;
                     
                     this.isLangSelectorOpen = false;
                     location.reload();
+                },
+
+                // --- [BARU] Fetch Doorprize Stats ---
+                async fetchDoorprizeStats() {
+                    try {
+                        const response = await fetch('doorprize/api.php?action=get_stats');
+                        const res = await response.json();
+                        if (res.status === 'success') {
+                            this.doorprizeStats.participants = res.data.total_participants;
+                            this.doorprizeStats.coupons = res.data.total_coupons;
+                        }
+                    } catch (error) {
+                        console.error('Gagal mengambil data doorprize:', error);
+                    }
                 },
 
                 // --- [PERUBAHAN] Scroller Galeri Armada (Continuous) ---
@@ -183,6 +203,7 @@ const { createApp } = Vue;
             mounted() {
                 this.initScrollAnimation();
                 this.initContinuousScroller(); // [PERUBAHAN] Panggil inisiasi scroller baru
+                this.fetchDoorprizeStats(); // [BARU] Ambil data doorprize
 
                 // Listener untuk menutup popup saat klik di luar
                 document.addEventListener('click', (event) => {

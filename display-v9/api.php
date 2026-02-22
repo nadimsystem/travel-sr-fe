@@ -212,23 +212,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 http_response_code(500);
                 echo json_encode(['status' => 'error', 'message' => 'Failed to delete route: ' . $conn->error]);
             }
+        } else if ($action === 'save_fleet') {
+            $id = $input['id'];
+            $name = $input['name'];
+            $plate = $input['plate'];
+            $capacity = $input['capacity'];
+            $status = $input['status'];
+            $icon = $input['icon'];
+
+            $stmt = $conn->prepare("INSERT INTO fleet (id, name, plate, capacity, status, icon) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, plate=?, capacity=?, status=?, icon=?");
+            $stmt->bind_param("dssissssiss", 
+                $id, $name, $plate, $capacity, $status, $icon,
+                $name, $plate, $capacity, $status, $icon
+            );
+
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Fleet saved']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to save fleet: ' . $conn->error]);
+            }
+        } else if ($action === 'delete_fleet') {
+            $id = $input['id'];
+            $stmt = $conn->prepare("DELETE FROM fleet WHERE id = ?");
+            $stmt->bind_param("d", $id);
+            
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Fleet deleted']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to delete fleet: ' . $conn->error]);
+            }
+        } else if ($action === 'save_driver') {
+            $id = $input['id'];
+            $name = $input['name'];
+            $phone = $input['phone'];
+            $status = $input['status'];
+            $licenseType = isset($input['licenseType']) ? $input['licenseType'] : '';
+
+            $stmt = $conn->prepare("INSERT INTO drivers (id, name, phone, status, licenseType) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, phone=?, status=?, licenseType=?");
+            $stmt->bind_param("dssssssss", 
+                $id, $name, $phone, $status, $licenseType,
+                $name, $phone, $status, $licenseType
+            );
+
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Driver saved']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to save driver: ' . $conn->error]);
+            }
+        } else if ($action === 'delete_driver') {
+            $id = $input['id'];
+            $stmt = $conn->prepare("DELETE FROM drivers WHERE id = ?");
+            $stmt->bind_param("d", $id);
+            
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Driver deleted']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to delete driver: ' . $conn->error]);
+            }
         }
         exit;
     }
 
     // Default Sync Logic (Only if no action)
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $input = json_decode($rawInput, true);
     
     // Validate input for sync (must have at least one known key)
     if (!$input) {
+        error_log("API Error: Invalid JSON input. Raw: " . substr($rawInput, 0, 100));
         http_response_code(400);
         echo json_encode(['status' => 'error', 'message' => 'Invalid JSON']);
         exit;
     }
 
     if(!isset($input['bookings']) && !isset($input['fleet']) && !isset($input['drivers']) && !isset($input['trips']) && !isset($input['routes']) && !isset($input['busRoutes'])) {
-        // If not a sync request and not an action, ignore or error
-        // But for safety, let's just exit if empty to prevent accidental deletion
+        // If empty payload, do nothing but log it
+        error_log("API Warning: Empty payload received");
         if(empty($input)) exit; 
     }
 
@@ -241,18 +304,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $stmt = $conn->prepare("INSERT INTO bookings (id, serviceType, routeId, date, time, passengerName, passengerPhone, passengerType, seatCount, selectedSeats, duration, totalPrice, paymentMethod, paymentStatus, validationStatus, paymentLocation, paymentReceiver, paymentProof, status, seatNumbers, ktmProof, downPaymentAmount, type, seatCapacity, priceType, packageType, routeName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             foreach ($input['bookings'] as $b) {
+                if(empty($b['id'])) continue; // Skip invalid ID
                 $selectedSeats = isset($b['selectedSeats']) ? json_encode($b['selectedSeats']) : '[]';
                 $seatCapacity = isset($b['seatCapacity']) ? $b['seatCapacity'] : null;
                 $downPaymentAmount = isset($b['downPaymentAmount']) ? $b['downPaymentAmount'] : 0;
                 
-                $stmt->bind_param("dsssssssisddsssssssssdsisss", 
-                    $b['id'], $b['serviceType'], $b['routeId'], $b['date'], $b['time'], 
-                    $b['passengerName'], $b['passengerPhone'], $b['passengerType'], $b['seatCount'], 
-                    $selectedSeats, $b['duration'], $b['totalPrice'], $b['paymentMethod'], 
-                    $b['paymentStatus'], $b['validationStatus'], $b['paymentLocation'], $b['paymentReceiver'], 
-                    $b['paymentProof'], $b['status'], $b['seatNumbers'], $b['ktmProof'], 
-                    $downPaymentAmount, $b['type'], $seatCapacity, $b['priceType'], 
-                    $b['packageType'], $b['routeName']
+                // Safe assignment for optional fields
+                $passengerType = isset($b['passengerType']) ? $b['passengerType'] : 'Umum';
+                $seatCount = isset($b['seatCount']) ? $b['seatCount'] : 1;
+                $duration = isset($b['duration']) ? $b['duration'] : 1;
+                $paymentMethod = isset($b['paymentMethod']) ? $b['paymentMethod'] : 'Cash';
+                $paymentStatus = isset($b['paymentStatus']) ? $b['paymentStatus'] : 'Pending';
+                $validationStatus = isset($b['validationStatus']) ? $b['validationStatus'] : 'Pending';
+                $paymentLocation = isset($b['paymentLocation']) ? $b['paymentLocation'] : '';
+                $paymentReceiver = isset($b['paymentReceiver']) ? $b['paymentReceiver'] : '';
+                $paymentProof = isset($b['paymentProof']) ? $b['paymentProof'] : '';
+                $seatNumbers = isset($b['seatNumbers']) ? $b['seatNumbers'] : '';
+                $ktmProof = isset($b['ktmProof']) ? $b['ktmProof'] : '';
+                $type = isset($b['type']) ? $b['type'] : '';
+                $priceType = isset($b['priceType']) ? $b['priceType'] : '';
+                $packageType = isset($b['packageType']) ? $b['packageType'] : '';
+                $routeName = isset($b['routeName']) ? $b['routeName'] : '';
+                $routeId = isset($b['routeId']) ? $b['routeId'] : '';
+                $time = isset($b['time']) ? $b['time'] : '';
+
+                // Corrected type string: 27 chars for 27 vars
+                // ssssssssisidsssssssssdsisss
+                $stmt->bind_param("ssssssssisidsssssssssdsisss", 
+                    $b['id'], $b['serviceType'], $routeId, $b['date'], $time, 
+                    $b['passengerName'], $b['passengerPhone'], $passengerType, $seatCount, 
+                    $selectedSeats, $duration, $b['totalPrice'], $paymentMethod, 
+                    $paymentStatus, $validationStatus, $paymentLocation, $paymentReceiver, 
+                    $paymentProof, $b['status'], $seatNumbers, $ktmProof, 
+                    $downPaymentAmount, $type, $seatCapacity, $priceType, 
+                    $packageType, $routeName
                 );
                 $stmt->execute();
             }
@@ -263,7 +348,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if (!empty($input['fleet'])) {
             $stmt = $conn->prepare("INSERT INTO fleet (id, name, plate, capacity, status, icon) VALUES (?, ?, ?, ?, ?, ?)");
             foreach ($input['fleet'] as $f) {
-                $stmt->bind_param("dssiss", $f['id'], $f['name'], $f['plate'], $f['capacity'], $f['status'], $f['icon']);
+                if(empty($f['id'])) continue; // Skip invalid ID
+                $stmt->bind_param("sssiss", $f['id'], $f['name'], $f['plate'], $f['capacity'], $f['status'], $f['icon']);
                 $stmt->execute();
             }
         }
@@ -273,8 +359,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if (!empty($input['drivers'])) {
             $stmt = $conn->prepare("INSERT INTO drivers (id, name, phone, status, licenseType) VALUES (?, ?, ?, ?, ?)");
             foreach ($input['drivers'] as $d) {
+                if(empty($d['id'])) continue; // Skip invalid ID
                 $licenseType = isset($d['licenseType']) ? $d['licenseType'] : '';
-                $stmt->bind_param("dssss", $d['id'], $d['name'], $d['phone'], $d['status'], $licenseType);
+                $stmt->bind_param("sssss", $d['id'], $d['name'], $d['phone'], $d['status'], $licenseType);
                 $stmt->execute();
             }
         }
@@ -284,13 +371,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if (!empty($input['trips'])) {
             $stmt = $conn->prepare("INSERT INTO trips (id, routeConfig, fleet, driver, passengers, status, departureTime) VALUES (?, ?, ?, ?, ?, ?, ?)");
             foreach ($input['trips'] as $t) {
+                if(empty($t['id'])) continue; // Skip invalid ID
                 $routeConfig = json_encode($t['routeConfig']);
                 $fleet = json_encode($t['fleet']);
                 $driver = json_encode($t['driver']);
                 $passengers = json_encode($t['passengers']);
                 $departureTime = isset($t['departureTime']) ? $t['departureTime'] : null;
                 
-                $stmt->bind_param("dssssss", $t['id'], $routeConfig, $fleet, $driver, $passengers, $t['status'], $departureTime);
+                // Changed 'd' to 's' for ID
+                $stmt->bind_param("sssssss", $t['id'], $routeConfig, $fleet, $driver, $passengers, $t['status'], $departureTime);
                 $stmt->execute();
             }
         }
@@ -300,6 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     } catch (Exception $e) {
         $conn->rollback();
+        error_log("API Sync Error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => 'Sync failed: ' . $e->getMessage()]);
     }
