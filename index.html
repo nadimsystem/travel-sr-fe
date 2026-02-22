@@ -28,16 +28,25 @@
     <link rel="icon" type="image/webp" href="image/logo.webp" />
     <link rel="apple-touch-icon" href="image/logo.webp">
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
-        rel="stylesheet" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:wght@400;700&family=Poppins:wght@100..900&family=Montserrat&family=Work+Sans:wght@100..900&family=Roboto:wght@100..900&family=Roboto+Condensed:wght@100..900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playwrite+US+Trad+Guides&family=Playwrite+US+Trad:wght@100..400&display=swap"
+        rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script type="text/javascript"
-        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
     <script type="application/ld+json">
     {
@@ -45,18 +54,18 @@
       "@type": "TravelAgency",
       "name": "PO Sutan Raya",
       "legalName": "PT Fajar Wisata Langgeng",
-      "url": "https://www.sutanraya.com/",  // SEO: Pastikan URL benar
-      "logo": "https://www.sutanraya.com/image/logo.png", // SEO: Gunakan URL absolut logo
+      "url": "https://www.sutanraya.com/",  
+      "logo": "https://www.sutanraya.com/image/logo.png",
       "description": "Penyedia jasa sewa Hiace Luxury, Bus Pariwisata, shuttle reguler, dan tour organizer profesional di Padang, Sumatera Barat.",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Jln. Akses Bandara Internasional Minangkabau no.17 - 18",
-        "addressLocality": "Padang Pariaman", // Lebih spesifik jika memungkinkan
+        "addressLocality": "Padang Pariaman", 
         "addressRegion": "Sumatera Barat",
-        "postalCode": "25585", // SEO: Tambahkan Kode Pos jika tahu
+        "postalCode": "25585", 
         "addressCountry": "ID"
       },
-      "telephone": "+6282199996500", // SEO: Nomor telepon utama
+      "telephone": "+6282199996500", 
       "contactPoint": [
         {
           "@type":"ContactPoint",
@@ -64,20 +73,20 @@
           "contactType":"customer service",
           "areaServed": "ID",
           "availableLanguage":["Indonesian", "English"],
-          "contactOption": "TollFree", // Atau HearingImpairedSupported jika relevan
+          "contactOption": "TollFree", 
           "description": "Kontak Shuttle Reguler"
         },
         {
            "@type":"ContactPoint",
            "telephone":"+6282199991265",
-           "contactType":"sales", // atau customer support
+           "contactType":"sales", 
            "areaServed": "ID",
            "availableLanguage":["Indonesian", "English"],
            "contactOption": "TollFree",
            "description": "Kontak Sewa/Carter Armada (Hiace/Bus)"
         }
       ],
-      "openingHoursSpecification": [ // SEO: Tambahkan jam buka jika ada
+      "openingHoursSpecification": [ 
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": [
@@ -89,16 +98,16 @@
             "Saturday",
             "Sunday"
           ],
-          "opens": "00:00", // Asumsi buka 24 jam
+          "opens": "00:00", 
           "closes": "23:59"
         }
       ],
-      "sameAs": [ // SEO: Tambahkan link media sosial
+      "sameAs": [ 
         "https://www.instagram.com/po.sutan_raya/",
         "https://www.tiktok.com/@sutanraya_travel"
       ],
-      "priceRange": "Rp", // Estimasi ($, $$, $$$)
-      "hasOfferCatalog": { // SEO: Menjelaskan jenis layanan
+      "priceRange": "Rp", 
+      "hasOfferCatalog": { 
         "@type": "OfferCatalog",
         "name": "Layanan Transportasi & Wisata",
         "itemListElement": [
@@ -136,24 +145,12 @@
     </script>
 
     <style>
-        /* CSS Kustom Minimal untuk Google Translate */
-        body {
-            top: 0px !important;
-        }
-
-        .skiptranslate,
-        .goog-te-banner-frame,
-        #google_translate_element {
-            display: none !important;
-        }
-
-        /* CSS untuk Animasi Scroll */
         .scroll-animate {
             opacity: 0;
             transform: translateY(30px);
             transition: opacity 0.6s ease-out, transform 0.9s ease-out;
             will-change: opacity, transform;
-            /* Optimasi performa */
+
         }
 
         .scroll-animate.visible {
@@ -173,17 +170,12 @@
             transition-delay: 0.3s;
         }
 
-        /* Font Imports */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Playwrite+US+Trad+Guides&family=Playwrite+US+Trad:wght@100..400&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-
         @font-face {
             font-family: 'bother-font';
             src: url('fonts/BrothersideSignature.otf') format('opentype'),
                 url('fonts/BrothersideSignature.ttf') format('truetype');
+            font-display: swap;
+
         }
 
         .bt-font {
@@ -224,7 +216,6 @@
         /* CSS untuk Tab Kontak Aktif (dikelola Vue) */
         .tab-btn.active-tab {
             border-color: #D4AF37;
-            /* sutan-gold */
             color: #D4AF37;
         }
 
@@ -255,7 +246,6 @@
                     },
                     fontFamily: {
                         'sans': ['Plus Jakarta Sans', 'sans-serif'],
-
                     },
                     borderRadius: {
                         '4xl': '2rem',
@@ -282,22 +272,29 @@
                     <div class="flex items-center space-x-0 mx-auto bg-white py-3 px-5 shadow-md rounded-full"
                         role="navigation" aria-label="Navigasi Utama">
                         <a href="#home"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Beranda</a>
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_home">Beranda</a>
                         <a href="#services"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Layanan</a>
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_services">Layanan</a>
                         <a href="#artikel"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Artikel</a>
-                        <a href="#packages"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Wisata</a>
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_articles">Artikel</a>
+                        <a href="tourorganizer.html"
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_tourism">Wisata</a>
                         <a href="#advantages"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Keunggulan</a>
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_advantages">Keunggulan</a>
 
                         <a href="#contact"
-                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Kontak</a>
+                            class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors"
+                            data-translate="nav_contact">Kontak</a>
                     </div>
 
-                    <a href="#contact"
-                        class="inline-block bg-yellow-500 hover:bg-yellow-600 text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all">
+                    <a href="#" @click.prevent="toggleWaSelector" id="wa-toggle-desktop"
+                        class="inline-block bg-yellow-500 hover:bg-yellow-600 text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all"
+                        data-translate="nav_rent_now">
                         Sewa Sekarang
                     </a>
                 </div>
@@ -310,20 +307,21 @@
             role="dialog" aria-modal="true">
             <ul class="flex flex-col items-center py-4 space-y-2">
                 <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#home"
-                        @click="closeMobileMenu">Beranda</a></li>
+                        @click="closeMobileMenu" data-translate="nav_home">Beranda</a></li>
                 <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#services"
-                        @click="closeMobileMenu">Layanan</a></li>
-                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#packages"
-                        @click="closeMobileMenu">Wisata</a></li>
+                        @click="closeMobileMenu" data-translate="nav_services">Layanan</a></li>
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="tourorganizer.html"
+                        @click="closeMobileMenu" data-translate="nav_tourism">Wisata</a></li>
                 <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#advantages"
-                        @click="closeMobileMenu">Keunggulan</a></li>
+                        @click="closeMobileMenu" data-translate="nav_advantages">Keunggulan</a></li>
                 <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#artikel"
-                        @click="closeMobileMenu">Artikel</a></li>
+                        @click="closeMobileMenu" data-translate="nav_articles">Artikel</a></li>
                 <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="#contact"
-                        @click="closeMobileMenu">Kontak</a></li>
+                        @click="closeMobileMenu" data-translate="nav_contact">Kontak</a></li>
                 <li>
-                    <a href="#contact" @click="closeMobileMenu"
-                        class="mt-2 inline-block bg-sutan-gold text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all">
+                    <a href="#" @click.prevent="toggleWaSelector" id="wa-toggle-desktop"
+                        class="mt-2 inline-block bg-sutan-gold text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all"
+                        data-translate="nav_rent_now">
                         Sewa Sekarang
                     </a>
                 </li>
@@ -344,76 +342,92 @@
                     <center>
                         <img loading="lazy" src="image/logo.webp" width="200px" class="lg:hidden " alt="">
                     </center>
-                    <div class="font-bold my-3 kicker block text-sutan-gold uppercase tracking-wider mb-2">PO. SUTAN
+                    <div class="font-bold my-3 kicker block text-sutan-gold uppercase tracking-wider mb-2"
+                        data-translate="hero_kicker">PO. SUTAN
                         RAYA</div>
-                    <h1
-                        class="mt-2 text-2xl sm:text-5xl pf-font lg:hidden max-md:block lg:text-[65px] font-bold text-white leading-tight ">
+
+                    <h1 class="mt-2 text-2xl sm:text-4xl md:text-5xl lg:text-[65px] font-bold text-white leading-tight pf-font"
+                        data-translate="hero_title">
                         Kenyamanan, kemewahan, dan rasa aman itu adalah milik kita semua.
                     </h1>
-                    <h1
-                        class="mt-3 text-4xl sm:text-5xl pf-font lg:block max-md:hidden lg:text-[65px] font-bold text-white leading-tight ">
-                        Kenyamanan, kemewahan, dan rasa aman itu adalah milik kita semua.
-                    </h1>
-                    <!-- <h1
-                        class="mt-2 text-4xl sm:text-5xl pf-font lg:block max-md:hidden lg:text-[65px] font-bold text-white leading-tight ">
-                        Kenyamanan, kemewahan, dan rasa aman itu adalah milik <span class=" font-normal ">Kita
-                            semua</span>.
-                    </h1> -->
-                    <div class="my-[40px] text-lg lg:text-xl font-light lg:block max-md:hidden   text-gray-200 lg:w-3/4"
-                        style="line-height: 30px;">
+
+                    <div class="my-5 text-sm md:text-lg lg:text-xl font-light text-gray-200 lg:w-3/4 leading-relaxed"
+                        data-translate="hero_desc">
                         Sebagai pelopor transportasi luxury dan eksekutif di Sumatera Barat, kami menghadirkan
                         standar baru dalam kenyamanan dan layanan perjalanan Anda.
                     </div>
-                    <div class="my-[20px] text-[13px] font-light lg:hidden max-md:block   text-gray-200 lg:w-3/4">
-                        Sebagai pelopor transportasi luxury dan eksekutif di Sumatera Barat, kami menghadirkan
-                        standar baru dalam kenyamanan dan layanan perjalanan Anda.
-                    </div>
-                    <div class="flex max-md:hidden items-center gap-3 mt-4">
+
+                    <div class="flex flex-col sm:flex-row items-center gap-3 mt-8">
                         <a href="#services"
-                            class="bg-sutan-gold text-sutan-dark font-bold rounded-full px-7 py-3 text-base">
-                            <i class="bi bi-car-front-fill me-2"></i> Lihat Layanan
+                            class="bg-sutan-gold text-sutan-dark font-bold rounded-full px-7 py-3 text-sm lg:text-base w-full sm:w-auto text-center hover:bg-yellow-500 transition-colors">
+                            <i class="bi bi-car-front-fill me-2"></i> <span data-translate="btn_view_services">Lihat
+                                Layanan</span>
                         </a>
-                        <a href="#" @click.prevent="toggleWaSelector"
-                            class="border-2 border-white text-white font-bold rounded-full  px-7 py-3 text-base hover:bg-white hover:text-sutan-dark transition-all">
-                            <i class="bi bi-whatsapp me-2"></i> Whatsapp
-                        </a>
-                    </div>
-                    <div class="lg:hidden flex justify-center space-x-3">
-                        <a href="#services"
-                            class="bg-sutan-gold text-[12px] text-sutan-dark font-bold rounded-full px-7 py-3 ">
-                            <i class="bi bi-car-front-fill me-2"></i> Lihat Layanan
-                        </a>
-                        <a href="#" @click.prevent="toggleWaSelector"
-                            class="border-2 border-white text-[12px] text-white font-bold rounded-full px-7 py-3  hover:bg-white hover:text-sutan-dark transition-all">
-                            <i class="bi bi-whatsapp me-2"></i> Whatsapp
+                        <a href="#" @click.prevent="toggleWaSelector" id="wa-toggle-desktop"
+                            class="border-2 border-white text-white font-bold rounded-full px-7 py-3 text-sm lg:text-base w-full sm:w-auto text-center hover:bg-white hover:text-sutan-dark transition-all">
+                            <i class="bi bi-whatsapp me-2"></i> <span data-translate="btn_whatsapp">Whatsapp</span>
                         </a>
                     </div>
                 </div>
             </div>
         </main>
 
-        <div id="wa-selector"
-            class="fixed top-1/3 right-6 lg:top-1/4 lg:right-12 w-72 bg-white rounded-2xl shadow-2xl z-[60] p-5 border border-gray-200 transition-all duration-300 ease-out"
+        <div id="language-selector" v-cloak
+            class="fixed bottom-24 right-4 sm:right-12 w-48 bg-white rounded-xl shadow-xl z-[60] overflow-hidden border border-gray-100 transition-all duration-300 ease-out origin-bottom-right opacity-0 scale-95 pointer-events-none hidden">
+            <!-- Language selector content would go here -->
+        </div>
+
+        <div id="wa-selector" v-cloak
+            class="fixed top-1/3 right-6 lg:top-1/4 lg:right-12 w-72 bg-white rounded-2xl shadow-2xl z-[60] p-5 border border-gray-200 transition-all duration-300 ease-out opacity-0 translate-y-10 pointer-events-none"
             :class="{ 'opacity-100 translate-y-0 pointer-events-auto': isWaSelectorOpen, 'opacity-0 translate-y-10 pointer-events-none': !isWaSelectorOpen }">
-            <div class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200">
+            <div class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200"
+                data-translate="wa_selector_title">
                 Pilih Kontak WhatsApp
             </div>
             <div class="space-y-3">
-                <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%20Shuttle%2C%20saya%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace."
+                <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Padang%2C%20saya%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace."
                     target="_blank" rel="noopener noreferrer"
                     class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
                     <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
                     <div>
-                        <div class="font-semibold text-sutan-dark">Shuttle / Carter Hiace</div>
+                        <div class="font-semibold text-sutan-dark">Admin Padang</div>
                         <div class="text-sm text-gray-600">0821-9999-1265</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6282199991244?text=Halo%20Admin%20Payakumbuh%2C%20saya%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace."
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Payakumbuh</div>
+                        <div class="text-sm text-gray-600">0821-9999-1244</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6282199991264?text=Halo%20Admin%20Bukittinggi%2C%20saya%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace."
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Bukittinggi</div>
+                        <div class="text-sm text-gray-600">0821-9999-1264</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6285365049346?text=Halo%20Admin%20Pekanbaru%2C%20saya%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace."
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Pekanbaru</div>
+                        <div class="text-sm text-gray-600">0853-6504-9346</div>
                     </div>
                 </a>
                 <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20mau%20bertanya%20tentang%20sewa%20Bus%20Pariwisata."
                     target="_blank" rel="noopener noreferrer"
-                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border-t border-gray-200 mt-2 pt-3">
                     <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
                     <div>
-                        <div class="font-semibold text-sutan-dark">Sewa Bus Pariwisata</div>
+                        <div class="font-semibold text-sutan-dark" data-translate="wa_item_bus">Sewa Bus Pariwisata
+                        </div>
                         <div class="text-sm text-gray-600">0821-9999-6500</div>
                     </div>
                 </a>
@@ -423,29 +437,34 @@
         <section id="services" class="bg-[#f6f6f6] py-16 lg:py-24" aria-labelledby="layanan-kami">
             <div class="container mx-auto max-w-6xl px-4 max-md:px-[35px] ">
                 <div class="text-center mb-12 scroll-animate">
-                    <span class="kicker">Layanan Kami</span>
-                    <h2 id="layanan-kami" class="text-4xl lg:text-5xl font-extrabold section-title pf-font">Solusi
+                    <span class="kicker" data-translate="services_kicker">Layanan Kami</span>
+                    <h2 id="layanan-kami" class="text-4xl lg:text-5xl font-extrabold section-title pf-font"
+                        data-translate="services_title">Solusi
                         Perjalanan Terbaik</h2>
-                    <p class=" text-gray-600 max-w-2xl mx-auto mt-4 text-[14px] lg:text-lg">Dirancang sempurna untuk
+                    <p class=" text-gray-600 max-w-2xl mx-auto mt-4 text-[14px] lg:text-lg"
+                        data-translate="services_desc">Dirancang sempurna untuk
                         kenyamanan,
                         keamanan, dan gaya perjalanan Anda di Sumatera Barat.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
 
                     <article
-                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate">
+                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate sticky top-24 lg:static z-10 transition-all duration-300">
                         <img loading="lazy" src="armada/10.webp"
                             alt="Interior Toyota Hiace Luxury Sutan Raya dengan captain seat"
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Sewa Hiace Luxury</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Nikmati kenyamanan eksklusif dengan 13
+                            <h3 class="text-xl font-bold mb-2" data-translate="service_hiace_title">Sewa Hiace Luxury
+                            </h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="service_hiace_desc">
+                                Nikmati kenyamanan eksklusif dengan 13
                                 unit Hiace
                                 (Commuter & Premio) berkapasitas 8 seat. Fasilitas premium: kursi pijat, karaoke,
                                 coolbox, snack & air mineral.</p>
                             <div class="mt-auto pt-4 flex justify-between items-center">
                                 <a href="#luxury-class"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_info_detail">
                                     Info Detail →
                                 </a>
                                 <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20tertarik%20menyewa%20Hiace%20Luxury."
@@ -462,19 +481,22 @@
                     </article>
 
                     <article
-                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate delay-1">
-                        <img loading="lazy" src="armada/09.webp"
+                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate delay-1 sticky top-28 lg:static z-20 transition-all duration-300">
+                        <img loading="lazy" src="r25/1.jpg"
                             alt="Bus Pariwisata Sutan Raya terbaru di jalanan Sumatera Barat"
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Sewa Bus Pariwisata</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Armada 9 bus (Medium & Big Bus) keluaran
+                            <h3 class="text-xl font-bold mb-2" data-translate="service_bus_title">Sewa Bus Pariwisata
+                            </h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="service_bus_desc">Armada 9
+                                bus (Medium & Big Bus) keluaran
                                 terbaru
                                 berkapasitas 33-50 kursi. Dilengkapi fasilitas modern: karaoke, GPS tracking, port USB
                                 setiap bangku.</p>
                             <div class="mt-auto pt-4 flex justify-between items-center">
                                 <a href="#contact"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_info_detail">
                                     Info Detail →
                                 </a>
                                 <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20tertarik%20menyewa%20Bus%20Pariwisata."
@@ -491,19 +513,21 @@
                     </article>
 
                     <article
-                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate delay-2">
+                        class="bg-white shadow-xl rounded-2xl shadow-sm overflow-hidden flex flex-col h-full border border-gray-200 scroll-animate delay-2 sticky top-32 lg:static z-30 transition-all duration-300">
                         <img loading="lazy" src="image/tourup.webp"
                             alt="Tim Sutan Raya Tour & Organizer berdiskusi merencanakan paket wisata"
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Tour & Organizer</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Rancang liburan bebas repot di Sumatera
+                            <h3 class="text-xl font-bold mb-2" data-translate="service_tour_title">Tour & Organizer</h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="service_tour_desc">Rancang
+                                liburan bebas repot di Sumatera
                                 Barat. Kami
                                 sediakan paket Outbound, dokumentasi profesional (foto, video, drone), pemesanan hotel,
                                 tiket pesawat, dll.</p>
                             <div class="mt-auto pt-4 flex justify-between items-center">
-                                <a href="#packages"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                <a href="tourorganizer.html"
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_view_packages">
                                     Lihat Paket Wisata →
                                 </a>
                                 <a href="https://wa.me/6281268238068?text=Halo%20Tim%20Tour%20Organizer%20Sutan%20Raya%2C%20saya%20tertarik%20dengan%20paket%20wisata."
@@ -526,24 +550,31 @@
         <section id="armada" class="pt-16 lg:pt-24" aria-labelledby="galeri-armada">
             <div class="container mx-auto max-w-6xl px-4 scroll-animate">
                 <div class="text-center mb-12">
-                    <span class="kicker">Galeri Armada</span>
-                    <h2 id="galeri-armada" class="section-title text-4xl lg:text-5xl font-extrabold pf-font">Armada
+                    <span class="kicker" data-translate="gallery_kicker">Galeri Armada</span>
+                    <h2 id="galeri-armada" class="section-title text-4xl lg:text-5xl font-extrabold pf-font"
+                        data-translate="gallery_title">Armada
                         Terbaru &
                         Terbaik Kami</h2>
-                    <p class="text-gray-600 text-lg mx-auto max-w-2xl mt-4">
+                    <p class="text-gray-600 text-lg mx-auto max-w-2xl mt-4" data-translate="gallery_desc">
                         Kenyamanan dan keamanan Anda adalah prioritas utama kami dalam setiap perjalanan.
                     </p>
                 </div>
             </div>
             <div class="w-full overflow-hidden scroll-animate">
                 <div id="imageScroller" class="flex overflow-x-auto py-4 px-4" @mouseenter="stopScroll"
-                    @mouseleave="startScroll" role="region" aria-label="Galeri Gambar Armada">
-                    <img loading="lazy" src="armada/01.webp" class="h-80 lg:h-96"
-                        alt="Armada Hiace Premio Sutan Raya tampak depan">
+                    @mouseleave="startScroll" @touchstart="stopScroll" @touchend="startScroll" role="region"
+                    aria-label="Galeri Gambar Armada">
+                    <img loading="lazy" src="r25/1.jpg" class="h-80 lg:h-96" alt="R25 Sutan Raya">
+                    <img loading="lazy" src="r25/4.jpg" class="h-80 lg:h-96" alt="R25 Sutan Raya">
+                    <img loading="lazy" src="r25/3.jpg" class="h-80 lg:h-96" alt="R25 Sutan Raya">
+                    <img loading="lazy" src="armada/01.webp" class="h-80 lg:h-96" alt="">
+
+
                     <img loading="lazy" src="armada/02.webp" class="h-80 lg:h-96"
                         alt="Armada Hiace Premio Sutan Raya tampak samping">
                     <img loading="lazy" src="armada/09.webp" class="h-80 lg:h-96"
                         alt="Bus Pariwisata Sutan Raya di lokasi wisata">
+                    <img loading="lazy" src="r25/9.jpg" class="h-80 lg:h-96" alt="R25 Sutan Raya">
                     <img loading="lazy" src="armada/15.webp" class="h-80 lg:h-96"
                         alt="Interior mewah Bus Pariwisata Sutan Raya">
                     <img loading="lazy" src="armada/08.webp" class="h-80 lg:h-96"
@@ -566,14 +597,220 @@
             </div>
         </section>
 
+        <section id="shuttle-reguler" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="travel-shuttle-reguler">
+            <div class="container mx-auto max-w-6xl px-4 scroll-animate">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+                    <!-- Left Column: Content & Image -->
+                    <div class="flex flex-col h-full">
+                        <div class="mb-8">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="text-sm font-bold tracking-widest text-gray-800 uppercase">Travel Reguler (Per Bangku)</span>
+                                <div class="flex space-x-1">
+                                    <button onclick="updatePrices('IDR')"
+                                        class="currency-btn w-6 h-6 rounded-full flex items-center justify-center text-[10px] border border-gray-200 bg-sutan-gold text-sutan-dark font-bold shadow-sm transition-all"
+                                        data-currency="IDR" title="Indonesian Rupiah">IDR</button>
+                                    <button onclick="updatePrices('MYR')"
+                                        class="currency-btn w-6 h-6 rounded-full flex items-center justify-center text-[10px] border border-gray-200 bg-white text-gray-600 shadow-sm hover:scale-110 transition-all"
+                                        data-currency="MYR" title="Malaysian Ringgit">MYR</button>
+                                    <button onclick="updatePrices('USD')"
+                                        class="currency-btn w-6 h-6 rounded-full flex items-center justify-center text-[10px] border border-gray-200 bg-white text-gray-600 shadow-sm hover:scale-110 transition-all"
+                                        data-currency="USD" title="US Dollar">USD</button>
+                                </div>
+                            </div>
+                            <h2 id="travel-shuttle-reguler"
+                                class="text-4xl lg:text-6xl font-extrabold pf-font text-sutan-dark leading-tight mb-4">
+                                Solusi Perjalanan<br>Tenang & Nyaman
+                            </h2>
+                            <p class="text-gray-600 text-base lg:text-lg leading-relaxed">
+                                Layanan shuttle reguler Sutan Raya adalah pilihan ideal untuk perjalanan hemat, aman, dan
+                                praktis dengan sistem Antar Jemput Alamat (door to door). Nikmati kenyamanan kelas
+                                eksekutif dengan harga terbaik.
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl overflow-hidden shadow-2xl mt-auto">
+                            <img loading="lazy" src="image/travel.jpg"
+                                alt="Interior Hiace Luxury untuk Shuttle Reguler Sutan Raya"
+                                class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Booking Button & Route List -->
+                    <div class="flex flex-col">
+                        
+                        <!-- CTA Button -->
+                        <div class="mb-8 flex justify-end">
+                             <a href="#" @click.prevent="toggleWaSelector" id="wa-toggle-desktop"
+                                class="inline-flex items-center justify-center bg-sutan-dark text-white font-bold rounded-full px-8 py-4 text-sm lg:text-base hover:bg-gray-800 transition-all w-full lg:w-auto shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                <i class="bi bi-whatsapp me-2 text-xl" aria-hidden="true"></i> Booking Tiket Travel
+                            </a>
+                        </div>
+
+                        <!-- Routes Stack -->
+                        <div class="space-y-4">
+                            
+                            <!-- Route 1 -->
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 border-l-[6px] border-l-sutan-gold hover:shadow-lg transition-shadow">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                    <div class="mb-3 sm:mb-0">
+                                        <h3 class="text-sutan-dark text-xl font-bold mb-1">Padang ⇄ Bukittinggi</h3>
+                                        <p class="text-gray-500 text-sm">Antar Jemput Alamat (Door to Door)</p>
+                                    </div>
+                                    <div class="text-left sm:text-right">
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-2xl font-bold text-sutan-dark" data-original-price="120000">Rp 120.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Umum)</span>
+                                        </div>
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-lg font-bold text-sutan-gold" data-original-price="100000">Rp 100.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Mahasiswa)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Route 2 -->
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 border-l-[6px] border-l-sutan-gold hover:shadow-lg transition-shadow">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                    <div class="mb-3 sm:mb-0">
+                                        <h3 class="text-sutan-dark text-xl font-bold mb-1">Padang ⇄ Payakumbuh</h3>
+                                        <p class="text-gray-500 text-sm">Antar Jemput Alamat (Door to Door)</p>
+                                    </div>
+                                    <div class="text-left sm:text-right">
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-2xl font-bold text-sutan-dark" data-original-price="150000">Rp 150.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Umum)</span>
+                                        </div>
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-lg font-bold text-sutan-gold" data-original-price="130000">Rp 130.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Mahasiswa)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Route 3 -->
+                             <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 border-l-[6px] border-l-sutan-gold hover:shadow-lg transition-shadow">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                    <div class="mb-3 sm:mb-0">
+                                        <h3 class="text-sutan-dark text-xl font-bold mb-1">Padang ⇄ Pekanbaru</h3>
+                                        <p class="text-gray-500 text-sm">Antar Jemput Sebatas Kota</p>
+                                    </div>
+                                    <div class="text-left sm:text-right">
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-2xl font-bold text-sutan-dark" data-original-price="260000">Rp 260.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Umum)</span>
+                                        </div>
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-lg font-bold text-sutan-gold" data-original-price="240000">Rp 240.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Mahasiswa)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Route 4 -->
+                             <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 border-l-[6px] border-l-sutan-gold hover:shadow-lg transition-shadow">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                    <div class="mb-3 sm:mb-0">
+                                        <h3 class="text-sutan-dark text-xl font-bold mb-1">Payakumbuh ⇄ Pekanbaru</h3>
+                                        <p class="text-gray-500 text-sm">Antar Jemput Sebatas Kota</p>
+                                    </div>
+                                    <div class="text-left sm:text-right">
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-2xl font-bold text-sutan-dark" data-original-price="220000">Rp 220.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Umum)</span>
+                                        </div>
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-lg font-bold text-sutan-gold" data-original-price="200000">Rp 200.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Mahasiswa)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- Route 5 -->
+                             <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 border-l-[6px] border-l-sutan-gold hover:shadow-lg transition-shadow">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                    <div class="mb-3 sm:mb-0">
+                                        <h3 class="text-sutan-dark text-xl font-bold mb-1">Bukittinggi ⇄ Pekanbaru</h3>
+                                        <p class="text-gray-500 text-sm">Antar Jemput Sebatas Kota</p>
+                                    </div>
+                                    <div class="text-left sm:text-right">
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-2xl font-bold text-sutan-dark" data-original-price="220000">Rp 220.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Umum)</span>
+                                        </div>
+                                        <div class="flex items-baseline justify-start sm:justify-end gap-2">
+                                            <span class="text-lg font-bold text-sutan-gold" data-original-price="200000">Rp 200.000</span>
+                                            <span class="text-xs text-gray-500 font-normal">(Mahasiswa)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Layanan Paket -->
+        <section id="paket" class="bg-white py-16 lg:py-24 relative overflow-hidden">
+            <div class="container mx-auto max-w-6xl px-4 flex flex-col-reverse lg:flex-row items-center gap-12">
+                <div class="w-full lg:w-1/2 scroll-animate">
+                    <span class="kicker text-sutan-gold uppercase tracking-wider font-bold mb-2 block">Logistik
+                        Terpercaya</span>
+                    <h2 class="text-4xl lg:text-5xl font-extrabold pf-font mb-6 text-sutan-dark">Kirim Paket <br>Lebih
+                        Cepat & Aman</h2>
+                    <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+                        Layanan pengiriman barang <b>Pool to Pool</b> dan <b>Door to Door</b> untuk rute Padang,
+                        Bukittinggi, dan Payakumbuh.
+                        Jaminan barang aman sampai tujuan dengan armada premium kami.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="paket/index.html"
+                            class="bg-sutan-dark text-white font-bold rounded-full px-8 py-4 transition-all hover:bg-gray-800 shadow-lg hover:shadow-xl flex items-center justify-center">
+                            <i class="bi bi-box-seam-fill me-2"></i> Cek Tarif & Resi
+                        </a>
+                        <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20mau%20dikirimkan%20Price%20List%20Paket."
+                            target="_blank"
+                            class="border-2 border-sutan-dark text-sutan-dark font-bold rounded-full px-8 py-4 transition-all hover:bg-sutan-dark hover:text-white flex items-center justify-center">
+                            <i class="bi bi-whatsapp me-2"></i> Info Via WhatsApp
+                        </a>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 scroll-animate delay-1">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 group">
+                        <img src="image/paket-img.jpg" alt="Layanan Paket Sutan Raya"
+                            class="w-full h-80 lg:h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700">
+                        <div
+                            class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 lg:p-8">
+                            <div class="text-white font-bold text-xl lg:text-2xl mb-2"><i
+                                    class="bi bi-truck-front-fill me-2 text-sutan-gold"></i> Armada Reguler & Express
+                            </div>
+                            <p class="text-gray-300 text-sm">Siap mengantar dokumen, paket, hingga kargo ukuran besar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
         <section id="artikel" class="bg-white  py-16 lg:py-24" aria-labelledby="artikel-terbaru">
             <div class="container scroll-animate mx-auto max-w-6xl  max-md:px-[0px] ">
                 <div class="text-center mb-12 scroll-animate">
-                    <span class="kicker">BLOG & ARTIKEL</span>
-                    <h2 id="artikel-terbaru" class="text-3xl px-3 lg:text-5xl font-extrabold section-title pf-font">
+                    <span class="kicker" data-translate="articles_kicker">BLOG & ARTIKEL</span>
+                    <h2 id="artikel-terbaru" class="text-3xl px-3 lg:text-5xl font-extrabold section-title pf-font"
+                        data-translate="articles_title">
                         Seputar
                         Perjalanan <br> & Berita</h2>
-                    <p class="lg:text-lg text-gray-600 max-w-2xl px-6 mx-auto mt-4 text-[14px] ">Dapatkan wawasan, tips
+                    <p class="lg:text-lg text-gray-600 max-w-2xl px-6 mx-auto mt-4 text-[14px] "
+                        data-translate="articles_desc">Dapatkan wawasan, tips
                         perjalanan, dan
                         berita terbaru dari Sutan Raya.</p>
                 </div>
@@ -589,17 +826,20 @@
                             src="https://berita.pesisirselatankab.go.id/asset/foto_berita/IMG-20221109-WA00171.jpg"
                             alt="Pemandangan indah Kawasan Mandeh, Sumatera Barat" class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Panduan Super Lengkap Pulang Kampung: Destinasi Ikonik &
+                            <h3 class="text-xl font-bold mb-2" data-translate="art1_title">Panduan Super Lengkap Pulang
+                                Kampung: Destinasi Ikonik &
                                 Hidden Gems Ranah Minang | Sutan Raya
                             </h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Halo dunsanak kami di Malaysia, ini
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="art1_desc">Halo dunsanak
+                                kami di Malaysia, ini
                                 panduan wisata Sumatera Barat terlengkap untuk perantau Malaysia. Dari Bukittinggi,
                                 Mandeh, Saribu Rumah Gadang, hingga Geopark Silokek. Sutan Raya jemput di BIM!
                             </p>
                             <div class="mt-auto pt-4">
                                 <a href="artikel-malaysia.html"
                                     title="Baca artikel: 5 Destinasi Wajib di Sumatera Barat"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_read_more">
                                     Baca Selengkapnya →
                                 </a>
                             </div>
@@ -612,13 +852,16 @@
                             alt="Interior Hiace Luxury dengan kursi captain seat dan fasilitas modern"
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Tips Memilih Jasa Sewa Hiace Luxury untuk Rombongan</h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Perjalanan rombongan harus nyaman. Simak
+                            <h3 class="text-xl font-bold mb-2" data-translate="art2_title">Tips Memilih Jasa Sewa Hiace
+                                Luxury untuk Rombongan</h3>
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="art2_desc">Perjalanan
+                                rombongan harus nyaman. Simak
                                 tips memilih armada, fasilitas yang wajib ada, dan cara menghitung anggaran agar
                                 efisien.</p>
                             <div class="mt-auto pt-4">
                                 <a href="#" title="Baca artikel: Tips Memilih Sewa Hiace Luxury"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_read_more">
                                     Baca Selengkapnya →
                                 </a>
                             </div>
@@ -631,14 +874,17 @@
                             alt="Tim Sutan Raya Tour Organizer sedang melakukan briefing"
                             class="h-64 w-full object-cover">
                         <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2">Mengapa Tour Organizer Penting untuk Liburan Perusahaan?
+                            <h3 class="text-xl font-bold mb-2" data-translate="art3_title">Mengapa Tour Organizer
+                                Penting untuk Liburan Perusahaan?
                             </h3>
-                            <p class="text-gray-600 text-[12px] lg:text-base">Hemat waktu, tenaga, dan dapatkan
+                            <p class="text-gray-600 text-[12px] lg:text-base" data-translate="art3_desc">Hemat waktu,
+                                tenaga, dan dapatkan
                                 pengalaman terbaik. Ini alasan menggunakan jasa tour organizer adalah pilihan cerdas
                                 untuk outing perusahaan.</p>
                             <div class="mt-auto pt-4">
                                 <a href="#" title="Baca artikel: Pentingnya Tour Organizer"
-                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
+                                    class="bg-sutan-dark text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors"
+                                    data-translate="btn_read_more">
                                     Baca Selengkapnya →
                                 </a>
                             </div>
@@ -652,78 +898,77 @@
         <section class="w-full bg-sutan-dark text-center text-white py-16 lg:py-24" aria-labelledby="gallery-title">
             <div class="container mx-auto px-4 max-w-6xl">
                 <div class="mb-12 scroll-animate">
-                    <span class="kicker text-sutan-gold opacity-80">GALERI EKSKLUSIF</span>
-                    <h2 id="gallery-title" class="text-[40px] lg:text-[55px] font-bold pf-font leading-tight">
+                    <span class="kicker text-sutan-gold opacity-80" data-translate="premium_gallery_kicker">GALERI
+                        EKSKLUSIF</span>
+                    <h2 id="gallery-title" class="text-[40px] lg:text-[55px] font-bold pf-font leading-tight"
+                        data-translate="premium_gallery_title">
                         Armada Premium Sutan Raya
                     </h2>
-                    <p class="mt-4 text-gray-300 max-w-3xl mx-auto text-lg">
-                        Melayani dengan standar kemewahan tertinggi. Armada Big Bus Skyalander R25 dan Jetbus 5 dengan sasis Mercedes Benz, berkapasitas 32-45 penumpang dengan konfigurasi leg rest yang lega.
+                    <p class="mt-4 text-gray-300 max-w-3xl mx-auto text-lg" data-translate="premium_gallery_desc">
+                        Melayani dengan standar kemewahan tertinggi. Armada Big Bus Skyalander R25 dan Jetbus 5 dengan
+                        sasis Mercedes Benz, berkapasitas 32-45 penumpang dengan konfigurasi leg rest yang lega.
                     </p>
                 </div>
 
                 <!-- Waterfall / Masonry Layout -->
-                <div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 mx-auto">
-                    
+                <div class="grid grid-cols-4 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 mx-auto">
+
                     <!-- Item 1 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
-                        <img src="armada/01.webp" alt="Armada Big Bus Sutan Raya Depan" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <i class="bi bi-arrows-fullscreen text-white text-3xl"></i>
-                        </div>
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
+                        <img src="r25/1.jpg" alt="Armada Sutan Raya 1"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                     <!-- Item 2 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
-                        <img src="armada/15.webp" alt="Interior Mewah Big Bus" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                             <span class="text-white font-bold border border-white px-4 py-2 rounded-full">Interior Premium</span>
-                        </div>
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
+                        <img src="r25/2.jpg" alt="Armada Sutan Raya 2"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                     <!-- Item 3 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-2">
-                        <img src="armada/09.webp" alt="Big Bus di Perjalanan" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                            <p class="text-white font-medium text-sm">Perjalanan Nyaman & Aman</p>
-                        </div>
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-2">
+                        <img src="r25/3.jpg" alt="Armada Sutan Raya 3"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                     <!-- Item 4 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
-                        <img src="armada/08.webp" alt="Sutan Raya Jetbus 5" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
+                        <img src="r25/4.jpg" alt="Armada Sutan Raya 4"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                     <!-- Item 5 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
-                        <img src="armada/14.webp" alt="Seat Leg Rest" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="text-white font-bold border border-white px-4 py-2 rounded-full">Leg Rest</span>
-                        </div>
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
+                        <img src="r25/5.jpg" alt="Armada Sutan Raya 5"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
-                     <!-- Item 6 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-2">
-                        <img src="armada/02.webp" alt="Sutan Raya Tampak Samping" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+                    <!-- Item 6 -->
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-2">
+                        <img src="r25/6.jpg" alt="Armada Sutan Raya 6"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
-                     <!-- Item 7 -->
-                    <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
-                        <img src="armada/16.webp" alt="Fasilitas Karaoke" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="text-white font-bold border border-white px-4 py-2 rounded-full">Full Entertainment</span>
-                        </div>
+                    <!-- Item 7 -->
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate">
+                        <img src="r25/7.jpg" alt="Armada Sutan Raya 7"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                     <!-- Item 8 -->
-                     <div class="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
-                        <img src="armada/05.webp" alt="Armada Berjejer" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+                    <div class="relative group rounded-2xl overflow-hidden cursor-pointer scroll-animate delay-1">
+                        <img src="r25/8.jpg" alt="Armada Sutan Raya 8"
+                            class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
                     </div>
 
                 </div>
-                
-                 <div class="mt-12">
-                    <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20tertarik%20sewa%20Big%20Bus." target="_blank" class="inline-block bg-sutan-gold text-sutan-dark font-bold rounded-full px-10 py-4 text-base hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">
-                        <i class="bi bi-whatsapp me-2"></i> Tanya Ketersediaan Unit
+
+                <div class="mt-12">
+                    <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20saya%20tertarik%20sewa%20Big%20Bus."
+                        target="_blank"
+                        class="inline-block bg-sutan-gold text-sutan-dark font-bold rounded-full px-10 py-4 text-base hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                        <i class="bi bi-whatsapp me-2"></i> <span data-translate="btn_check_availability">Tanya
+                            Ketersediaan Unit</span>
                     </a>
                 </div>
 
@@ -731,15 +976,15 @@
         </section>
 
         <!-- Real Count Doorprize Section -->
-        <section class="bg-gradient-to-br from-sutan-dark to-black py-12 relative overflow-hidden" aria-labelledby="doorprize-stats">
-            <!-- Decorative Elements -->
+        <!-- <section class="bg-gradient-to-br from-sutan-dark to-black py-12 relative overflow-hidden" aria-labelledby="doorprize-stats">
+
             <div class="absolute top-0 right-0 w-64 h-64 bg-sutan-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div class="absolute bottom-0 left-0 w-64 h-64 bg-sutan-gold/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
             <div class="container mx-auto px-4 max-w-4xl relative z-10 scroll-animate">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-8 bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
                     
-                    <!-- Text Content -->
+
                     <div class="text-center md:text-left text-white md:w-5/12">
                         <span class="inline-block py-1 px-3 rounded-full bg-sutan-gold/20 text-sutan-gold text-xs font-bold mb-3 border border-sutan-gold/30">
                             ✨ LIVE UPDATE
@@ -756,10 +1001,10 @@
                         </a>
                     </div>
 
-                    <!-- Stats Cards -->
+
                     <div class="flex flex-row gap-4 md:gap-6 md:w-7/12 justify-center md:justify-end w-full">
                         
-                        <!-- Participant Count -->
+
                         <div class="flex-1 bg-white/10 rounded-2xl p-4 text-center border border-white/5 backdrop-blur-sm transform hover:-translate-y-1 transition-transform duration-300">
                             <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-400">
                                 <i class="bi bi-people-fill text-xl"></i>
@@ -770,7 +1015,7 @@
                             <div class="text-xs text-gray-400 uppercase tracking-wider font-medium">Total Peserta</div>
                         </div>
 
-                        <!-- Coupon Count -->
+
                         <div class="flex-1 bg-white/10 rounded-2xl p-4 text-center border border-white/5 backdrop-blur-sm transform hover:-translate-y-1 transition-transform duration-300">
                             <div class="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-3 text-yellow-400">
                                 <i class="bi bi-ticket-detailed-fill text-xl"></i>
@@ -784,7 +1029,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- <section id="karir" class="bg-white py-16 lg:py-24" aria-labelledby="karir-title">
             <div class="container mx-auto max-w-6xl px-4 max-md:px-[35px]">
@@ -925,111 +1170,7 @@
             </div>
         </section>
 
-        <section id="shuttle-reguler" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="travel-shuttle-reguler">
-            <div class="container mx-auto max-w-6xl px-4 scroll-animate">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-                    <div>
-                        <div class="px-[25px]">
-                            <span class="kicker">TRAVEL REGULER (PER BANGKU)</span>
-                            <h2 id="travel-shuttle-reguler"
-                                class="section-title text-3xl lg:text-5xl font-extrabold pf-font">Solusi
-                                Perjalanan Tenang & Nyaman</h2>
-                            <p class="text-gray-600 mt-4 text-[px-14] lg:text-lg">
-                                Layanan shuttle reguler Sutan Raya adalah pilihan ideal untuk perjalanan hemat, aman,
-                                dan
-                                praktis dengan sistem Antar Jemput Alamat (door to door). Nikmati kenyamanan kelas
-                                eksekutif dengan harga terbaik.
-                            </p>
-                        </div>
-
-                        <div class="mt-6 bg-white p-5 rounded-2xl shadow-xl border border-gray-200">
-                            <h3 class="font-bold text-lg text-sutan-dark mb-3 flex items-center">
-                                <i class="bi bi-clock-fill text-sutan-gold me-2" aria-hidden="true"></i>Jadwal
-                                Keberangkatan Harian
-                            </h3>
-
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm text-left text-gray-700">
-                                    <caption class="sr-only">Tabel Jadwal Keberangkatan Shuttle Reguler Sutan Raya
-                                    </caption>
-                                    <thead class="text-xs text-sutan-dark uppercase bg-gray-50 rounded-lg">
-                                        <tr>
-                                            <th scope="col" class="px-3 py-2">Rute</th>
-                                            <th scope="col" class="px-3 py-2">Waktu Keberangkatan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="bg-white border-b hover:bg-gray-50">
-                                            <td class="px-3 py-2 font-semibold">Padang → Bukittinggi</td>
-                                            <td class="px-3 py-2">07.00, 11.00, 15.00, 18.00 WIB</td>
-                                        </tr>
-                                        <tr class="bg-white border-b hover:bg-gray-50">
-                                            <td class="px-3 py-2 font-semibold">Bukittinggi → Padang</td>
-                                            <td class="px-3 py-2">07.00, 11.00, 15.00, 18.00 WIB</td>
-                                        </tr>
-                                        <tr class="bg-white border-b hover:bg-gray-50">
-                                            <td class="px-3 py-2 font-semibold">Padang → Payakumbuh</td>
-                                            <td class="px-3 py-2">05.00, 10.00, 14.00, 17.00 WIB</td>
-                                        </tr>
-                                        <tr class="bg-white hover:bg-gray-50">
-                                            <td class="px-3 py-2 font-semibold">Payakumbuh → Padang</td>
-                                            <td class="px-3 py-2">08.00, 10.00, 14.00, 18.00 WIB</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="lg:order-last order-first">
-                        <img loading="lazy" src="armada/03.webp"
-                            alt="Armada Toyota Hiace Commuter Sutan Raya untuk layanan shuttle reguler"
-                            class="w-full h-auto rounded-2xl shadow-lg mb-8 lg:mb-0">
-
-                        <div class="mt-8 space-y-4">
-                            <div class="bg-white p-5 rounded-2xl shadow-xl border-l-4 border-sutan-gold">
-                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                                    <div>
-                                        <h3 class="text-sutan-dark text-xl font-extrabold mb-0">Padang ⇄ Bukittinggi
-                                        </h3>
-                                        <p class="mb-0 text-gray-700 text-sm">Antar Jemput Alamat (Door to Door)</p>
-                                    </div>
-                                    <div class="text-left sm:text-right mt-2 sm:mt-0">
-                                        <p class="text-2xl font-bold mb-0 text-sutan-dark">Rp 120.000 <span
-                                                class="text-base font-normal text-gray-500"> (Umum)</span></p>
-                                        <p class="text-xl font-bold mb-0 text-sutan-gold">Rp 100.000 <span
-                                                class="text-base font-normal text-gray-500"> (Pelajar)</span></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white p-5 rounded-2xl shadow-xl border-l-4 border-sutan-gold">
-                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                                    <div>
-                                        <h3 class="text-sutan-dark text-xl font-extrabold mb-0">Padang ⇄ Payakumbuh</h3>
-                                        <p class="mb-0 text-gray-700 text-sm">Antar Jemput Alamat (Door to Door)</p>
-                                    </div>
-                                    <div class="text-left sm:text-right mt-2 sm:mt-0">
-                                        <p class="text-2xl font-bold mb-0 text-sutan-dark">Rp 150.000 <span
-                                                class="text-base font-normal text-gray-500"> (Umum)</span></p>
-                                        <p class="text-xl font-bold mb-0 text-sutan-gold">Rp 130.000 <span
-                                                class="text-base font-normal text-gray-500"> (Pelajar)</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%20Shuttle%2C%20saya%20mau%20booking%20tiket%20reguler."
-                            target="_blank" rel="noopener noreferrer"
-                            class="block bg-sutan-dark text-white text-center font-bold rounded-full px-8 py-4 text-[12px] lg:text-base w-full mt-8 hover:bg-gray-800 transition-all">
-                            <i class="bi bi-whatsapp me-2" aria-hidden="true"></i> Booking Tiket Shuttle
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
+        
 
         <section id="membership" class="py-16 lg:py-24" aria-labelledby="program-membership">
             <div class="container mx-auto max-w-6xl px-[35px] lg:px-0 scroll-animate">
@@ -1147,6 +1288,13 @@
                             </ul>
                         </div>
 
+                        <div class="mt-8">
+                            <a href="tourorganizer.html"
+                                class="inline-flex items-center justify-center bg-sutan-gold text-sutan-dark font-extrabold rounded-full px-8 py-4 text-base hover:bg-opacity-90 transition-all shadow-lg hover:-translate-y-1 w-full lg:w-auto">
+                                <i class="bi bi-eye-fill me-2"></i> Lihat Detail Paket & Galeri
+                            </a>
+                        </div>
+
                         <h3 class="font-bold text-xl mt-6 mb-3 text-sutan-dark"> Hubungi Tim Tour Kami:</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <a href="https://wa.me/6281268238068?text=Halo%20Jihad%2C%20saya%20tertarik%20dengan%20paket%20Tour%20%26%20Organizer%20Sutan%20Raya."
@@ -1166,35 +1314,29 @@
             </div>
         </section>
 
-        <!-- <section class="px-[24px] ">
-            <p class="text-lg">All new </p>
-            <p class="text-[30px] font-bold">Big bus sutan raya</p>
-            <div class="mt-5 flex gap-3 overflow-x-scroll">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-                <img src="https://i.pinimg.com/736x/4d/62/c0/4d62c089227ef9c5d08f85430483fa5c.jpg" width="250" class="transition-ease scroll-animate duriation-[1s] hover:scale-[1.1] rounded-[5px]" loading="lazy" alt="">
-            </div>
-        </section> -->
+
 
         <section id="advantages" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="keunggulan-kami">
             <div class="container mx-auto max-w-6xl px-4">
                 <div class="text-center mb-12 scroll-animate">
-                    <span class="kicker">Mengapa Memilih Kami</span>
-                    <h2 id="keunggulan-kami" class="section-title text-4xl lg:text-5xl font-extrabold pf-font">
+                    <span class="kicker" data-translate="adv_kicker">Mengapa Memilih Kami</span>
+                    <h2 id="keunggulan-kami" class="section-title text-4xl lg:text-5xl font-extrabold pf-font"
+                        data-translate="adv_title">
                         Keunggulan Sutan
                         Raya</h2>
-                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-4">Tiga pilar utama yang menjadikan kami
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-4" data-translate="adv_desc">Tiga pilar utama
+                        yang
+                        menjadikan kami
                         pilihan terbaik untuk perjalanan Anda di Sumatera Barat.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-gem" aria-hidden="true"></i></div>
-                        <h3 class="text-xl font-bold mb-2">Armada Terbaru & Mewah</h3>
-                        <p class="text-gray-600 text-[12px] lg:text-base">Kami hanya menggunakan unit terbaru, termasuk
+                        <h3 class="text-xl font-bold mb-2" data-translate="adv1_title">Armada Terbaru & Mewah</h3>
+                        <p class="text-gray-600 text-[12px] lg:text-base" data-translate="adv1_desc">Kami hanya
+                            menggunakan
+                            unit terbaru, termasuk
                             bus pariwisata terbaru dan Hiace dengan interior premium seperti kursi pijat, smart tv dan
                             karakoke untuk kenyamanan maksimal.</p>
                     </div>
@@ -1202,17 +1344,20 @@
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-1">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-people-fill" aria-hidden="true"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Kru Profesional & Ramah</h3>
-                        <p class="text-gray-600 text-[12px] lg:text-base">Driver dan kru kami berpengalaman, menguasai
+                        <h3 class="text-xl font-bold mb-2" data-translate="adv2_title">Kru Profesional & Ramah</h3>
+                        <p class="text-gray-600 text-[12px] lg:text-base" data-translate="adv2_desc">Driver dan kru kami
+                            berpengalaman, menguasai
                             medan jalan Sumatera
                             Barat, serta berkomitmen memberikan pelayanan terbaik yang ramah dan solutif.</p>
                     </div>
                     <div
                         class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-2">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-box2-heart-fill"
-                                aria-hidden="true"></i></div>
-                        <h3 class="text-xl font-bold mb-2">Layanan Terintegrasi</h3>
-                        <p class="text-gray-600 text-[12px] lg:text-base">Nikmati perjalanan tanpa khawatir. Kami
+                                aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2" data-translate="adv3_title">Layanan Terintegrasi</h3>
+                        <p class="text-gray-600 text-[12px] lg:text-base" data-translate="adv3_desc">Nikmati perjalanan
+                            tanpa khawatir. Kami
                             menyediakan solusi lengkap:
                             transportasi, penginapan, tiket, dokumentasi, hingga kegiatan outbound, dll.</p>
                     </div>
@@ -1223,11 +1368,12 @@
         <section id="visi-misi" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="visi-misi-kami">
             <div class="container mx-auto max-w-6xl px-4">
                 <div class="text-center mb-12 scroll-animate">
-                    <span class="kicker">Visi & Misi</span>
-                    <h2 id="visi-misi-kami " class="section-title text-4xl lg:text-5xl font-extrabold pf-font">Langkah &
+                    <span class="kicker" data-translate="vm_kicker">Visi & Misi</span>
+                    <h2 id="visi-misi-kami " class="section-title text-4xl lg:text-5xl font-extrabold pf-font"
+                        data-translate="vm_title">Langkah &
                         Tujuan
                         Sutan Raya</h2>
-                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-4">
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-4" data-translate="vm_desc">
                         Menghadirkan standar baru transportasi luxury di Sumatera Barat, serta ikut mendorong
                         pertumbuhan pariwisata dan ekonomi daerah.
                     </p>
@@ -1235,8 +1381,9 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div class="p-8 rounded-2xl h-100 scroll-animate">
                         <h3 class="font-bold text-sutan-gold text-2xl mb-4"><i class="bi bi-eye-fill me-2"
-                                aria-hidden="true"></i>Visi Perusahaan</h3>
-                        <p class="mb-0 text-[2xl] lg:text-[20px] leading-relaxed font-medium text-gray-800">
+                                aria-hidden="true"></i><span data-translate="vision_title">Visi Perusahaan</span></h3>
+                        <p class="mb-0 text-[2xl] lg:text-[20px] leading-relaxed font-medium text-gray-800"
+                            data-translate="vision_desc">
                             Berkontribusi dalam memajukan pariwisata serta menjadi penyedia jasa transportasi publik
                             yang berkomitmen mendorong pertumbuhan ekonomi melalui peningkatan mobilitas, pengurangan
                             kemacetan, dan pengembangan sistem transit perkotaan.
@@ -1244,29 +1391,36 @@
                     </div>
                     <div class="p-8 rounded-2xl bg-sutan-dark text-white shadow-lg h-100 scroll-animate delay-1">
                         <h3 class="font-bold text-sutan-gold text-2xl mb-4"><i class="bi bi-bullseye me-2"
-                                aria-hidden="true"></i>Misi Perusahaan</h3>
+                                aria-hidden="true"></i><span data-translate="mission_title">Misi Perusahaan</span></h3>
                         <ul class="list-none pl-0 space-y-3">
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Menjadi pelopor transportasi umum luxury di Sumatera Barat.
+                                    aria-hidden="true"></i><span data-translate="mission_1">Menjadi pelopor transportasi
+                                    umum luxury di Sumatera
+                                    Barat.</span>
                             </li>
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Memajukan pariwisata dalam bidang transportasi.</li>
+                                    aria-hidden="true"></i><span data-translate="mission_2">Memajukan pariwisata dalam
+                                    bidang transportasi.</span></li>
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Mengembangkan jaringan transportasi publik yang aman, nyaman,
-                                dan terpercaya.</li>
+                                    aria-hidden="true"></i><span data-translate="mission_3">Mengembangkan jaringan
+                                    transportasi publik yang aman, nyaman,
+                                    dan terpercaya.</span></li>
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Menghidupkan kembali lingkungan perkotaan melalui
-                                pengembangan transit.</li>
+                                    aria-hidden="true"></i><span data-translate="mission_4">Menghidupkan kembali
+                                    lingkungan perkotaan melalui
+                                    pengembangan transit.</span></li>
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Membangun reputasi sebagai perusahaan pilihan.</li>
+                                    aria-hidden="true"></i><span data-translate="mission_5">Membangun reputasi sebagai
+                                    perusahaan pilihan.</span></li>
                             <li class="flex items-start text-lg lg:text-[16px]"><i
                                     class="bi bi-check-circle-fill text-sutan-gold me-3 mt-1"
-                                    aria-hidden="true"></i>Selalu berkomitmen memberikan pelayanan terbaik.</li>
+                                    aria-hidden="true"></i><span data-translate="mission_6">Selalu berkomitmen
+                                    memberikan pelayanan terbaik.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -1278,9 +1432,11 @@
         <section id="team" class="bg-sutan-light py-16 lg:py-24" aria-labelledby="tim-kami">
             <div class="container mx-auto max-w-6xl px-0 sm:px-4">
                 <div class="text-center mb-12 scroll-animate px-4 sm:px-0">
-                    <h2 id="tim-kami" class="section-title text-3xl lg:text-5xl mt-3 pf-font">Salam Hangat
+                    <h2 id="tim-kami" class="section-title text-3xl lg:text-5xl mt-3 pf-font"
+                        data-translate="team_title">
+                        Salam Hangat
                     </h2>
-                    <p>Jajaran Direksi kami</p>
+                    <p data-translate="team_subtitle">Jajaran Direksi kami</p>
                 </div>
 
                 <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory
@@ -1290,29 +1446,30 @@
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate 
                                w-72 flex-shrink-0 snap-center sm:w-auto">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-workspace"
-                                aria-hidden="true"></i></div>
+                                aria-hidden="true"></i>
+                        </div>
                         <h3 class="text-xl font-bold">Wedinof Akhnel, B.B.A</h3>
-                        <p class="text-gray-600  text-[12px]">Direktur Utama</p>
+                        <p class="text-gray-600  text-[12px]" data-translate="pos_director_main">Direktur Utama</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-1
                                w-72 flex-shrink-0 snap-center sm:w-auto">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-gear" aria-hidden="true"></i>
                         </div>
                         <h3 class="text-xl font-bold">Agung Rauf, S.Kom</h3>
-                        <p class="text-gray-600  text-[12px]">Direktur Operasional</p>
+                        <p class="text-gray-600  text-[12px]" data-translate="pos_director_ops">Direktur Operasional</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-2
                                w-72 flex-shrink-0 snap-center sm:w-auto">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person-check" aria-hidden="true"></i>
                         </div>
                         <h3 class="text-xl font-bold">Satrio, S.M</h3>
-                        <p class="text-gray-600  text-[12px]">Direktur Keuangan</p>
+                        <p class="text-gray-600  text-[12px]" data-translate="pos_director_fin">Direktur Keuangan</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-full text-center scroll-animate delay-3
                                w-72 flex-shrink-0 snap-center sm:w-auto">
                         <div class="text-5xl text-sutan-gold mb-4"><i class="bi bi-person" aria-hidden="true"></i></div>
                         <h3 class="text-xl font-bold">Nagmah Putri Dinda Toni, S.Si</h3>
-                        <p class="text-gray-600  text-[12px]">Komisaris</p>
+                        <p class="text-gray-600  text-[12px]" data-translate="pos_commissioner">Komisaris</p>
                     </div>
                 </div>
             </div>
@@ -1320,8 +1477,8 @@
 
         <section id="contact" class="bg-white pb-16 lg:py-24" aria-labelledby="kontak-kami">
             <div class="container mx-auto max-w-6xl px-4 mb-8 scroll-animate">
-
-                <p class="pf-fon text-center text-[20px] mt-3">Loket Sutan Raya</p>
+                <p class="pf-fon text-center text-[20px] mt-3" data-translate="contact_location_title">Loket Sutan Raya
+                </p>
                 <div class="mt-4" role="tabpanel">
                     <div id="tab-content-padang" v-show="activeTab === 'padang'" role="tabpanel"
                         aria-labelledby="tab-btn-padang">
@@ -1337,9 +1494,12 @@
             <div class="container mx-auto max-w-6xl px-4 mt-16 scroll-animate">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div>
-                        <span class="kicker">Kontak</span>
-                        <h2 id="kontak-kami" class="section-title text-4xl lg:text-5xl font-extrabold">Hubungi Kami</h2>
-                        <p class="text-gray-600 text-[12px] lg:text-base mt-4">Tim kami siap membantu merencanakan
+                        <span class="kicker" data-translate="nav_contact">Kontak</span>
+                        <h2 id="kontak-kami" class="section-title text-4xl lg:text-5xl font-extrabold"
+                            data-translate="contact_title">Hubungi Kami</h2>
+                        <p class="text-gray-600 text-[12px] lg:text-base mt-4" data-translate="contact_desc">Tim kami
+                            siap
+                            membantu merencanakan
                             perjalanan Anda.
                             Hubungi kami untuk pertanyaan, reservasi, atau permintaan khusus.</p>
                         <div class="mt-6 space-y-4">
@@ -1347,14 +1507,16 @@
                                 <div>
                                     <p class="text-[12px] lg:text-base"><strong><i
                                                 class="bi bi-geo-alt-fill me-2 text-sutan-gold"
-                                                aria-hidden="true"></i>Alamat Kantor</strong><br>
+                                                aria-hidden="true"></i><span
+                                                data-translate="contact_address_label">Alamat Kantor</span></strong><br>
                                         Jln. Akses Bandara Internasional Minangkabau no.17 - 18, Padang Pariaman,
                                         Sumatera Barat.</p>
                                 </div>
                                 <div>
                                     <p class="text-[12px] lg:text-base"><strong><i
                                                 class="bi bi-envelope-fill me-2 text-sutan-gold"
-                                                aria-hidden="true"></i>Email</strong><br>
+                                                aria-hidden="true"></i><span
+                                                data-translate="contact_email_label">Email</span></strong><br>
                                         <a href="mailto:posutanraya@gmail.com"
                                             class="text-sutan-dark hover:text-sutan-gold transition-colors">posutanraya@gmail.com</a>
                                     </p>
@@ -1362,13 +1524,36 @@
                                 <div>
                                     <p class="text-[12px] lg:text-base"><strong><i
                                                 class="bi bi-telephone-fill me-2 text-sutan-gold"
-                                                aria-hidden="true"></i>Telepon / WhatsApp</strong><br>
-                                        <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%20Shuttle"
-                                            class="text-sutan-dark hover:text-sutan-gold transition-colors">0821-9999-1265</a>
-                                        (Shuttle Reguler / Carter Hiace)<br>
-                                        <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20mau%20bertanya%20sewa%20armada"
-                                            class="text-sutan-dark hover:text-sutan-gold transition-colors">0821-9999-6500</a>
-                                        (Sewa/Carter Bus )
+                                                aria-hidden="true"></i><span
+                                                data-translate="contact_phone_label">Telepon /
+                                                WhatsApp</span></strong><br>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                        <a href="https://wa.me/6282199991265"
+                                            class="text-sutan-dark hover:text-sutan-gold transition-colors block">
+                                            <i class="bi bi-whatsapp me-1 text-green-600"></i> Padang: 0821-9999-1265
+                                        </a>
+                                        <a href="https://wa.me/6282199991244"
+                                            class="text-sutan-dark hover:text-sutan-gold transition-colors block">
+                                            <i class="bi bi-whatsapp me-1 text-green-600"></i> Payakumbuh:
+                                            0821-9999-1244
+                                        </a>
+                                        <a href="https://wa.me/6282199991264"
+                                            class="text-sutan-dark hover:text-sutan-gold transition-colors block">
+                                            <i class="bi bi-whatsapp me-1 text-green-600"></i> Bukittinggi:
+                                            0821-9999-1264
+                                        </a>
+                                        <a href="https://wa.me/6285365049346"
+                                            class="text-sutan-dark hover:text-sutan-gold transition-colors block">
+                                            <i class="bi bi-whatsapp me-1 text-green-600"></i> Pekanbaru: 0853-6504-9346
+                                        </a>
+                                    </div>
+                                    <div class="mt-3 pt-3 border-t border-gray-100">
+                                        <a href="https://wa.me/6282199996500"
+                                            class="text-sutan-dark hover:text-sutan-gold transition-colors font-semibold block">
+                                            <i class="bi bi-bus-front-fill me-1 text-sutan-gold"></i> Sewa Bus:
+                                            0821-9999-6500
+                                        </a>
+                                    </div>
                                     </p>
                                 </div>
                             </address>
@@ -1376,32 +1561,37 @@
                     </div>
                     <div>
                         <div class="p-6 lg:p-8 rounded-2xl bg-white shadow-lg">
-                            <h3 class="mb-4 text-2xl font-bold text-sutan-dark">Formulir Permintaan Cepat</h3>
+                            <h3 class="mb-4 text-2xl font-bold text-sutan-dark" data-translate="contact_form_title">
+                                Formulir
+                                Permintaan Cepat</h3>
                             <form @submit.prevent="handleFormSubmit" class="space-y-4"
                                 aria-label="Formulir Kontak Cepat">
                                 <div>
-                                    <label for="form-name" class="sr-only">Nama Lengkap</label>
+                                    <label for="form-name" class="sr-only" data-translate="ph_name">Nama Lengkap</label>
                                     <input id="form-name" v-model="form.name" name="name" type="text"
                                         autocomplete="name"
                                         class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sutan-gold focus:border-transparent outline-none"
-                                        placeholder="Nama lengkap Anda" required>
+                                        placeholder="Nama lengkap Anda" required data-translate="ph_name">
                                 </div>
                                 <div>
-                                    <label for="form-phone" class="sr-only">Nomor WhatsApp</label>
+                                    <label for="form-phone" class="sr-only" data-translate="ph_phone">Nomor
+                                        WhatsApp</label>
                                     <input id="form-phone" v-model="form.phone" name="phone" type="tel"
                                         autocomplete="tel"
                                         class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sutan-gold focus:border-transparent outline-none"
-                                        placeholder="Nomor WhatsApp Anda" required>
+                                        placeholder="Nomor WhatsApp Anda" required data-translate="ph_phone">
                                 </div>
                                 <div>
-                                    <label for="form-message" class="sr-only">Pesan atau Kebutuhan Perjalanan</label>
+                                    <label for="form-message" class="sr-only" data-translate="ph_message">Pesan atau
+                                        Kebutuhan Perjalanan</label>
                                     <textarea id="form-message" v-model="form.message" name="message" rows="5"
                                         class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sutan-gold focus:border-transparent outline-none"
                                         placeholder="Deskripsikan kebutuhan perjalanan Anda (contoh: Sewa Hiace Luxury 10 orang, 3 hari di Bukittinggi)..."
-                                        required></textarea>
+                                        required data-translate="ph_message"></textarea>
                                 </div>
                                 <button type="submit"
-                                    class="w-full bg-sutan-gold text-sutan-dark font-bold rounded-full px-8 py-3 text-base hover:bg-opacity-90 transition-all">Kirim
+                                    class="w-full bg-sutan-gold text-sutan-dark font-bold rounded-full px-8 py-3 text-base hover:bg-opacity-90 transition-all"
+                                    data-translate="btn_send_wa">Kirim
                                     Pesan via WhatsApp</button>
                             </form>
                         </div>
@@ -1418,7 +1608,9 @@
                         class="me-2">
                     <span class="font-bold text-2xl text-white">SUTAN RAYA</span>
                 </a>
-                <p class="mt-2 text-base">Mendefinisikan Ulang Perjalanan Mewah di Sumatera Barat.</p>
+                <p class="mt-2 text-base" data-translate="footer_tagline">Mendefinisikan Ulang Perjalanan Mewah di
+                    Sumatera
+                    Barat.</p>
                 <div class="flex justify-center space-x-4 my-4">
                     <a href="https://www.instagram.com/po.sutan_raya/"
                         class="text-gray-400 hover:text-sutan-gold text-2xl" target="_blank" rel="noopener noreferrer"
@@ -1429,34 +1621,64 @@
                 </div>
                 <hr class="border-t border-gray-700 my-6">
                 <div class="text-sm">
-                    © 2025 PO Sutan Raya (PT Fajar Wisata Langgeng). All rights reserved.
+                    <p data-translate="footer_copyright">© 2025 PO Sutan Raya (PT Fajar Wisata Langgeng). All rights
+                        reserved.</p>
                 </div>
             </div>
         </footer>
 
-        <div id="wa-selector-2"
-            class="fixed bottom-24 left-1/2 -translate-x-1/2 w-72 bg-white rounded-2xl shadow-2xl z-[60] p-5 border border-gray-200 transition-all duration-300 ease-out"
+        <div id="wa-selector-2" v-cloak
+            class="fixed bottom-24 left-1/2 -translate-x-1/2 w-72 bg-white rounded-2xl shadow-2xl z-[60] p-5 border border-gray-200 transition-all duration-300 ease-out opacity-0 translate-y-10 pointer-events-none"
             :class="{ 'opacity-100 translate-y-0 pointer-events-auto': isWaSelector2Open, 'opacity-0 translate-y-10 pointer-events-none': !isWaSelector2Open }"
             role="dialog" aria-modal="true" aria-labelledby="wa-select-title-2">
-            <h3 id="wa-select-title-2" class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200">
+            <h3 id="wa-select-title-2" class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200"
+                data-translate="wa_selector_title">
                 Pilih Kontak WhatsApp
             </h3>
             <div class="space-y-3">
-                <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Sutan%20Raya%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Padang%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
                     target="_blank" rel="noopener noreferrer"
                     class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
                     <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
                     <div>
-                        <div class="font-semibold text-sutan-dark">Shuttle / Carter Hiace</div>
+                        <div class="font-semibold text-sutan-dark">Admin Padang</div>
                         <div class="text-sm text-gray-600">0821-9999-1265</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6282199991244?text=Halo%20Admin%20Payakumbuh%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Payakumbuh</div>
+                        <div class="text-sm text-gray-600">0821-9999-1244</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6282199991264?text=Halo%20Admin%20Bukittinggi%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Bukittinggi</div>
+                        <div class="text-sm text-gray-600">0821-9999-1264</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/6285365049346?text=Halo%20Admin%20Pekanbaru%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
+                    <div>
+                        <div class="font-semibold text-sutan-dark">Admin Pekanbaru</div>
+                        <div class="text-sm text-gray-600">0853-6504-9346</div>
                     </div>
                 </a>
                 <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20mau%20bertanya%20sewa%20Bus"
                     target="_blank" rel="noopener noreferrer"
-                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                    class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border-t border-gray-200 mt-2 pt-3">
                     <i class="bi bi-whatsapp text-2xl text-green-500 me-3" aria-hidden="true"></i>
                     <div>
-                        <div class="font-semibold text-sutan-dark">Sewa Bus Pariwisata</div>
+                        <div class="font-semibold text-sutan-dark" data-translate="wa_item_bus">Sewa Bus Pariwisata
+                        </div>
                         <div class="text-sm text-gray-600">0821-9999-6500</div>
                     </div>
                 </a>
@@ -1472,7 +1694,8 @@
             class="language-selector fixed bottom-40 right-6 lg:bottom-24 w-72 bg-white rounded-2xl shadow-2xl z-50 p-5 border border-gray-200 transition-all duration-300 ease-out"
             :class="{ 'opacity-100 translate-y-0 pointer-events-auto': isLangSelectorOpen, 'opacity-0 translate-y-10 pointer-events-none': !isLangSelectorOpen }"
             role="dialog" aria-modal="true" aria-labelledby="lang-select-title">
-            <h3 id="lang-select-title" class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200">
+            <h3 id="lang-select-title" class="font-bold text-base text-sutan-dark mb-3 pb-2 border-b border-gray-200"
+                data-translate="lang_select_title">
                 Pilih Bahasa
             </h3>
             <div class="grid grid-cols-4 gap-3">
@@ -1501,15 +1724,15 @@
                 <a href="#home"
                     class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
                     <i class="bi bi-house-door-fill text-xl" aria-hidden="true"></i>
-                    <span class="text-xs font-medium">Beranda</span>
+                    <span class="text-xs font-medium" data-translate="nav_home">Beranda</span>
                 </a>
                 <a href="#services"
                     class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
                     <i class="bi bi-grid-fill text-xl" aria-hidden="true"></i>
-                    <span class="text-xs font-medium">Layanan</span>
+                    <span class="text-xs font-medium" data-translate="nav_services">Layanan</span>
                 </a>
-                <a href="#" @click.prevent="toggleWaSelector2" class="flex flex-col items-center text-sutan-dark -mt-8"
-                    aria-label="Hubungi via WhatsApp">
+                <a href="#" @click.prevent="toggleWaSelector2" id="wa-toggle-mobile"
+                    class="flex flex-col items-center text-sutan-dark -mt-8" aria-label="Hubungi via WhatsApp">
                     <div
                         class="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
                         <i class="bi bi-whatsapp text-white text-3xl" aria-hidden="true"></i>
@@ -1518,23 +1741,139 @@
                 <a href="#armada"
                     class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
                     <i class="bi bi-car-front-fill text-xl" aria-hidden="true"></i>
-                    <span class="text-xs font-medium">Armada</span>
+                    <span class="text-xs font-medium" data-translate="nav_armada">Armada</span>
                 </a>
                 <button @click="toggleMobileMenu"
                     class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors"
                     aria-label="Buka Menu Lainnya" :aria-expanded="isMobileMenuOpen.toString()"
                     aria-controls="mobile-menu-dropdown">
                     <i class="bi bi-list text-xl" aria-hidden="true"></i>
-                    <span class="text-xs font-medium">Lainnya</span>
+                    <span class="text-xs font-medium" data-translate="nav_more">Lainnya</span>
                 </button>
             </div>
         </nav>
 
+
+    <!-- Contact Popup (Centered) -->
+    <div id="contact-popup-modal" v-cloak
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+            :class="{ 'opacity-100 pointer-events-auto': isContactPopupOpen, 'opacity-0 pointer-events-none': !isContactPopupOpen }"
+            @click.self="toggleContactPopup">
+        
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 translate-y-4 mx-4"
+                :class="{ 'translate-y-0 opacity-100': isContactPopupOpen, 'translate-y-4 opacity-0': !isContactPopupOpen }">
+            
+            <!-- Header -->
+            <div class="bg-sutan-dark text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2"><i class="bi bi-whatsapp text-sutan-gold"></i> Hubungi Admin</h3>
+                <button @click="toggleContactPopup" class="text-white hover:text-sutan-gold transition-colors">
+                    <i class="bi bi-x-lg text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5 space-y-3 max-h-[70vh] overflow-y-auto">
+                <p class="text-sm text-gray-600 mb-2">Silakan pilih admin sesuai kota tujuan atau kebutuhan Anda:</p>
+                
+                <!-- Admin Padang -->
+                <a href="https://wa.me/6282199991265?text=Halo%20Admin%20Padang%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 rounded-xl transition-all group">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors me-3 shrink-0">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Admin Padang</div>
+                        <div class="text-xs text-gray-500">0821-9999-1265</div>
+                    </div>
+                    <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-green-500"></i>
+                </a>
+
+                <!-- Admin Payakumbuh -->
+                <a href="https://wa.me/6282199991244?text=Halo%20Admin%20Payakumbuh%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 rounded-xl transition-all group">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors me-3 shrink-0">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Admin Payakumbuh</div>
+                        <div class="text-xs text-gray-500">0821-9999-1244</div>
+                    </div>
+                    <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-green-500"></i>
+                </a>
+
+                <!-- Admin Bukittinggi -->
+                <a href="https://wa.me/6282199991264?text=Halo%20Admin%20Bukittinggi%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 rounded-xl transition-all group">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors me-3 shrink-0">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Admin Bukittinggi</div>
+                        <div class="text-xs text-gray-500">0821-9999-1264</div>
+                    </div>
+                    <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-green-500"></i>
+                </a>
+
+                <!-- Admin Pekanbaru -->
+                <a href="https://wa.me/6285365049346?text=Halo%20Admin%20Pekanbaru%2C%20mau%20bertanya%20tentang%20shuttle/carter%20Hiace"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 rounded-xl transition-all group">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors me-3 shrink-0">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Admin Pekanbaru</div>
+                        <div class="text-xs text-gray-500">0853-6504-9346</div>
+                    </div>
+                    <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-green-500"></i>
+                </a>
+
+                    <!-- Sewa Bus -->
+                    <a href="https://wa.me/6282199996500?text=Halo%20Admin%20Sutan%20Raya%2C%20mau%20bertanya%20sewa%20Bus"
+                    target="_blank" rel="noopener noreferrer"
+                    class="flex items-center p-3 bg-gray-50 hover:bg-green-50 border border-gray-100 hover:border-green-200 rounded-xl transition-all group mt-2 pt-3 border-t">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-500 group-hover:text-white transition-colors me-3 shrink-0">
+                        <i class="bi bi-bus-front-fill"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Sewa Bus Pariwisata</div>
+                        <div class="text-xs text-gray-500">Chat Admin Bus</div>
+                    </div>
+                    <i class="bi bi-chevron-right ml-auto text-gray-300 group-hover:text-blue-500"></i>
+                </a>
+
+            </div>
+            
+            <div class="bg-gray-50 p-3 text-center text-xs text-gray-400">
+                &copy; PO Sutan Raya - Travel Aman & Nyaman
+    </div>
+        </div>
+    </div>
     </div>
 
-    <div id="google_translate_element" style="display:none;"></div>
 
-    <script src="app2.js"> </script>
+
+
+    <script>
+            (function () {
+                const cookies = document.cookie.split("; ");
+                for (let c of cookies) {
+                    const [name] = c.split("=");
+                    if (name.trim().startsWith("googtrans")) {
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=." + window.location.hostname;
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                    }
+                }
+            })();
+    </script>
+
+    <script src="app2.js?v=<?= time(); ?>"></script>
+    <script src="js/translate.js?v=<?= time(); ?>"></script>
+    <script src="js/currency.js?v=<?= time(); ?>"></script>
 </body>
 
 </html>

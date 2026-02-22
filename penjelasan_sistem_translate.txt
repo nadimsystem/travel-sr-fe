@@ -1,0 +1,44 @@
+Mekanisme Sistem Translate pada File index.html
+
+PENTING:
+Sistem yang digunakan pada aplikasi ini BUKAN Google Translate Widget (alat otomatis dari Google), melainkan sebuah "Sistem Translate Manual/Internal" (Custom Dictionary-based Translation).
+
+Berikut adalah penjelasan teknis langkah demi langkah bagaimana sistem ini bekerja untuk dijadikan prompt:
+
+1. Struktur Data (Kamus Bahasa)
+   - File: `js/translate.js`
+   - Sistem mendefinisikan sebuah variabel objek besar bernama `translations`.
+   - Objek ini memiliki "key" untuk setiap kode bahasa (contoh: "id" untuk Indonesia, "en" untuk Inggris).
+   - Di dalam setiap kode bahasa, terdapat pasangan "key-value" untuk setiap teks yang ada di website.
+     Contoh:
+     "nav_home": "Beranda" (untuk ID)
+     "nav_home": "Home" (untuk EN)
+
+2. Penandaan di HTML (Marker)
+   - File: `index.html`
+   - Elemen HTML yang ingin diterjemahkan TIDAK berisi teks mati, melainkan diberi atribut khusus `data-translate="KEY_NYA"`.
+     Contoh: 
+     `<a href="#home" data-translate="nav_home">Beranda</a>`
+   - Atribut inilah yang menjadi penghubung antara elemen HTML dengan kamus di `js/translate.js`.
+
+3. Fungsi Pengganti Bahasa (Switcher Logic)
+   - File: `js/translate.js` -> function `updateLanguage(lang)`
+   - Ketika bahasa dipilih:
+     a. Sistem menyimpan preferensi bahasa ke `localStorage` browser agar tersimpan saat di-refresh.
+     b. Sistem mencari SEMUA elemen di halaman yang memiliki atribut `data-translate` (menggunakan `document.querySelectorAll`).
+     c. Untuk setiap elemen, sistem mengambil nilai key-nya.
+     d. Sistem mencocokkan key tersebut ke dalam objek `translations` sesuai bahasa yang dipilih.
+     e. Teks di dalam elemen (`innerHTML`) atau placeholder (untuk input) diganti dengan teks dari kamus.
+
+4. Integrasi dengan Vue.js
+   - File: `app2.js`
+   - Aplikasi menggunakan Vue.js untuk mengelola state UI (tampilan selector bahasa).
+   - Vue memanggil fungsi global `window.changeLanguage` ketika tombol bendera diklik.
+
+5. Pembersihan Google Translate (Pencegahan Konflik)
+   - File: `index.html` (bagian bawah)
+   - Terdapat script khusus yang secara aktif MENGHAPUS cookie `googtrans`.
+   - Tujuannya: Mencegah widget Google Translate bawaan browser (Chrome) menimpa atau bentrok dengan sistem translate manual ini.
+
+Ringkasan untuk Prompt:
+"Sistem ini menggunakan pendekatan Dictionary-based Client-side Translation. Terdapat objek JSON berisi pemetaan teks untuk setiap bahasa. Elemen HTML ditandai dengan atribut 'data-translate'. Javascript berfungsi untuk mendeteksi perubahan bahasa, melakukan lookup ke objek JSON, dan memanipulasi DOM (innerHTML/placeholder) secara real-time tanpa reload halaman."

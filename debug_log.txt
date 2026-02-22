@@ -1,0 +1,4 @@
+2026-01-25 13:21:29 Create Booking: ID=TEST_1769343689 ProofLen=0 Substr=
+2026-01-25 13:21:29 Create Booking Error: Incorrect integer value: 'TEST_1769343689' for column `sutanraya_v11`.`bookings`.`id` at row 1
+2026-01-25 13:21:43 Create Booking: ID=1769343703 ProofLen=0 Substr=
+2026-01-25 13:31:15 Create Booking: ID=1769344275 ProofLen=0 Substr=

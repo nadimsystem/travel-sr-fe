@@ -24,7 +24,8 @@ const { createApp } = Vue;
                     doorprizeStats: {
                         participants: 0,
                         coupons: 0
-                    }
+                    },
+                    isContactPopupOpen: false // [BARU] Popup Kontak
                 };
             },
             methods: {
@@ -57,12 +58,22 @@ const { createApp } = Vue;
                     this.isMobileMenuOpen = false;
                     this.isWaSelectorOpen = false;
                     this.isWaSelector2Open = false;
+                    this.isContactPopupOpen = false;
+                },
+                toggleContactPopup(event) {
+                    if (event) event.preventDefault();
+                    this.isContactPopupOpen = !this.isContactPopupOpen;
+                    this.isMobileMenuOpen = false;
+                    this.isWaSelectorOpen = false;
+                    this.isWaSelector2Open = false;
+                    this.isLangSelectorOpen = false;
                 },
                 closeAllPopups() {
                     this.isMobileMenuOpen = false;
                     this.isWaSelectorOpen = false;
                     this.isWaSelector2Open = false;
                     this.isLangSelectorOpen = false;
+                    this.isContactPopupOpen = false;
                 },
 
                 // --- Tab Kontak ---
@@ -91,16 +102,17 @@ const { createApp } = Vue;
                 },
 
                 // --- Pengganti Bahasa ---
+                // --- Pengganti Bahasa ---
                 changeLanguage(lang) {
-                    const cookieName = 'googtrans';
-                    const cookieValue = '/auto/' + lang;
-                    const domain = '.' + window.location.hostname.split('.').slice(-2).join('.'); // Get root domain
-                    
-                    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
-                    document.cookie = `${cookieName}=${cookieValue}; path=/; domain=${domain}`;
-                    
+                    // Panggil fungsi global dari js/translate.js
+                    if (typeof window.changeLanguage === 'function') {
+                        window.changeLanguage(lang);
+                    } else {
+                        // Fallback jika js/translate.js belum load
+                        localStorage.setItem('sutanraya_lang', lang);
+                        location.reload();
+                    }
                     this.isLangSelectorOpen = false;
-                    location.reload();
                 },
 
                 // --- [BARU] Fetch Doorprize Stats ---
@@ -122,17 +134,36 @@ const { createApp } = Vue;
                     const scroller = document.getElementById('imageScroller');
                     if (!scroller) return;
 
-                    // 1. Simpan lebar original
-                    this.originalScrollWidth = scroller.scrollWidth;
-                    
-                    // 2. Duplikasi gambar untuk efek loop tak terbatas
+                    // Force scroll behavior to auto to prevent smooth scrolling interference
+                    scroller.style.scrollBehavior = 'auto';
+
+                    // 1. Duplikasi gambar untuk efek loop tak terbatas
                     const images = Array.from(scroller.children);
                     images.forEach(img => {
                         scroller.appendChild(img.cloneNode(true));
                     });
-                    
-                    // 3. Mulai scroll
-                    this.startScroll();
+
+                    // 2. [VISUAL PERFECT] Tunggu SEMUA gambar clone termuat sempurna sebelum hitung width
+                    const allImages = Array.from(scroller.querySelectorAll('img'));
+                    const imagePromises = allImages.map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise(resolve => {
+                            img.onload = resolve;
+                            img.onerror = resolve; 
+                        });
+                    });
+
+                    // [SAFETY] Fallback jika ada gambar yang hang loading (terutama di Safari mobile)
+                    const timeoutPromise = new Promise(resolve => setTimeout(resolve, 3000));
+
+                    Promise.race([Promise.all(imagePromises), timeoutPromise]).then(() => {
+                         // Tunggu nextTick Vue + sedikit buffer render agar width akurat 100%
+                        this.$nextTick(() => {
+                           // Re-calculate width just to be sure
+                           this.originalScrollWidth = scroller.scrollWidth / 2;
+                           this.startScroll();
+                        });
+                    });
                 },
 
                 startScroll() { // Dipanggil oleh @mouseleave
@@ -202,7 +233,7 @@ const { createApp } = Vue;
             },
             mounted() {
                 this.initScrollAnimation();
-                this.initContinuousScroller(); // [PERUBAHAN] Panggil inisiasi scroller baru
+                this.initContinuousScroller(); // Self-wait logic inside
                 this.fetchDoorprizeStats(); // [BARU] Ambil data doorprize
 
                 // Listener untuk menutup popup saat klik di luar
@@ -211,9 +242,9 @@ const { createApp } = Vue;
                         !event.target.closest('#mobile-menu-dropdown') &&
                         !event.target.closest('button[aria-controls="mobile-menu-dropdown"]') &&
                         !event.target.closest('#wa-selector') &&
-                        !event.target.closest('a[href="#"][@click.prevent="toggleWaSelector"]') && 
+                        !event.target.closest('#wa-toggle-desktop') && 
                         !event.target.closest('#wa-selector-2') &&
-                        !event.target.closest('a[href="#"][@click.prevent="toggleWaSelector2"]') && 
+                        !event.target.closest('#wa-toggle-mobile') && 
                         !event.target.closest('#language-selector') &&
                         !event.target.closest('.language-toggle');
 
@@ -230,127 +261,3 @@ const { createApp } = Vue;
                 this.stopScroll(); // [PERUBAHAN] Panggil stopScroll untuk membersihkan requestAnimationFrame
             }
         }).mount('#app');
-
-     // === GOOGLE TRANSLATE (LOGIKA BARU YANG ROBUST) ===
-
-/**
- * (BARU) Variabel yang Anda minta untuk memaksa region.
- * Hapus (comment out) baris ini atau set ke null untuk mengaktifkan
- * deteksi bahasa otomatis berdasarkan browser/device.
- */
-const forceRegion = 'ID';
-
-/**
- * (BARU) Daftar bahasa yang didukung oleh widget Anda.
- * Ini harus SAMA PERSIS dengan 'includedLanguages' di init.
- */
-const supportedLanguages = ['id', 'en', 'zh-CN', 'ko', 'ja', 'ar', 'de', 'fr'];
-
-/**
- * (BARU) Helper Function: Pemicu perubahan bahasa yang robust (tahan banting).
- * Ini akan terus mencoba menemukan <select> widget sampai berhasil atau timeout.
- */
-function triggerLanguageChange(langCode) {
-    // Pastikan bahasa ada di daftar
-    if (!supportedLanguages.includes(langCode)) {
-        console.warn(`Bahasa ${langCode} tidak ada dalam daftar supportedLanguages.`);
-        return;
-    }
-
-    let attempt = 0;
-    const maxAttempts = 10; // Coba maksimal 10 kali (total 5 detik)
-    const intervalTime = 500; // Coba setiap 0.5 detik
-
-    // Hapus interval lama jika ada (mencegah double-click atau race condition)
-    if (window.googleTranslateInterval) {
-        clearInterval(window.googleTranslateInterval);
-    }
-
-    window.googleTranslateInterval = setInterval(() => {
-        // Cari elemen <select> yang dibuat oleh Google
-        const selectElement = document.querySelector('#google_translate_element select');
-        
-        if (selectElement) {
-            // (BERHASIL) Elemen ditemukan
-            clearInterval(window.googleTranslateInterval); // Hentikan percobaan
-            window.googleTranslateInterval = null; // Hapus ID interval
-
-            if (selectElement.value !== langCode) {
-                selectElement.value = langCode;
-                // Memicu event 'change' agar script Google Translate bekerja
-                selectElement.dispatchEvent(new Event('change'));
-                console.log(`Google Translate berhasil di-switch ke ${langCode}.`);
-            } else {
-                console.log(`Google Translate sudah di ${langCode}.`);
-            }
-        } else {
-            // (GAGAL) Elemen belum siap, coba lagi
-            attempt++;
-            console.log(`Mencoba switch ke ${langCode} (Percobaan ${attempt})... Widget belum siap.`);
-            if (attempt >= maxAttempts) {
-                clearInterval(window.googleTranslateInterval); // Hentikan percobaan
-                window.googleTranslateInterval = null;
-                console.error('Gagal menemukan elemen <select> Google Translate setelah 5 detik.');
-            }
-        }
-    }, intervalTime);
-}
-
-/**
- * (BARU) Fungsi untuk auto-switch berdasarkan bahasa browser.
- * Hanya berjalan jika forceRegion tidak di-set ke 'ID'.
- */
-function autoSwitchLanguage() {
-    // 1. Cek variabel paksa
-    if (forceRegion === 'ID') {
-        console.log('Region dipaksa ke ID. Google Translate tidak akan auto-switch.');
-        return; // Berhenti
-    }
-
-    // 2. Deteksi bahasa browser (misal: 'en' dari 'en-US')
-    const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
-    
-    // 3. Cek cookie dulu. Jika user pernah memilih bahasa, jangan di-override.
-    const cookieLang = document.cookie.split('; ').find(row => row.startsWith('googtrans='));
-    if (cookieLang && cookieLang !== '/id/id') {
-        console.log('Cookie terjemahan (pilihan user) ditemukan. Auto-switch dibatalkan.');
-        return;
-    }
-
-    // 4. Cek jika bahasa didukung dan bukan bahasa default (id)
-    if (supportedLanguages.includes(userLang) && userLang !== 'id') {
-        console.log(`Bahasa browser terdeteksi: ${userLang}. Mencoba auto-switch...`);
-        // Panggil helper robust untuk switch
-        triggerLanguageChange(userLang);
-    } else {
-        console.log(`Bahasa browser (${userLang}) tidak didukung atau sudah ID. Tidak ada auto-switch.`);
-    }
-}
-
-/**
- * (Fungsi Asli Anda - DIMODIFIKASI)
- * Fungsi init Google Translate. HARUS berada di scope global (wadtiindow).
- */
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'id',
-        includedLanguages: supportedLanguages.join(','), // Ambil dari variabel
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-        autoDisplay: false
-    }, 'google_translate_element');
-
-    // (BARU) Panggil fungsi auto-switch SETELAH widget di-init.
-    // Kita beri jeda sedikit agar 'google_translate_element' sempat ter-render
-    // sebelum kita mulai mencari <select> di dalam autoSwitchLanguage -> triggerLanguageChange
-    setTimeout(autoSwitchLanguage, 500); 
-}
-
-/**
- * (Fungsi Anda yang Lain - DIMODIFIKASI)
- * Ini adalah fungsi yang dipanggil oleh tombol-tombol bendera (pilihan manual).
- * Sekarang menggunakan helper 'triggerLanguageChange' yang robust.
- */
-function changeLanguage(langCode) {
-    triggerLanguageChange(langCode);
-    closeLangSelector(); // Tutup pop-up bahasa setelah diklik
-}

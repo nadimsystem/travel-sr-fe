@@ -18,7 +18,7 @@
                 googleTranslateSelect.value = langCode;
                 googleTranslateSelect.dispatchEvent(new Event('change'));
             } else {
-                // Fallback jika elemen tidak ditemukan setelah beberapa saat
+
                 setTimeout(() => {
                     const selectFallback = document.querySelector('#google_translate_element select');
                     if (selectFallback) {

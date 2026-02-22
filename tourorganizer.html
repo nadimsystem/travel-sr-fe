@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Tour & Organizer | PO Sutan Raya</title>
+    <meta name="description" content="Paket Wisata & Tour Organizer Profesional di Sumatera Barat. Liburan anti ribet dengan fasilitas luxury, dokumentasi eksklusif, dan tim berpengalaman." />
+
+    <link rel="icon" type="image/webp" href="image/logo.webp" />
+
+    <!-- Open Graph / WhatsApp Preview -->
+    <meta property="og:title" content="Paket Wisata & Tour Organizer | PO Sutan Raya" />
+    <meta property="og:description" content="Liburan Anti Ribet, Kenangan Tak Terlupakan. Paket wisata luxury dan tour organizer profesional di Sumatera Barat. Booking sekarang!" />
+    <meta property="og:image" content="image/thumbnail-tour.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://www.sutanraya.com/tourorganizer.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=Playfair+Display:wght@400;700&family=Poppins:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+US+Trad+Guides&family=Playwrite+US+Trad:wght@100..400&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Tailwind & Vue -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sutan-dark': '#121212',
+                        'sutan-gold': '#D4AF37',
+                        'sutan-light': '#F8F9FA',
+                        'sutan-secondary': '#222222',
+                    },
+                    fontFamily: {
+                        'sans': ['Plus Jakarta Sans', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                        '5xl': '2.5rem',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .pf-font { font-family: 'Playfair Display', serif; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('tour/foto/WhatsApp Image 2025-12-29 at 15.55.13.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform;
+        }
+        .scroll-animate.visible { opacity: 1; transform: translateY(0); }
+        .scroll-animate.delay-1 { transition-delay: 0.1s; }
+        .scroll-animate.delay-2 { transition-delay: 0.2s; }
+        .scroll-animate.delay-3 { transition-delay: 0.3s; }
+        
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+
+<body class="bg-white text-sutan-dark pb-24 lg:pb-0">
+
+    <div id="app">
+        <!-- Desktop Navbar (Identical to Index) -->
+        <nav class="fixed top-0 left-0 right-0 z-50 mt-4 max-md:hidden transition-all duration-300" :class="{'mt-0': scrolled}">
+            <div class="container mx-auto max-w-6xl px-4 py-2 rounded-full relative">
+                <div class="flex justify-between items-center" :class="{'bg-white/90 backdrop-blur-md shadow-md rounded-full px-6 py-2 border border-white/20': scrolled}">
+                    <a class="flex items-center flex-row" href="index.html" aria-label="Beranda Sutan Raya">
+                        <img loading="lazy" src="image/logo.webp" alt="Logo PO Sutan Raya" style="height: 40px;" class="me-2">
+                        <span class="font-extrabold text-xl" :class="scrolled ? 'text-sutan-dark' : 'text-white shadow-black drop-shadow-md'" translate="no"> SUTAN RAYA</span>
+                    </a>
+
+                    <div class="flex items-center space-x-0 mx-auto bg-white py-3 px-5 shadow-md rounded-full" role="navigation">
+                        <a href="index.html#home" class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Beranda</a>
+                        <a href="index.html#services" class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Layanan</a>
+                        <a href="index.html#artikel" class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Artikel</a>
+                        <a href="#" class="px-3 py-2 text-sutan-gold font-bold text-[14px] rounded-lg transition-colors">Wisata</a>
+                        <a href="index.html#advantages" class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Keunggulan</a>
+                        <a href="index.html#contact" class="px-3 py-2 text-gray-700 hover:text-sutan-gold text-[14px] font-normal hover:font-bold rounded-lg transition-colors">Kontak</a>
+                    </div>
+
+                    <a href="index.html#contact" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all">
+                        Sewa Sekarang
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu-dropdown" class="lg:hidden fixed top-16 left-0 right-0 mx-4 mt-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-4 z-50 transition-all duration-300 ease-out"
+            :class="{ 'opacity-100 translate-y-0 pointer-events-auto': isMobileMenuOpen, 'opacity-0 -translate-y-5 pointer-events-none': !isMobileMenuOpen }">
+            <ul class="flex flex-col items-center py-4 space-y-2">
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="index.html#home" @click="closeMobileMenu">Beranda</a></li>
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="index.html#services" @click="closeMobileMenu">Layanan</a></li>
+                <li><a class="block py-2 text-sutan-gold font-bold" href="#">Wisata</a></li>
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="index.html#advantages" @click="closeMobileMenu">Keunggulan</a></li>
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="index.html#artikel" @click="closeMobileMenu">Artikel</a></li>
+                <li><a class="block py-2 text-gray-700 hover:text-sutan-gold font-semibold" href="index.html#contact" @click="closeMobileMenu">Kontak</a></li>
+                <li>
+                    <a href="index.html#contact" @click="closeMobileMenu" class="mt-2 inline-block bg-sutan-gold text-sutan-dark font-bold rounded-full px-6 py-2 text-sm hover:bg-opacity-90 transition-all">
+                        Sewa Sekarang
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- HERO SECTION (Pitching Style) -->
+        <header class="relative min-h-[90vh] flex items-center bg-cover bg-center hero-bg rounded-b-[3rem] shadow-2xl overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 rounded-b-[3rem]"></div>
+            
+            <div class="container mx-auto max-w-6xl px-6 relative z-10 pt-20">
+                <div class="flex flex-col lg:flex-row items-center gap-10">
+                    <!-- Text Content -->
+                    <div class="lg:w-7/12 text-center lg:text-left scroll-animate">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sutan-gold font-bold text-xs lg:text-sm tracking-wider mb-6">
+                            <i class="bi bi-stars"></i> PO. SUTAN RAYA TOUR & ORGANIZER
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight font-sans mb-6">
+                            Liburan <span class="text-transparent bg-clip-text bg-gradient-to-r from-sutan-gold to-yellow-200">Anti Ribet</span>, <br>
+                            Kenangan <span class="italic font-serif font-normal">Tak Terlupakan.</span>
+                        </h1>
+                        <p class="text-gray-200 text-sm lg:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-10 font-light">
+                            Kami hadirkan pengalaman wisata premium di Sumatera Barat. Layanan lengkap mulai dari transportasi luxury, penginapan, hingga dokumentasi drone eksklusif untuk momen terbaik Anda.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                             <a href="#packages" class="bg-sutan-gold text-sutan-dark px-8 py-4 rounded-full font-bold shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] hover:-translate-y-1 transition-all text-sm lg:text-base">
+                                <i class="bi bi-box2-heart-fill me-2"></i> Lihat Paket Wisata
+                            </a>
+                            <a href="https://wa.me/6281268238068" target="_blank" class="bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-full font-bold hover:bg-white hover:text-sutan-dark transition-all text-sm lg:text-base">
+                                <i class="bi bi-whatsapp me-2"></i> Konsultasi Gratis
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Floating Image Card -->
+                    <div class="lg:w-5/12 hidden lg:block scroll-animate delay-1">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-sutan-gold blur-3xl opacity-20 rounded-full animate-pulse"></div>
+                            <div class="relative z-10 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-4 transform rotate-3 hover:rotate-0 transition-all duration-700 shadow-2xl">
+                                <img src="tour/foto/WhatsApp Image 2025-12-29 at 08.23.49.jpeg" alt="Tour Experience" class="w-full h-auto rounded-2xl shadow-lg">
+                                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce" style="animation-duration: 3s;">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl">
+                                        <i class="bi bi-shield-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-sutan-dark">Terpercaya</div>
+                                        <div class="text-xs text-gray-500">Legalitas Resmi & Aman</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        <div class="text-center">
+            <p>Nadima</p>
+        </div>
+
+        <!-- WHY CHOOSE US (Brochure Style) -->
+        <section class="py-20 lg:py-28 bg-white relative overflow-hidden">
+            <div class="container mx-auto max-w-6xl px-6">
+                <div class="text-center mb-16 scroll-animate">
+                    <span class="text-sutan-gold font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Our Strength</span>
+                    <h2 class="text-3xl lg:text-5xl font-bold pf-font text-sutan-dark">Mengapa Memilih Kami?</h2>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+                    <!-- Item 1 -->
+                    <div class="group bg-gray-50 hover:bg-white hover:shadow-xl p-6 rounded-3xl border border-gray-100 transition-all duration-300 scroll-animate">
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-person-workspace"></i>
+                        </div>
+                        <h3 class="font-bold text-sm lg:text-lg mb-2">Tim Profesional</h3>
+                        <p class="text-gray-500 text-xs lg:text-sm">Didukung SDM berpengalaman untuk kelancaran acara Anda.</p>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="group bg-gray-50 hover:bg-white hover:shadow-xl p-6 rounded-3xl border border-gray-100 transition-all duration-300 scroll-animate delay-1">
+                        <div class="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <h3 class="font-bold text-sm lg:text-lg mb-2">Harga Kompetitif</h3>
+                        <p class="text-gray-500 text-xs lg:text-sm">Penawaran terbaik, transparan, dan sesuai budget.</p>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="group bg-gray-50 hover:bg-white hover:shadow-xl p-6 rounded-3xl border border-gray-100 transition-all duration-300 scroll-animate delay-2">
+                        <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <h3 class="font-bold text-sm lg:text-lg mb-2">Peralatan Modern</h3>
+                        <p class="text-gray-500 text-xs lg:text-sm">Drone Dji Mini 4 Pro, Kamera DSLR, dan Game Tools terawat.</p>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="group bg-gray-50 hover:bg-white hover:shadow-xl p-6 rounded-3xl border border-gray-100 transition-all duration-300 scroll-animate delay-3">
+                        <div class="w-14 h-14 bg-sutan-gold/20 text-sutan-gold rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-bus-front"></i>
+                        </div>
+                        <h3 class="font-bold text-sm lg:text-lg mb-2">Armada Luxury</h3>
+                        <p class="text-gray-500 text-xs lg:text-sm">Big Bus & Hiace Luxury milik sendiri dengan fasilitas premium.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FACILITIES (Dark Mode) -->
+        <section class="py-20 bg-[#1a1a1a] text-white relative">
+            <div class="container mx-auto max-w-6xl px-6 relative z-10">
+                <div class="flex flex-col lg:flex-row gap-16 items-center">
+                    <div class="lg:w-5/12 scroll-animate">
+                        <span class="text-sutan-gold font-bold tracking-widest text-xs uppercase mb-2 block">Services</span>
+                        <h2 class="text-3xl lg:text-5xl font-bold pf-font mb-6">Fasilitas Utama</h2>
+                        <p class="text-gray-400 mb-8 text-sm lg:text-base">Kami memastikan setiap detail perjalanan Anda tertangani dengan sempurna.</p>
+                        
+                        <ul class="space-y-6">
+                            <li class="flex gap-4 items-start group">
+                                <div class="w-10 h-10 rounded-full bg-sutan-gold/20 flex items-center justify-center text-sutan-gold group-hover:bg-sutan-gold group-hover:text-black transition-colors shrink-0">
+                                    <i class="bi bi-bus-front-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base lg:text-lg">Transportasi Luxury</h4>
+                                    <p class="text-gray-500 text-xs lg:text-sm">Big Bus R25 / Hiace Premio dengan Kursi Pijat & Karaoke.</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 items-start group">
+                                <div class="w-10 h-10 rounded-full bg-sutan-gold/20 flex items-center justify-center text-sutan-gold group-hover:bg-sutan-gold group-hover:text-black transition-colors shrink-0">
+                                    <i class="bi bi-camera-reels-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base lg:text-lg">Dokumentasi Eksklusif</h4>
+                                    <p class="text-gray-500 text-xs lg:text-sm">Foto, Video Cinematic (7-10 mnt), Drone Footage.</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 items-start group">
+                                <div class="w-10 h-10 rounded-full bg-sutan-gold/20 flex items-center justify-center text-sutan-gold group-hover:bg-sutan-gold group-hover:text-black transition-colors shrink-0">
+                                    <i class="bi bi-people-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base lg:text-lg">Outbound & Fun Games</h4>
+                                    <p class="text-gray-500 text-xs lg:text-sm">Trainer, Fasilitator, dan Peralatan Game lengkap.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="lg:w-7/12 grid grid-cols-2 gap-3 scroll-animate delay-1">
+                        <img src="r25/10.jpg" class="rounded-2xl w-full h-40 lg:h-60 object-cover opacity-80 hover:opacity-100 transition-opacity">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 15.55.13.jpeg" class="rounded-2xl w-full h-40 lg:h-60 object-cover opacity-80 hover:opacity-100 transition-opacity translate-y-8">
+                        <img src="r25/6.jpg" class="rounded-2xl w-full h-40 lg:h-60 object-cover opacity-80 hover:opacity-100 transition-opacity">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 08.28.09.jpeg" class="rounded-2xl w-full h-40 lg:h-60 object-cover opacity-80 hover:opacity-100 transition-opacity translate-y-8">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PACKAGES (SR1 & SR2) -->
+        <section id="packages" class="py-20 lg:py-28 bg-gray-50">
+            <div class="container mx-auto max-w-6xl px-6">
+                <div class="text-center mb-16 scroll-animate">
+                    <h2 class="text-3xl lg:text-5xl font-bold pf-font text-sutan-dark">Paket Wisata & Outbound</h2>
+                    <p class="text-gray-500 mt-4 max-w-2xl mx-auto text-sm lg:text-base">Pilih paket yang sesuai dengan kebutuhan outing perusahaan atau grup Anda.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- SR1 (Premium) -->
+                    <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100 relative overflow-hidden group hover:border-sutan-gold transition-colors duration-300 scroll-animate">
+                        <div class="absolute top-0 right-0 bg-sutan-gold text-white text-[10px] font-bold px-4 py-2 rounded-bl-xl">POPULAR</div>
+                        <h3 class="text-2xl font-bold text-sutan-dark">Paket SR1</h3>
+                        <div class="text-4xl font-bold text-sutan-gold mt-4 mb-2">175K <span class="text-sm text-gray-400 font-normal">/pax</span></div>
+                        <p class="text-gray-400 text-xs mb-8">Pengalaman outbound terlengkap & mewah.</p>
+                        
+                        <ul class="space-y-4 mb-8 text-sm text-gray-600">
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-sutan-gold"></i> Welcome Drink</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-sutan-gold"></i> Program Fun Games</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-sutan-gold"></i> Trainer & Fasilitator</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-sutan-gold"></i> Game Tools Lengkap</li>
+                             <li class="flex gap-3 font-bold text-sutan-dark"><i class="bi bi-check-circle-fill text-sutan-gold"></i> Dokumentasi Eksklusif</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-sutan-gold"></i> 3-7 Crew Lapangan</li>
+                        </ul>
+                        
+                        <a href="https://wa.me/6281268238068?text=Halo%20Jihad%2C%20saya%20mau%20booking%20Paket%20SR1." target="_blank" class="block w-full py-4 text-center rounded-2xl bg-sutan-dark text-white font-bold hover:bg-sutan-gold transition-colors">Booking Sekarang</a>
+                    </div>
+
+                    <!-- SR2 -->
+                    <div class="bg-white rounded-[2.5rem] p-8 shadow-lg border border-gray-100 relative overflow-hidden group hover:border-sutan-gold transition-colors duration-300 scroll-animate delay-1">
+                        <h3 class="text-2xl font-bold text-sutan-dark">Paket SR2</h3>
+                        <div class="text-4xl font-bold text-gray-800 mt-4 mb-2">100K <span class="text-sm text-gray-400 font-normal">/pax</span></div>
+                        <p class="text-gray-400 text-xs mb-8">Pilihan hemat untuk keseruan maksimal.</p>
+                        
+                        <ul class="space-y-4 mb-8 text-sm text-gray-600">
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-gray-300"></i> Mineral Water</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-gray-300"></i> Program Fun Games</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-gray-300"></i> Trainer & Fasilitator</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-gray-300"></i> 2-3 Crew Lapangan</li>
+                             <li class="flex gap-3"><i class="bi bi-check-circle-fill text-gray-300"></i> Dibantu Dokumentasi HP</li>
+                        </ul>
+                        
+                        <a href="https://wa.me/6281268238068?text=Halo%20Jihad%2C%20saya%20mau%20booking%20Paket%20SR2." target="_blank" class="block w-full py-4 text-center rounded-2xl border-2 border-gray-200 text-sutan-dark font-bold hover:border-sutan-dark transition-colors">Booking Sekarang</a>
+                    </div>
+                    
+                    <!-- Documentation Add-on -->
+                    <div class="bg-gradient-to-br from-sutan-dark to-black text-white rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden group scroll-animate delay-2">
+                        <div class="absolute -right-10 -top-10 text-[150px] text-white opacity-5"><i class="bi bi-camera-reels"></i></div>
+                        <h3 class="text-2xl font-bold text-sutan-gold">Add-On Dokumentasi</h3>
+                        <p class="text-gray-400 text-xs mt-2 mb-8">Abadikan momen dengan kualitas sinematik.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="p-4 bg-white/10 rounded-2xl border border-white/10">
+                                <div class="font-bold text-sm">Paket 1 Hari</div>
+                                <div class="text-sutan-gold text-xl font-bold">Rp 3.000.000</div>
+                            </div>
+                            <div class="p-4 bg-white/10 rounded-2xl border border-white/10">
+                                <div class="font-bold text-sm">Paket 3 Hari</div>
+                                <div class="text-sutan-gold text-xl font-bold">Rp 5.000.000</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 text-[10px] text-gray-500 text-center">
+                            Includes: Pilot Drone, Videographer, Editor, Output Softcopy & Video 7-10 Mins.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY (Masonry Style) -->
+        <section class="py-20 bg-white">
+            <div class="container mx-auto max-w-7xl px-4">
+                <div class="text-center mb-12 scroll-animate">
+                    <span class="text-sutan-gold font-bold text-xs tracking-widest uppercase">Our Portfolio</span>
+                    <h2 class="text-3xl lg:text-5xl font-bold pf-font">Galeri Aktivitas</h2>
+                </div>
+
+                <div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 scroll-animate">
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 08.23.49.jpeg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                     <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/11.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/1.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 08.25.17.jpeg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/2.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 15.54.25.jpeg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                     <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/3.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/4.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                         <img src="tour/foto/WhatsApp Image 2025-12-29 at 08.28.09.jpeg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/5.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="r25/8.jpg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="break-inside-avoid rounded-2xl overflow-hidden shadow-lg group">
+                        <img src="tour/foto/WhatsApp Image 2025-12-29 at 15.55.13.jpeg" class="w-full group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT (Jihad & Agung) -->
+        <section id="contact" class="py-20 lg:py-28 bg-[#fdfdfd] border-t border-gray-100">
+            <div class="container mx-auto max-w-4xl px-4 text-center">
+                <h2 class="text-3xl lg:text-5xl font-bold pf-font mb-6 text-sutan-dark">Mulai Rencanakan Sekarang</h2>
+                <p class="text-gray-600 mb-12 text-sm lg:text-lg">Konsultasikan rencana perjalanan Anda langsung dengan tim spesialis kami.</p>
+
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="https://wa.me/6281268238068" target="_blank" class="flex items-center gap-4 bg-white border border-gray-200 p-4 rounded-2xl shadow-lg hover:shadow-2xl hover:border-sutan-gold transition-all hover:-translate-y-1 group">
+                        <div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-2xl group-hover:bg-green-600 group-hover:text-white transition-colors">
+                            <i class="bi bi-whatsapp"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs font-bold text-gray-400">TOUR SPECIALIST</div>
+                            <div class="text-xl font-bold text-sutan-dark">Jihad</div>
+                            <div class="text-sm text-sutan-gold font-bold">0812 6823 8068</div>
+                        </div>
+                    </a>
+
+                    <a href="https://wa.me/6282199991181" target="_blank" class="flex items-center gap-4 bg-white border border-gray-200 p-4 rounded-2xl shadow-lg hover:shadow-2xl hover:border-sutan-gold transition-all hover:-translate-y-1 group">
+                        <div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-2xl group-hover:bg-green-600 group-hover:text-white transition-colors">
+                            <i class="bi bi-whatsapp"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs font-bold text-gray-400">TOUR SPECIALIST</div>
+                            <div class="text-xl font-bold text-sutan-dark">Agung</div>
+                            <div class="text-sm text-sutan-gold font-bold">0821 9999 1181</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer (Identical to Index) -->
+        <footer class="bg-sutan-dark py-16 text-center text-gray-400 border-t border-white/10">
+            <div class="container mx-auto max-w-6xl px-4">
+                 <a class="flex justify-center items-center mb-4 text-white hover:opacity-80 transition-opacity" href="index.html">
+                    <img loading="lazy" src="image/logo.webp" alt="Logo PO Sutan Raya" style="height: 40px;" class="me-2">
+                    <span class="font-bold text-2xl">SUTAN RAYA</span>
+                </a>
+                <p class="mt-2 text-sm lg:text-base">Mendefinisikan Ulang Perjalanan Mewah di Sumatera Barat.</p>
+                <div class="flex justify-center space-x-6 my-6 text-2xl">
+                    <a href="#" class="hover:text-sutan-gold transition-colors"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="hover:text-sutan-gold transition-colors"><i class="bi bi-tiktok"></i></a>
+                    <a href="#" class="hover:text-sutan-gold transition-colors"><i class="bi bi-globe"></i></a>
+                </div>
+                <div class="text-xs border-t border-gray-800 pt-6">
+                    &copy; 2025 PO Sutan Raya. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+        <!-- Mobile Bottom Nav (Identical to Index) -->
+        <nav role="navigation" aria-label="Navigasi Cepat Mobile" class="lg:hidden fixed bottom-0 left-0 right-0 px-[15px] pb-[5px] mb-[20px] mx-[20px] rounded-[45px] z-40 bg-white/80 backdrop-blur-lg border-t border-gray-200 shadow-[0_-5px_15px_-3px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-around items-center h-16">
+                <a href="index.html#home" class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
+                    <i class="bi bi-house-door-fill text-xl"></i>
+                    <span class="text-xs font-medium">Beranda</span>
+                </a>
+                <a href="index.html#services" class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
+                    <i class="bi bi-grid-fill text-xl"></i>
+                    <span class="text-xs font-medium">Layanan</span>
+                </a>
+                <a href="https://wa.me/6281268238068" target="_blank" class="flex flex-col items-center text-sutan-dark -mt-8">
+                    <div class="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform border-4 border-white">
+                        <i class="bi bi-whatsapp text-white text-3xl"></i>
+                    </div>
+                </a>
+                <a href="index.html#armada" class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
+                    <i class="bi bi-car-front-fill text-xl"></i>
+                    <span class="text-xs font-medium">Armada</span>
+                </a>
+                <button @click="toggleMobileMenu" class="flex flex-col items-center text-gray-700 hover:text-sutan-gold transition-colors">
+                    <i class="bi bi-list text-xl"></i>
+                    <span class="text-xs font-medium">Lainnya</span>
+                </button>
+            </div>
+        </nav>
+
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const { createApp, ref, onMounted, onUnmounted } = Vue;
+
+        createApp({
+            setup() {
+                const scrolled = ref(false);
+                const isMobileMenuOpen = ref(false);
+
+                const handleScroll = () => {
+                    scrolled.value = window.scrollY > 50;
+                    
+                    // Simple Scroll Animation Logic
+                    const elements = document.querySelectorAll('.scroll-animate');
+                    elements.forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        if(rect.top < window.innerHeight - 100) {
+                            el.classList.add('visible');
+                        }
+                    });
+                };
+
+                const toggleMobileMenu = () => {
+                    isMobileMenuOpen.value = !isMobileMenuOpen.value;
+                }
+
+                const closeMobileMenu = () => {
+                    isMobileMenuOpen.value = false;
+                }
+
+                // const toggleWaSelector = () =>{
+                //     isWaSelectorOpen.value = !isWaSelectorOpen.value;
+                // }
+
+                onMounted(() => {
+                    window.addEventListener('scroll', handleScroll);
+                    handleScroll(); // Check initial state
+                });
+
+                onUnmounted(() => {
+                    window.removeEventListener('scroll', handleScroll);
+                });
+
+                return {
+                    scrolled,
+                    isMobileMenuOpen,
+                    toggleMobileMenu,
+                    closeMobileMenu
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
