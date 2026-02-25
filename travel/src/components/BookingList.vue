@@ -29,7 +29,8 @@ const fetchRoutes = async () => {
 
 // Format Helper
 const formatRupiah = (number) => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number)
+  const parsed = parseInt(String(number || '').replace(/\D/g, '')) || 0;
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parsed)
 }
 
 const formatDate = (dateString) => {
@@ -171,9 +172,35 @@ watch(() => filters.value.date, () => {
     loadSchedulesForFilter()
 })
 
+const parseSchedules = (schedules) => {
+    const times = [];
+    if (!Array.isArray(schedules)) return times;
+    for (const s of schedules) {
+        if (typeof s === 'string') {
+            try {
+                if (s.includes('{')) {
+                    const obj = JSON.parse(s);
+                    if (obj && obj.hidden !== true && obj.hidden !== 'true' && obj.hidden !== 1) {
+                        times.push(obj.time || s);
+                    }
+                } else {
+                    times.push(s);
+                }
+            } catch (e) {
+                times.push(s);
+            }
+        } else if (typeof s === 'object' && s !== null) {
+            if (s.hidden !== true && s.hidden !== 'true' && s.hidden !== 1) {
+                times.push(s.time);
+            }
+        }
+    }
+    return times;
+}
+
 const getAvailableTimesForRoute = computed(() => {
     const r = routes.value.find(x => x.id === filters.value.routeId)
-    return r ? r.schedules : []
+    return r ? parseSchedules(r.schedules) : []
 })
 
 const filteredRoutes = computed(() => {
@@ -191,13 +218,12 @@ const groupedRoutes = computed(() => {
         let schedules = []
         if (route.schedules && Array.isArray(route.schedules)) {
              
-             let timesToDisplay = route.schedules
+             let timesToDisplay = parseSchedules(route.schedules)
              if (filters.value.time) {
                  timesToDisplay = timesToDisplay.filter(t => t === filters.value.time)
              }
 
-             schedules = timesToDisplay.map(timeObj => {
-                  let timeString = typeof timeObj === 'string' ? timeObj : timeObj.time
+             schedules = timesToDisplay.map(timeString => {
                   // Normalize format: replace . with : (e.g. 05.00 -> 05:00) so it matches Db bookings
                   timeString = timeString.replace('.', ':')
                   
@@ -241,8 +267,11 @@ const groupedRoutes = computed(() => {
 
 onMounted(async () => {
     loading.value = true
-    await fetchRoutes()
-    await loadSchedulesForFilter()
+    // Run requests in parallel to reduce perceived overall latency
+    await Promise.all([
+        fetchRoutes(),
+        loadSchedulesForFilter()
+    ])
     loading.value = false
 })
 
@@ -340,7 +369,7 @@ const getSeatClass = (seatNum, batch) => {
                      </div>
                      <div>
                          <h3 class="text-lg font-black text-slate-800 tracking-tight">{{ cleanRouteName(route.origin) }} <i class="bi bi-arrow-right text-slate-400 mx-1"></i> {{ cleanRouteName(route.destination) }}</h3>
-                         <p class="text-xs text-slate-500 mt-0.5">Tarif Umum: <span class="font-bold text-blue-600">{{ formatRupiah(route.price_umum) }}</span> / kursi &nbsp;·&nbsp; Pelajar: <span class="font-bold text-green-600">{{ formatRupiah(route.price_pelajar) }}</span></p>
+                         <p class="text-xs text-slate-500 mt-0.5">Tarif Umum: <span class="font-bold text-blue-600">{{ formatRupiah(route.price_umum || route.price || route.harga || route.tarif) }}</span> / kursi &nbsp;·&nbsp; Pelajar: <span class="font-bold text-green-600">{{ formatRupiah(route.price_pelajar) }}</span></p>
                      </div>
                 </div>
 
@@ -416,6 +445,7 @@ const getSeatClass = (seatNum, batch) => {
 <style scoped>
 /* Base overrides */
 input[type="date"] {
+    appearance: none;
     -webkit-appearance: none;
 }
 input[type="date"]::-webkit-calendar-picker-indicator {

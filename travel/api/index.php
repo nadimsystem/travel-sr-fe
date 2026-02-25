@@ -138,6 +138,9 @@ try {
         case 'get_booking_history':
             getBookingHistory($conn);
             break;
+        case 'get_bank_accounts':
+            getBankAccounts($conn);
+            break;
         default:
             jsonResponse(['status' => 'error', 'message' => 'Invalid Action'], 400);
     }
@@ -191,6 +194,27 @@ function getRoutes($conn) {
     jsonResponse(['status' => 'success', 'data' => $routes, 'routes' => $routes]);
 }
 
+function getBankAccounts($conn) {
+    $sql = "SELECT id, route_id, bank_name, account_number, account_holder, sort_order FROM route_bank_accounts ORDER BY route_id, sort_order ASC";
+    $result = $conn->query($sql);
+    
+    $accounts = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $accounts[] = $row;
+        }
+    }
+    
+    // Provide a fallback if database fails or is empty
+    if (empty($accounts)) {
+         $accounts = [
+             ['id' => 'fallback_1', 'route_id' => 'ALL', 'bank_name' => 'BCA PADANG', 'account_number' => '7425888781', 'account_holder' => 'Sutan Raya', 'sort_order' => 1]
+         ];
+    }
+    
+    jsonResponse(['status' => 'success', 'data' => $accounts]);
+}
+
 function getDailyBookings($conn) {
     $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
     
@@ -209,7 +233,7 @@ function getDailyBookings($conn) {
                 validationStatus, 
                 passengerName 
             FROM bookings 
-            WHERE date = ? AND status != 'Cancelled' AND status != 'Antrian' AND status != 'Pending'
+            WHERE date = ? AND status != 'Cancelled' AND status != 'Pending'
             ORDER BY routeId, time, batchNumber ASC, id ASC";
             
     $stmt = $conn->prepare($sql);

@@ -155,25 +155,33 @@ onMounted(() => {
     <!-- Login State -->
     <transition name="fade" mode="out-in">
         <div v-if="!isLoggedIn" class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-8 text-center max-w-md mx-auto mt-10">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="bi bi-search text-3xl"></i>
+            <div class="mb-6 flex justify-center">
+                <div class="w-16 h-16 bg-blue-50/50 text-[#00c853] rounded-2xl flex items-center justify-center">
+                    <i class="bi bi-person-lines-fill text-3xl"></i>
+                </div>
             </div>
-            <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Cek Riwayat</h2>
-            <p class="text-slate-500 text-sm mb-8">Masukkan data Anda untuk melihat tiket.</p>
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Riwayat Perjalanan</h2>
+            <p class="text-slate-500 text-[11px] mb-8">Masukan data diri kamu untuk melihat tiket perjalan yang sudah di pesen ya!</p>
+            
+            <div v-if="errorMsg" class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-left flex items-start gap-3">
+                <i class="bi bi-exclamation-circle-fill text-red-500 mt-0.5"></i>
+                <div>
+                    <p class="text-sm font-bold text-red-800">Oops, Data Tidak Ditemukan</p>
+                    <p class="text-[11px] text-red-600 mt-0.5">{{ errorMsg }}</p>
+                </div>
+            </div>
             
             <form @submit.prevent="handleLogin" class="space-y-5 text-left">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">Nomor WhatsApp</label>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NO. WHATSAPP</label>
                     <div class="relative">
-                        <input type="tel" v-model="loginPhone" placeholder="08..." class="w-full pl-11 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
-                        <i class="bi bi-whatsapp absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="tel" v-model="loginPhone" placeholder="08..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">Nama Pemesan</label>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NAMA LENGKAP</label>
                     <div class="relative">
-                        <input type="text" v-model="loginName" placeholder="Nama Lengkap..." class="w-full pl-11 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
-                        <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" v-model="loginName" placeholder="Nama penumpang..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
                     </div>
                 </div>
                 
@@ -187,13 +195,18 @@ onMounted(() => {
         <!-- Logged In / List State -->
         <div v-else class="animate-fade-in space-y-6">
             
-            <div class="flex items-center justify-between mb-8">
-                 <div>
-                     <h2 class="text-2xl font-black text-slate-800 tracking-tight">Riwayat Pemesanan</h2>
-                     <p class="text-slate-500 text-sm mt-1">Halo <span class="font-bold text-blue-600">{{ loginName }}</span>, ini daftar tiket Anda.</p>
+            <div class="bg-blue-600 rounded-[2rem] p-5 flex items-center justify-between shadow-md mb-8">
+                 <div class="flex items-center gap-3">
+                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-blue-400 text-blue-600 font-bold text-lg">
+                         {{ loginName.charAt(0).toUpperCase() }}
+                     </div>
+                     <div>
+                         <h2 class="text-white font-bold text-lg leading-tight">{{ loginName }}</h2>
+                         <p class="text-blue-100 text-[11px]">{{ loginPhone }}</p>
+                     </div>
                  </div>
-                 <button @click="logout" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold text-xs rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2">
-                     <i class="bi bi-box-arrow-right"></i> Keluar
+                 <button @click="logout" class="w-10 h-10 bg-white/10 rounded-xl text-white flex items-center justify-center hover:bg-white/20 transition-colors">
+                     <i class="bi bi-box-arrow-right text-lg"></i>
                  </button>
             </div>
 
@@ -221,44 +234,43 @@ onMounted(() => {
                     <div class="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-bl-full -z-0"></div>
 
                     <div class="p-6 relative z-10">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                            <div>
-                                <div class="flex items-center gap-3 mb-1">
-                                    <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md">ID: {{ booking.id }}</span>
-                                    <span class="text-xs font-bold px-2.5 py-1 rounded-md border flex items-center gap-1.5" :class="getStatusBadgeClass(booking.status)">
-                                        <i :class="getStatusIcon(booking.status)"></i> {{ booking.status || 'MENUNGGU VERSIFIKASI' }}
-                                    </span>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                                    <i class="bi bi-bus-front-fill text-lg"></i>
                                 </div>
-                                <h3 class="font-black text-slate-800 text-xl tracking-tight">{{ booking.routeName || booking.route_name || booking.rute || '-' }}</h3>
-                                <p class="text-slate-500 text-sm font-medium mt-1"><i class="bi bi-calendar-event mr-1 text-slate-400"></i> {{ formatDate(booking.date || booking.booking_date || booking.tanggal_berangkat) }}</p>
+                                <div>
+                                    <h3 class="font-black text-slate-800 text-lg tracking-tight leading-none mb-1">{{ booking.routeName || booking.route_name || booking.rute || '-' }}</h3>
+                                    <p class="text-slate-500 text-[11px] font-medium">{{ formatDate(booking.date || booking.booking_date || booking.tanggal_berangkat) }} • {{ booking.time || booking.jam_berangkat }}</p>
+                                </div>
                             </div>
                             
-                            <div class="text-left md:text-right bg-slate-50 md:bg-transparent p-3 md:p-0 rounded-lg">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Jam Keberangkatan</p>
-                                <p class="font-black text-2xl text-blue-600 leading-none">{{ booking.time || booking.jam_berangkat }}</p>
+                            <!-- Status Badge -->
+                            <div class="px-3 py-1.5 rounded-l-xl rounded-tr-xl text-[10px] font-bold uppercase tracking-wider" :class="getStatusBadgeClass(booking.status)">
+                                {{ booking.status || 'MENUNGGU VERIFIKASI' }}
                             </div>
                         </div>
 
                         <div class="border-t border-dashed border-slate-200 my-4"></div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 gap-y-4 gap-x-2">
                             <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">Penumpang</p>
-                                <p class="font-bold text-slate-700 text-sm whitespace-nowrap overflow-hidden text-ellipsis">{{ booking.passengerName || booking.passenger_name || booking.nama || loginName }}</p>
+                                <p class="text-[10px] text-slate-400 mb-0.5">Kode Booking</p>
+                                <p class="font-bold text-slate-700 text-sm">#{{ booking.id }}</p>
                             </div>
                             <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">Tipe</p>
+                                <p class="text-[10px] text-slate-400 mb-0.5">Tipe Penumpang</p>
                                 <p class="font-bold text-slate-700 text-sm">{{ booking.passengerType || booking.passenger_type || booking.jenis_penumpang || 'Umum' }}</p>
                             </div>
                             <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">Kursi</p>
+                                <p class="text-[10px] text-slate-400 mb-1">Kursi dipesan</p>
                                 <div class="flex gap-1 flex-wrap">
                                     <span v-for="seat in (booking.seatNumbers || booking.seat_numbers || booking.kursi || '').split(',')" :key="seat" class="w-6 h-6 bg-slate-100 text-slate-700 rounded text-[10px] font-black flex items-center justify-center border border-slate-200">{{ seat.trim() }}</span>
                                 </div>
                             </div>
                             <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">Total Harga</p>
-                                <p class="font-bold text-slate-800 text-sm">{{ formatRupiah(booking.totalPrice || booking.total_price || booking.harga) }}</p>
+                                <p class="text-[10px] text-slate-400 mb-0.5">Total Harga</p>
+                                <p class="font-bold text-blue-600 text-sm">{{ formatRupiah(booking.totalPrice || booking.total_price || booking.harga) }}</p>
                             </div>
                         </div>
 

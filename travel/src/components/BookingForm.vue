@@ -241,26 +241,29 @@ const bankAccounts = computed(() => {
         }))
 })
 
-// Group Routes
+// Group Routes (by origin city)
 const groupedRoutes = computed(() => {
     const groups = {}
     routes.value.forEach(route => {
-        // Create base key, normalizing 'via' texts
+        // Skip routes that contain 'via sitinjau' (case-insensitive)
+        if (route.origin.toLowerCase().includes('via sitinjau') || route.destination.toLowerCase().includes('via sitinjau')) {
+            return
+        }
+
+        // Create base key, normalizing 'via' texts to only get the base city
         let o = route.origin.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
-        let d = route.destination.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
         
         // Capitalize words
         o = o.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-        d = d.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
         
-        const key = `${o} - ${d}`
+        const key = `${o}`
         if(!groups[key]) groups[key] = []
         groups[key].push(route)
     })
     
     // Convert object to sorted array
     return Object.keys(groups).sort().map(key => ({
-        label: key,
+        label: `Keberangkatan: ${key}`,
         routes: groups[key]
     }))
 })
@@ -555,10 +558,13 @@ const processBooking = async (payload) => {
 
             Swal.fire({
                 icon: 'success',
-                title: 'Pesanan Berhasil!',
-                html: `Terima kasih! Bukti pemesanan telah diterbitkan. <br/><br/>Simpan ID Booking: <b>${res.data.booking_id || ''}</b>`,
+                title: 'Yeay, Tiket Berhasil Dipesan!',
+                html: `<div class="text-sm">
+                           Terima kasih telah mempercayakan perjalanan Anda bersama <b>Sutan Raya Travel</b>.<br/><br/>
+                           Kursi Anda sudah aman! Silakan klik tombol di bawah untuk melihat detail tiket dan status perjalanan Anda.
+                       </div>`,
                 confirmButtonColor: '#2563eb',
-                confirmButtonText: 'Lihat Tiket Saya'
+                confirmButtonText: 'Lihat Tiket Saya <i class="bi bi-arrow-right"></i>'
             }).then(() => {
                 // Auto login user into history session
                 localStorage.setItem('travel_history_session', JSON.stringify({
@@ -870,7 +876,10 @@ const processBooking = async (payload) => {
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Alamat Pengantaran</label>
                                 <textarea v-model="formData.dropoffAddress" rows="2" placeholder="Kosongkan jika turun di pool..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 resize-none shadow-sm"></textarea>
                             </div>
-                             <!-- Map Link for dropoff excluded for brevity, can be added similar to pickup if needed -->
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Link Google Maps <span class="text-slate-400 lowercase font-normal">(opsional, membantu supir)</span></label>
+                                <input type="url" v-model="formData.dropoffMapLink" placeholder="https://maps.app.goo.gl/..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 shadow-sm font-mono placeholder:font-sans">
+                            </div>
                         </div>
                     </div>
 
@@ -960,25 +969,102 @@ const processBooking = async (payload) => {
 
         </div>
 
-        <div v-if="currentStep === steps.length" class="text-center py-20 px-4">
-             <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner shadow-green-500/20">
-                  <i class="bi bi-check-lg text-5xl"></i>
-             </div>
-             <h3 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Validasi Data Berhasil</h3>
-             <p class="text-slate-500 text-sm max-w-sm mx-auto">Silakan klik tombol di bawah ini untuk mengirimkan detail pemesanan Anda.</p>
+        <div v-if="currentStep === steps.length" class="animate-fade-in space-y-6">
+            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
+                 <i class="bi bi-card-checklist text-[#ff6b00]"></i> Konfirmasi Data
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm relative overflow-hidden">
+                <!-- Decorative element -->
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+                
+                <h4 class="font-bold text-slate-800 text-sm mb-4">Detail Penumpang</h4>
+                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
+                    <p class="text-slate-500 font-medium">Nama</p>
+                    <p class="font-bold text-slate-800 text-right">{{ formData.passengerName }}</p>
+                    
+                    <p class="text-slate-500 font-medium">No. WhatsApp</p>
+                    <p class="font-bold text-slate-800 text-right">{{ formData.passengerPhone }}</p>
+
+                    <p class="text-slate-500 font-medium">Tipe Penumpang</p>
+                    <p class="font-bold text-slate-800 text-right">
+                        <span class="px-2 py-0.5 rounded-md text-xs" :class="formData.passengerType === 'Umum' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'">
+                            {{ formData.passengerType }}
+                        </span>
+                    </p>
+                </div>
+                
+                <hr class="border-slate-200">
+                
+                <h4 class="font-bold text-slate-800 text-sm mb-4 mt-2">Detail Perjalanan</h4>
+                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
+                    <p class="text-slate-500 font-medium">Rute</p>
+                    <p class="font-bold text-slate-800 text-right">{{ selectedRoute ? `${selectedRoute.origin} ➔ ${selectedRoute.destination}` : '-' }}</p>
+                    
+                    <p class="text-slate-500 font-medium">Jadwal</p>
+                    <p class="font-bold text-slate-800 text-right">{{ formData.date }} <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-xs ml-1">{{ formData.time }}</span></p>
+
+                    <p class="text-slate-500 font-medium">Titik Jemput</p>
+                    <p class="font-bold text-slate-800 text-right">
+                        {{ formData.pickupAddress }}
+                        <a v-if="formData.pickupMapLink" :href="formData.pickupMapLink" target="_blank" class="block text-blue-500 text-xs font-medium hover:underline mt-1"><i class="bi bi-geo-alt-fill"></i> Buka Maps</a>
+                    </p>
+                    
+                    <p class="text-slate-500 font-medium">Lokasi Turun</p>
+                    <p class="font-bold text-slate-800 text-right">
+                        {{ formData.dropoffAddress || '-' }}
+                        <a v-if="formData.dropoffMapLink" :href="formData.dropoffMapLink" target="_blank" class="block text-blue-500 text-xs font-medium hover:underline mt-1"><i class="bi bi-geo-alt-fill"></i> Buka Maps</a>
+                    </p>
+                </div>
+
+                <hr class="border-slate-200">
+                
+                <h4 class="font-bold text-slate-800 text-sm mb-4 mt-2">Detail Pembayaran</h4>
+                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
+                    <p class="text-slate-500 font-medium">Metode</p>
+                    <p class="font-bold text-slate-800 text-right">{{ formData.paymentMethod }}</p>
+                    
+                    <template v-if="formData.paymentMethod === 'Transfer'">
+                        <p class="text-slate-500 font-medium">Rekening Tujuan</p>
+                        <p class="font-bold text-slate-800 text-right text-xs">{{ selectedBankAccount ? selectedBankAccount.label : '-' }}</p>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Total Price Summary Box -->
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+                <i class="bi bi-wallet2 absolute -right-4 -bottom-4 text-6xl text-white/10"></i>
+                <div class="relative z-10 flex justify-between items-center">
+                    <div>
+                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider mb-1">Total Pembayaran</p>
+                        <p class="text-2xl font-black tracking-tight">{{ formatRupiah(totalPrice) }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider mb-1">Kursi Dipilih</p>
+                        <p class="text-xl font-bold">{{ selectedSeats.length }} Kursi</p>
+                        <p class="text-[10px] text-blue-200 mt-0.5">({{ selectedSeats.join(', ') }})</p>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
     </form>
 
     <!-- Navigation Buttons Outside Card -->
     <div class="mt-6">
-        <!-- Steps 1 to 4 Navigation -->
-        <div v-if="currentStep < steps.length" class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-4">
-            <button type="button" @click="currentStep === 1 ? $emit('go-home') : prevStep()" 
+        <!-- Steps Navigation -->
+        <div class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-4">
+            <button v-if="currentStep < steps.length" type="button" @click="currentStep === 1 ? $emit('go-home') : prevStep()" 
                     class="flex-1 py-4 bg-slate-50 border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
                 {{ currentStep === 1 ? 'Batal' : 'Kembali' }}
             </button>
-            <button type="button" @click="nextStep"
+            <button v-if="currentStep === steps.length" type="button" @click="prevStep()" 
+                    class="flex-1 py-4 bg-slate-50 border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
+                Kembali Edit
+            </button>
+            
+            <button v-if="currentStep < steps.length" type="button" @click="nextStep"
                     class="flex-1 py-4 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all transform active:scale-95">
                 Lanjut
             </button>
