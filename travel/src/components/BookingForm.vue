@@ -78,8 +78,6 @@ const fetchOccupiedSeats = async () => {
     try {
         const url = `api/?action=get_daily_booked_seats&date=${formData.value.date}`
         const res = await axios.get(url)
-        console.log("Response Get Seats:", res.data)
-        
         if (res.data.status === 'success') {
             const allDbBookings = res.data.data;
             
@@ -165,7 +163,27 @@ const fetchOccupiedSeats = async () => {
             });
 
             batchesData.value = seatsAndBatches
-            availableBatches.value = Array.from({length: maxBatchProcessed}, (_, i) => i + 1)
+            
+            // Logic: Minimal 5 orang di armada terakhir baru buka armada baru
+            let allowedBatches = [];
+            for (let i = 1; i <= Math.max(1, maxBatchProcessed); i++) {
+                allowedBatches.push(i);
+                const paxCount = seatsAndBatches[i] ? seatsAndBatches[i].length : 0;
+                // Jika armada ini ada kurang dari 5 orang, DAN kita sedang mengecek armada terakhir yang ada datanya, 
+                // maka jangan buka armada kosong berikutnya TAPI tetap pertahankan armada yang eksplisit diminta admin (maxBatchProcessed)
+                if (paxCount < 5 && i >= maxBatchProcessed) {
+                     break; 
+                }
+            }
+            
+            // Jika batch terakhir penuh (8) atau minimal 5, kita selalu sediakan 1 armada kosong extra
+            const lastAllowed = allowedBatches[allowedBatches.length - 1];
+            if (seatsAndBatches[lastAllowed] && seatsAndBatches[lastAllowed].length >= 5) {
+                // If the last armada has >= 5 pax, we can open the next one
+                allowedBatches.push(lastAllowed + 1);
+            }
+            
+            availableBatches.value = allowedBatches;
             
             updateSeatMap()
         }
@@ -206,14 +224,60 @@ const getSeatClass = (seatId) => {
 }
 
 // Bank Account Selection
-const bankAccounts = [
-    { value: 'BCA PADANG', label: 'BCA PADANG (7425888781)' },
-    { value: 'BCA BUKITTINGGI', label: 'BCA BUKITTINGGI (7425888722)' },
-    { value: 'BCA PAYAKUMBUH', label: 'BCA PAYAKUMBUH (7425888943)' }
-]
+const allBankAccounts = ref([])
+
+const bankAccounts = computed(() => {
+    if (!selectedRoute.value) return []
+    const routeId = selectedRoute.value.id
+    
+    // Filter accounts for this route
+    const routeAccounts = allBankAccounts.value.filter(a => a.route_id === routeId || a.route_id === 'ALL')
+    
+    return routeAccounts
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        .map(b => ({
+            value: b.bank_name,
+            label: `${b.bank_name} (${b.account_number})`
+        }))
+})
+
+// Group Routes
+const groupedRoutes = computed(() => {
+    const groups = {}
+    routes.value.forEach(route => {
+        // Create base key, normalizing 'via' texts
+        let o = route.origin.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
+        let d = route.destination.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
+        
+        // Capitalize words
+        o = o.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        d = d.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        
+        const key = `${o} - ${d}`
+        if(!groups[key]) groups[key] = []
+        groups[key].push(route)
+    })
+    
+    // Convert object to sorted array
+    return Object.keys(groups).sort().map(key => ({
+        label: key,
+        routes: groups[key]
+    }))
+})
+
+// Auto-select bank account if only one is available
+watch(bankAccounts, (newVal) => {
+    if (newVal && newVal.length === 1) {
+        formData.value.destinationAccount = newVal[0].value
+    } else if (newVal && newVal.length > 1 && !newVal.find(b => b.value === formData.value.destinationAccount)) {
+        formData.value.destinationAccount = ''
+    } else if (!newVal || newVal.length === 0) {
+        formData.value.destinationAccount = ''
+    }
+}, { immediate: true })
 
 const selectedBankAccount = computed(() => {
-    return bankAccounts.find(b => b.value === formData.value.destinationAccount)
+    return bankAccounts.value.find(b => b.value === formData.value.destinationAccount)
 })
 
 const copyToClipboard = (text) => {
@@ -223,29 +287,60 @@ const copyToClipboard = (text) => {
     })
 }
 
+// Fallback Prices in case DB returns 0 (e.g. BKT-PDG)
+const fallbackPrices = {
+    'BKT-PDG': { umum: 120000, pelajar: 100000 },
+    'BKT-PDG-2': { umum: 250000, pelajar: 250000 },
+    'PDG-BKT': { umum: 120000, pelajar: 100000 },
+    'PDG-BKT-2': { umum: 120000, pelajar: 100000 },
+    'PDG-PYK': { umum: 150000, pelajar: 130000 },
+    'PDG-PYK-2': { umum: 250000, pelajar: 250000 },
+    'PYK-PDG': { umum: 150000, pelajar: 130000 },
+    'PYK-PDG-2': { umum: 250000, pelajar: 250000 },
+    'BKT-PKU': { umum: 220000, pelajar: 220000 },
+    'PKU-BKT': { umum: 220000, pelajar: 220000 }
+}
+
 // Price Calculation
 const totalPrice = computed(() => {
     if (!selectedRoute.value) return 0
     let basePrice = 0
     
     if (formData.value.passengerType === 'Mahasiswa / Pelajar') {
-        basePrice = parseInt(selectedRoute.value.price_pelajar) || 0
+        const p = String(selectedRoute.value.price_pelajar || selectedRoute.value.harga_pelajar || selectedRoute.value.price_student || '').replace(/\D/g, '')
+        basePrice = parseInt(p) || 0
+        if (basePrice === 0 && fallbackPrices[selectedRoute.value.id]) {
+            basePrice = fallbackPrices[selectedRoute.value.id].pelajar
+        }
     } else {
-        basePrice = parseInt(selectedRoute.value.price_umum) || 0
+        const p = String(selectedRoute.value.price_umum || selectedRoute.value.price || selectedRoute.value.harga || selectedRoute.value.tarif || selectedRoute.value.harga_umum || selectedRoute.value.price_normal || '').replace(/\D/g, '')
+        basePrice = parseInt(p) || 0
+        if (basePrice === 0 && fallbackPrices[selectedRoute.value.id]) {
+            basePrice = fallbackPrices[selectedRoute.value.id].umum
+        }
     }
     
     // Apply discount if student
-    if(formData.value.passengerType === 'Mahasiswa / Pelajar' && !selectedRoute.value.price_pelajar) {
+    if(formData.value.passengerType === 'Mahasiswa / Pelajar' && basePrice === 0) {
+        // Fallback if price_pelajar is 0 or empty, we calculate from price_umum
+        const pUmum = String(selectedRoute.value.price_umum || selectedRoute.value.price || selectedRoute.value.harga || selectedRoute.value.tarif || selectedRoute.value.harga_umum || '').replace(/\D/g, '')
+        let calculatedUmum = parseInt(pUmum) || 0
+        if (calculatedUmum === 0 && fallbackPrices[selectedRoute.value.id]) {
+            calculatedUmum = fallbackPrices[selectedRoute.value.id].umum
+        }
+        basePrice = calculatedUmum - 20000
+    } else if (formData.value.passengerType === 'Mahasiswa / Pelajar' && !selectedRoute.value.price_pelajar && !selectedRoute.value.harga_pelajar) {
         // Fallback backward compatibility in case API doesn't have it
         basePrice -= 20000 
     }
     
     const total = basePrice * selectedSeats.value.length
-    return isNaN(total) ? 0 : total
+    return isNaN(total) ? 0 : Math.max(0, total) // Prevent negative price
 })
 
 const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number)
+    const parsed = parseInt(String(number || '').replace(/\D/g, '')) || 0;
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parsed)
 }
 
 // Lifecycle
@@ -260,13 +355,48 @@ onMounted(async () => {
         console.error("Failed to fetch routes", e)
         error.value = "Gagal memuat rute. Silakan refresh."
     }
+
+    // Fetch Bank Accounts
+    try {
+        const res = await axios.get('api/?action=get_bank_accounts')
+        if (res.data.status === 'success' && Array.isArray(res.data.data)) {
+            allBankAccounts.value = res.data.data
+        }
+    } catch (e) {
+        console.error("Failed to fetch bank accounts", e)
+    }
 })
 
 // Dynamic Times based on Route Selection
 const availableTimes = computed(() => {
     if(!selectedRoute.value || !selectedRoute.value.schedules) return []
-    // Schedules are stored as JSON string array in DB, parsed by PHP API
-    return selectedRoute.value.schedules
+    
+    const times = []
+    const schedules = selectedRoute.value.schedules;
+    
+    if (!Array.isArray(schedules)) return [];
+
+    for (const s of schedules) {
+        if (typeof s === 'string') {
+            try {
+                if (s.includes('{')) {
+                    const obj = JSON.parse(s);
+                    if (obj && obj.hidden !== true && obj.hidden !== 'true' && obj.hidden !== 1) {
+                        times.push(obj.time || s);
+                    }
+                } else {
+                    times.push(s);
+                }
+            } catch (e) {
+                times.push(s);
+            }
+        } else if (typeof s === 'object' && s !== null) {
+            if (s.hidden !== true && s.hidden !== 'true' && s.hidden !== 1) {
+                times.push(s.time);
+            }
+        }
+    }
+    return times
 })
 
 // File Upload Handlers (Base64 conversion)
@@ -314,22 +444,34 @@ const removeFile = (field) => {
 const currentStep = ref(1)
 const steps = [
     { title: 'Data Penumpang', icon: 'bi-person-fill' },
-    { title: 'Jadwal & Kursi', icon: 'bi-map-fill' },
+    { title: 'Pilih Perjalanan', icon: 'bi-map-fill' },
+    { title: 'Pilih Kursi', icon: 'bi-grid-fill' },
     { title: 'Pembayaran', icon: 'bi-wallet-fill' },
     { title: 'Konfirmasi', icon: 'bi-check-circle-fill' }
 ]
 
 const validateStep = (step) => {
-    // Shake animation class flag can be added here if needed
     if (step === 1) {
         if (!formData.value.passengerName || !formData.value.passengerPhone) return "Nama dan No. WhatsApp wajib diisi."
+        
+        // Remove spaces/dashes before validation
+        const cleanedPhone = formData.value.passengerPhone.replace(/[\s-]/g, '')
+        // Validate valid phone formats (e.g. +62812... or 0812...) - at least 9 digits, max 15 digits
+        const phoneRegex = /^(?:\+?\d{9,15})$/
+        
+        if (!phoneRegex.test(cleanedPhone)) {
+            return "No. WhatsApp tidak valid. Pastikan hanya memasukkan angka (minimal 9 digit), boleh menggunakan awalan +."
+        }
+        
         if (formData.value.passengerType === 'Mahasiswa / Pelajar' && !formData.value.ktmProof) return "Bagi mahasiswa/pelajar, foto KTM wajib diunggah."
     }
     if (step === 2) {
         if (!formData.value.routeId || !formData.value.date || !formData.value.time) return "Harap lengkapi Rute, Tanggal, dan Jam."
-        if (selectedSeats.value.length === 0) return "Silakan pilih minimal 1 kursi keberangkatan."
     }
     if (step === 3) {
+        if (selectedSeats.value.length === 0) return "Silakan pilih minimal 1 kursi keberangkatan."
+    }
+    if (step === 4) {
         if (!formData.value.pickupAddress) return "Alamat Penjemputan wajib diisi."
         if (!formData.value.destinationAccount || !formData.value.paymentProof) return "Pilih rekening tujuan dan unggah bukti transfer."
     }
@@ -363,12 +505,12 @@ const prevStep = () => {
 
 // Submission
 const submitBooking = async () => {
-    // Final Validation Check
     const isStep1Valid = validateStep(1)
     const isStep2Valid = validateStep(2)
     const isStep3Valid = validateStep(3)
+    const isStep4Valid = validateStep(4)
     
-    if (isStep1Valid !== true || isStep2Valid !== true || isStep3Valid !== true) {
+    if (isStep1Valid !== true || isStep2Valid !== true || isStep3Valid !== true || isStep4Valid !== true) {
         Swal.fire('Error', 'Mohon lengkapi semua data dengan benar sebelum submit.', 'error')
         return
     }
@@ -446,82 +588,70 @@ const processBooking = async (payload) => {
   <div class="booking-form-container max-w-2xl mx-auto py-6 md:py-10 px-4 pb-32">
     
     <!-- Step Indicator -->
-    <div class="mb-8 relative z-0">
-        <div class="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-[2px] bg-slate-200 -z-10 rounded-full"></div>
+    <div class="mb-8 relative z-0 mt-2">
+        <div class="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-[2px] bg-slate-100 -z-10 rounded-full"></div>
         <div class="flex items-center justify-between">
             <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center gap-2">
-                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10"
-                     :class="currentStep > index + 1 ? 'bg-green-500 text-white border-2 border-white shadow-sm' : 
-                             currentStep === index + 1 ? 'bg-blue-600 text-white border-2 border-white shadow-md scale-110' : 
-                             'bg-white text-slate-400 border border-slate-200'">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg transition-all duration-300 z-10"
+                     :class="currentStep > index + 1 ? 'bg-green-500 text-white shadow-sm' : 
+                             currentStep === index + 1 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 scale-110' : 
+                             'bg-white text-slate-300 border border-slate-200'">
                     <i v-if="currentStep > index + 1" class="bi bi-check-lg"></i>
                     <i v-else :class="step.icon"></i>
                 </div>
-                <!-- Labels hidden on very small screens -->
-                <span class="text-[10px] uppercase font-bold tracking-widest hidden md:block"
-                      :class="currentStep === index + 1 ? 'text-blue-600' : 'text-slate-400'">
-                    {{ step.title }}
-                </span>
             </div>
         </div>
     </div>
     
-    <!-- Header Area -->
     <div class="mb-8 flex items-center gap-3">
-        <button v-if="currentStep > 1" @click="prevStep" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex flex-shrink-0 items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-500 hover:bg-blue-50 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-            <i class="bi bi-arrow-left text-lg"></i>
+        <button @click="$emit('go-home')" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors">
+            <i class="bi bi-arrow-left"></i>
         </button>
         <div>
             <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">{{ steps[currentStep-1].title }}</h2>
-            <p class="text-slate-500 text-sm">Masukan informasi yang valid.</p>
         </div>
     </div>
 
     <!-- Form Content Wrapper -->
     <form @submit.prevent class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-6 md:p-8 relative min-h-[400px]">
         
-        <!-- STEP 1: Penumpang -->
         <div v-if="currentStep === 1" class="animate-fade-in space-y-6">
             
+            <div class="mb-6 flex items-center gap-2 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
+                <i class="bi bi-person-fill text-blue-600"></i> Data Penumpang
+            </div>
+
             <div class="space-y-3">
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2 px-1">Tipe Penumpang</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <button type="button" @click="formData.passengerType = 'Umum'" class="relative p-4 rounded-xl border-1.5 transition-all text-left group"
-                            :class="formData.passengerType === 'Umum' ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-slate-200 hover:border-blue-300'">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-slate-800" :class="formData.passengerType === 'Umum' ? 'text-blue-700' : ''">Umum</span>
-                            <i class="bi bi-check-circle-fill text-blue-500 text-lg" :class="formData.passengerType === 'Umum' ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"></i>
-                        </div>
-                        <p class="text-[11px] text-slate-500">Tarif penumpang normal</p>
+                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-2 px-1">KATEGORI PENUMPANG</label>
+                <div class="space-y-3">
+                    <button type="button" @click="formData.passengerType = 'Umum'" class="w-full p-4 rounded-xl border-1.5 transition-all text-left flex items-center justify-center gap-2 group"
+                            :class="formData.passengerType === 'Umum' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'">
+                        <i class="bi bi-person text-lg"></i>
+                        <span class="font-bold">Umum</span>
                     </button>
                     
-                    <button type="button" @click="formData.passengerType = 'Mahasiswa / Pelajar'" class="relative p-4 rounded-xl border-1.5 transition-all text-left flex flex-col justify-between group overflow-hidden"
-                            :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-slate-200 hover:border-blue-300'">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-slate-800 flex items-center gap-1.5" :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'text-blue-700' : ''">Mahasiswa</span>
-                             <i class="bi bi-check-circle-fill text-blue-500 text-lg" :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"></i>
-                        </div>
-                        <div class="py-0.5 px-2 bg-red-500 text-white text-[9px] font-bold rounded uppercase tracking-wider self-start inline-block">Hemat 20rb</div>
+                    <button type="button" @click="formData.passengerType = 'Mahasiswa / Pelajar'" class="w-full relative p-4 rounded-xl border-1.5 transition-all text-center flex items-center justify-center gap-2 group overflow-hidden"
+                            :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'">
+                        <div class="absolute right-0 top-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 pb-1.5 rounded-bl-xl rounded-tr-xl">Hemat 20rb</div>
+                        <i class="bi bi-mortarboard text-lg"></i>
+                        <span class="font-bold">Mahasiswa / Pelajar</span>
                     </button>
                 </div>
             </div>
 
             <div class="space-y-5">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">Nama Lengkap</label>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NAMA LENGKAP</label>
                     <div class="relative">
-                        <input type="text" v-model="formData.passengerName" placeholder="Cth: Nadim" class="w-full pl-11 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
-                        <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" v-model="formData.passengerName" placeholder="Nama penumpang..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
                     </div>
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">No. WhatsApp</label>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NO. WHATSAPP</label>
                     <div class="relative">
-                        <input type="tel" v-model="formData.passengerPhone" placeholder="Cth: 081234..." class="w-full pl-11 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
-                        <i class="bi bi-whatsapp absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="tel" v-model="formData.passengerPhone" placeholder="08..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1 pl-1">Pastikan aktif menerima notifikasi WhatsApp.</p>
                 </div>
             </div>
 
@@ -567,47 +697,57 @@ const processBooking = async (payload) => {
 
         </div>
 
-        <!-- STEP 2: Rute, Jadwal, & Kursi -->
+        <!-- STEP 2: Rute & Jadwal -->
         <div v-if="currentStep === 2" class="animate-fade-in space-y-6">
-            <div class="space-y-5 flex-1 mt-4">
+            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
+                <i class="bi bi-map-fill text-[#ff6b00]"></i> Pilih Perjalanan
+            </div>
+            
+            <div class="space-y-5 flex-1 mt-2">
                 
                 <div class="relative group">
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1 group-focus-within:text-blue-600 transition-colors">Tujuan Perjalanan</label>
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">RUTE PERJALANAN</label>
                     <div class="relative">
-                        <select v-model="formData.routeId" class="w-full pl-11 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none text-slate-800 font-semibold cursor-pointer">
-                            <option value="" disabled>Pilih Rute Anda...</option>
-                            <option v-for="route in routes" :key="route.id" :value="route.id" class="py-2">
-                                {{ route.origin }} ➔ {{ route.destination }}
-                            </option>
+                        <select v-model="formData.routeId" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none text-slate-800 cursor-pointer">
+                            <option value="" disabled>Pilih Rute</option>
+                            <optgroup v-for="group in groupedRoutes" :key="group.label" :label="group.label">
+                                <option v-for="route in group.routes" :key="route.id" :value="route.id" class="py-2">
+                                    {{ route.origin }} ➔ {{ route.destination }}
+                                </option>
+                            </optgroup>
                         </select>
-                        <i class="bi bi-geo-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                         <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="relative group">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1 group-focus-within:text-blue-600 transition-colors">Tanggal Keberangkatan</label>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">TANGGAL</label>
                         <div class="relative">
-                            <!-- Custom Date Input with native datepicker -->
-                            <input type="date" v-model="formData.date" class="w-full pl-11 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 font-semibold cursor-pointer">
-                            <i class="bi bi-calendar-event absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none"></i>
+                            <input type="date" v-model="formData.date" class="w-full p-3.5 pr-10 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 cursor-pointer">
+                            <i class="bi bi-calendar absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
                         </div>
                     </div>
 
                     <div class="relative group">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1 group-focus-within:text-blue-600 transition-colors">Jam Keberangkatan</label>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">JAM</label>
                         <div class="relative">
-                            <select v-model="formData.time" :disabled="!formData.routeId" class="w-full pl-11 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed text-slate-800 font-semibold cursor-pointer">
-                                <option value="" disabled>Pilih Jam...</option>
+                            <select v-model="formData.time" :disabled="!formData.routeId" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed text-slate-800 cursor-pointer">
+                                <option value="" disabled>Pilih Jam</option>
                                 <option v-for="t in availableTimes" :key="t" :value="t">{{ t }}</option>
                             </select>
-                            <i class="bi bi-clock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none"></i>
                             <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                         </div>
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- STEP 3: Pilih Kursi -->
+        <div v-if="currentStep === 3" class="animate-fade-in space-y-6">
+            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
+                <i class="bi bi-grid-3x3-gap-fill text-[#00c853]"></i> Pilih Kursi
             </div>
 
             <div class="mt-8 pt-8 border-t border-slate-200">
@@ -622,18 +762,22 @@ const processBooking = async (payload) => {
             <div v-else class="flex flex-col items-center">
                  
                  <!-- Batch UI Selector -->
-                 <div v-if="availableBatches.length > 1" class="flex flex-wrap justify-center gap-2 mb-6 w-full px-4">
-                     <button type="button" v-for="b in availableBatches" :key="b" @click="currentBatch = b"
-                             class="flex-1 md:flex-none border py-2 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap"
-                             :class="currentBatch === b ? 'bg-blue-600 text-white border-blue-600 shadow-md transform -translate-y-0.5' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300'">
-                        Armada Ke {{ b }}
-                     </button>
+                 <div v-if="availableBatches.length > 0" class="mb-6 w-full max-w-[300px] mx-auto">
+                     <div class="flex items-center gap-2 mb-1">
+                         <span class="text-xs font-bold text-slate-800 uppercase">PILIH KURSI (ARMADA {{currentBatch}})</span>
+                     </div>
+                     <p class="text-[10px] text-slate-400 mb-3"><i class="bi bi-info-circle text-slate-300 mr-1"></i> Tersedia {{availableBatches.length}} armada karena tingginya permintaan di jam ini.</p>
+                     <div class="flex flex-wrap gap-2" v-if="availableBatches.length > 1">
+                         <button type="button" v-for="b in availableBatches" :key="b" @click="currentBatch = b"
+                                 class="w-10 h-10 rounded-lg text-sm font-bold transition-all flex items-center justify-center border"
+                                 :class="currentBatch === b ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300'">
+                            {{ b }}
+                         </button>
+                     </div>
                  </div>
 
                  <!-- Physical Seat Map Outline -->
-                 <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-200 shadow-inner max-w-[300px] mx-auto w-full relative">
-                     <!-- "Front of vehicle" visual indicator -->
-                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 py-1 text-[10px] uppercase font-extrabold text-slate-500 rounded-full border border-slate-200 shadow-sm">Kabin Depan</div>
+                 <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 max-w-[300px] mx-auto w-full relative">
 
                      <div class="flex justify-center pt-4">
                          <div class="bg-slate-100 p-4 rounded-xl border border-slate-200 relative w-[180px]">
@@ -675,28 +819,27 @@ const processBooking = async (payload) => {
                  </div>
 
                  <!-- Legend & Status -->
-                 <div class="mt-6 flex flex-wrap justify-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-white border border-slate-300"></div> Kosong</span>
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-blue-600 border border-blue-700"></div> Dipilih</span>
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-slate-900 border border-slate-800"></div> Terisi</span>
+                 <div class="mt-6 flex flex-wrap justify-center gap-4 text-[11px] font-medium text-slate-500 px-4 py-2">
+                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-white border border-slate-200"></div> Kosong</span>
+                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-blue-600 border border-blue-600"></div> Dipilih</span>
+                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-slate-500 border border-slate-500"></div> Terisi</span>
                  </div>
 
                  <!-- Price Info -->
-                 <div class="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-4 md:p-5 w-full flex items-center justify-between">
+                 <div class="mt-6 bg-slate-50 rounded-2xl p-4 w-full flex items-center justify-between border-t border-slate-100">
                       <div>
-                          <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-0.5">Total Tagihan</p>
-                          <p class="text-xs text-blue-600 font-medium">({{ selectedSeats.length }} Kursi Terpilih)</p>
+                          <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">TOTAL HARGA</p>
                       </div>
                       <div class="text-right">
-                          <p class="font-bold text-2xl text-blue-700 tracking-tight">{{ formatRupiah(totalPrice) }}</p>
+                          <p class="font-bold text-xl text-blue-600">{{ formatRupiah(totalPrice) }}</p>
                       </div>
                  </div>
 
             </div>
         </div>
 
-        <!-- STEP 3: Alamat & Bayar -->
-        <div v-if="currentStep === 3" class="animate-fade-in space-y-6">
+        <!-- STEP 4: Alamat & Bayar -->
+        <div v-if="currentStep === 4" class="animate-fade-in space-y-6">
             
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- LEfT: ADDRESSES -->
@@ -753,7 +896,7 @@ const processBooking = async (payload) => {
                             </p>
                             
                             <div class="space-y-4 relative z-10">
-                                <div>
+                                <div v-show="bankAccounts.length > 1">
                                     <label class="text-[10px] font-bold text-blue-200 uppercase tracking-widest block mb-1">Rekening Tujuan</label>
                                     <select v-model="formData.destinationAccount" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-sm outline-none focus:border-white focus:bg-white/20 transition-all text-white appearance-none h-11">
                                         <option value="" disabled class="text-slate-800">Pilih Rekening BCA...</option>
@@ -828,26 +971,25 @@ const processBooking = async (payload) => {
     </form>
 
     <!-- Navigation Buttons Outside Card -->
-    <div class="mt-6 flex items-center justify-between">
-        
-        <button v-if="currentStep > 1 && currentStep < steps.length" type="button" @click="prevStep" 
-                class="px-5 md:px-8 py-3.5 bg-white border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
-            Kembali
-        </button>
-        <div v-else></div> <!-- Spacer -->
+    <div class="mt-6">
+        <!-- Steps 1 to 4 Navigation -->
+        <div v-if="currentStep < steps.length" class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-4">
+            <button type="button" @click="currentStep === 1 ? $emit('go-home') : prevStep()" 
+                    class="flex-1 py-4 bg-slate-50 border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
+                {{ currentStep === 1 ? 'Batal' : 'Kembali' }}
+            </button>
+            <button type="button" @click="nextStep"
+                    class="flex-1 py-4 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all transform active:scale-95">
+                Lanjut
+            </button>
+        </div>
 
-        <button v-if="currentStep < steps.length" type="button" @click="nextStep"
-                class="px-8 md:px-12 py-3.5 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all transform active:scale-95 ml-auto">
-            Lanjut
-        </button>
-
-        <!-- Submit Button Trigger -->
+        <!-- Step 5: Submit Trigger -->
         <button v-if="currentStep === steps.length" type="button" @click="submitBooking" :disabled="loading"
                 class="w-full py-4 bg-green-500 text-white font-bold text-base rounded-2xl shadow-md hover:bg-green-600 hover:-translate-y-1 transition-all transform active:scale-95 flex justify-center items-center gap-2">
             <span v-if="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             <span v-else><i class="bi bi-send-fill mb-0.5"></i> Proses Pemesanan</span>
         </button>
-
     </div>
 
     <br><br><br><br>
