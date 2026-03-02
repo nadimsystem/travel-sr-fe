@@ -850,7 +850,7 @@ if ($action === 'get_daily_manifest') {
     
     // 1. Get Bookings
     $bookings = [];
-    $sqlBookings = "SELECT * FROM bookings WHERE date = '$date' AND status NOT IN ('Antrian', 'Ditolak') ORDER BY id DESC";
+    $sqlBookings = "SELECT * FROM bookings WHERE date = '$date' AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') ORDER BY id DESC";
     $res = $conn->query($sqlBookings);
     if ($res) {
         while ($row = $res->fetch_assoc()) {
