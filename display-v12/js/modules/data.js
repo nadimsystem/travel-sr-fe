@@ -198,7 +198,17 @@ export const dataMixin = {
             bookingForm: { 
                 data: { id: null, serviceType: 'Travel', routeId: '', date: '', time: '', passengerName: '', passengerPhone: '', passengerType: 'Umum', seatCount: 1, duration: 1, isMultiStop: false },
                 selectedSeats: []
-            }
+            },
+
+            // -- Bank Account Mapping --
+            isBankModalOpen: false,
+            allRouteBankAccounts: [],
+            selectedRouteForBank: null,
+            editingBankAccounts: [],
+            bankForm: { bank_name: '', account_number: '', account_holder: '' },
+            isSavingBank: false,
+            dragOverIndex: null
+
         };
     }
 };

@@ -164,109 +164,79 @@ async function fetchOccupiedSeats() {
 }
 
 function processOccupiedSeats(bookings) {
-    // 1. Flatten all booked seats
-    // We need to simulate the dispatcher's batching logic to find the "current" batch
-    // But simplified: We just want to know which seats are taken in the *filling* car.
+    let batchesMap = new Map();
+    let currentBatchForUnassigned = 1;
+    const BAT_CAPACITY = 8;
     
-    // Actually, to support "Armada Baru" (New Fleet), we need to know if a seat is taken in the *current* fleet.
-    // If I pick "Same Fleet", I want to see what's taken.
-    // If I pick "New Fleet", I want to see everything empty.
-    
-    // Let's reconstruct the batches
-    let allPassengers = [];
+    // Sort by ID to simulate time of booking
+    bookings.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
     bookings.forEach(b => {
-        const seats = b.seatNumbers ? b.seatNumbers.split(',').map(s => s.trim()) : [];
-        seats.forEach(s => allPassengers.push({ seat: s, bookingId: b.id }));
+        let rawBatch = parseInt(b.batchNumber) || 1;
+        if (rawBatch > 1) {
+            if (!batchesMap.has(rawBatch)) batchesMap.set(rawBatch, []);
+            batchesMap.get(rawBatch).push(b);
+        } else {
+            // Find space
+            let seatsCount = parseInt(b.seatCount) || 1;
+            if (b.seatNumbers) seatsCount = b.seatNumbers.split(',').map(s=>s.trim()).filter(s=>s!=='').length;
+            
+            let placed = false;
+            let checkBatch = 1;
+            
+            while (!placed) {
+                let currentBatchList = batchesMap.get(checkBatch) || [];
+                let totalPaxInBatch = 0;
+                
+                currentBatchList.forEach(existing => {
+                    if(existing.seatNumbers) totalPaxInBatch += existing.seatNumbers.split(',').filter(s => s.trim() !== '').length;
+                    else totalPaxInBatch += parseInt(existing.seatCount) || 1; // Fallback
+                });
+                
+                if (totalPaxInBatch + seatsCount <= BAT_CAPACITY || totalPaxInBatch === 0) {
+                    if (!batchesMap.has(checkBatch)) batchesMap.set(checkBatch, []);
+                    batchesMap.get(checkBatch).push(b);
+                    placed = true;
+                } else {
+                    checkBatch++;
+                }
+            }
+        }
     });
 
-    // Batching logic (Max 8 per batch)
-    // We need to group them into batches of 8.
-    // But wait, the dispatcher groups by *count*, not by seat number collision (yet).
-    // However, physically, we can't have collision.
-    // So let's assume the dispatcher WILL handle collision.
-    
-    // For the UI:
-    // "Same Fleet" means: Show me the seats taken in the *last* batch if it's not full.
-    // If the last batch is full (8 pax), then start a new batch (all empty).
-    
-    const batchSize = 8;
-    const totalPax = allPassengers.length;
-    const fullBatches = Math.floor(totalPax / batchSize);
-    const remainder = totalPax % batchSize;
-    
-    // If remainder == 0 and totalPax > 0, it means the last car is full. Next booking is new car.
-    // So occupied is empty (new car).
-    // If remainder > 0, the last car has `remainder` passengers. We need to find WHICH seats they occupy.
-    // BUT, since we don't store batch ID, we don't strictly know which booking is in which batch 
-    // unless we sort them exactly like the dispatcher (Date/Time creation?).
-    // The API returns them in some order. Let's assume ID order or creation order.
-    
-    // Let's just assume we want to avoid *collisions* with ANY existing booking 
-    // UNLESS "New Fleet" is selected.
-    // Wait, if I have Seat 1 taken in Car 1.
-    // If I select "Same Fleet", I CANNOT pick Seat 1.
-    // If I select "New Fleet", I CAN pick Seat 1.
-    
-    // So, for "Same Fleet":
-    // We should mark ALL seats that are currently booked as occupied?
-    // No, because if Car 1 is full, I should be able to book Seat 1 for Car 2.
-    // But "Same Fleet" implies I want to join the *current* car.
-    // If Car 1 is full, "Same Fleet" is effectively "Next Fleet".
-    
-    // Let's try this logic:
-    // 1. Sort bookings by ID (proxy for creation time).
-    // 2. Assign them to batches.
-    // 3. Find the last batch.
-    // 4. If last batch is full, occupied = [].
-    // 5. If last batch is not full, occupied = seats in that batch.
-    
-    // Sort bookings (assuming API returns array of objects)
-    // We need the full booking objects to sort.
-    // The API returns { seatNumbers, seatCount, ... }
-    
-    // Since we don't have full timestamps here easily without fetching more data,
-    // let's try a simpler approach requested by user:
-    // "Centang default 'mobil yang sama'... memilih seat yang tersisa"
-    
-    // Let's map all currently taken seats.
-    // If we simply mark ALL taken seats as black, we prevent booking Seat 1 for Car 2.
-    // That's bad.
-    
-    // Let's use the Batch Logic.
-    let batches = [[]]; // Array of arrays of seat numbers
-    let currentBatchIndex = 0;
-    
-    // We need to iterate through passengers.
-    // We assume the API returns bookings in insertion order (ID ASC).
-    // We need to flatten into individual passengers.
-    let flatPassengers = [];
-    bookings.forEach(b => {
-        const seats = b.seatNumbers ? b.seatNumbers.split(',').map(s => s.trim()) : [];
-        seats.forEach(s => flatPassengers.push(s));
-    });
-    
-    // Fill batches
-    flatPassengers.forEach(seat => {
-        if (batches[currentBatchIndex].length >= 8) {
-            currentBatchIndex++;
-            batches[currentBatchIndex] = [];
+    // Determine the "last/active" batch that is currently being filled
+    let maxBatchKey = 1;
+    for (let k of batchesMap.keys()) {
+        if (k > maxBatchKey) maxBatchKey = k;
+    }
+
+    const lastBatchBookings = batchesMap.get(maxBatchKey) || [];
+    let lastBatchPaxCount = 0;
+    let lastBatchOccupiedSeats = [];
+
+    lastBatchBookings.forEach(bk => {
+        const seatsRaw = bk.seatNumbers || '';
+        const seatParts = seatsRaw.split(',').map(s => s.trim()).filter(s => s);
+        if (seatParts.length === 0) {
+            lastBatchPaxCount += 1;
+        } else {
+            lastBatchPaxCount += seatParts.length;
+            seatParts.forEach(s => lastBatchOccupiedSeats.push(s));
         }
-        batches[currentBatchIndex].push(seat);
     });
-    
-    // Now, determine occupied seats for UI
-    const seatOption = document.querySelector('input[name="seatOption"]:checked')?.value || 'same'; // Default to 'same'
+
+    const seatOption = document.querySelector('input[name="seatOption"]:checked')?.value || 'same';
     
     if (seatOption === 'new') {
-        occupiedSeats = []; // All free
+        occupiedSeats = []; // Start fresh array
     } else {
         // "Same Fleet"
-        // If the current batch is full, we are starting a new one -> All free.
-        if (batches[currentBatchIndex].length >= 8) {
+        if (lastBatchPaxCount >= BAT_CAPACITY) {
+            // If full, force new batch visually
             occupiedSeats = [];
         } else {
-            // Show occupied seats in this batch
-            occupiedSeats = batches[currentBatchIndex];
+            // Show occupied in the current active filling batch
+            occupiedSeats = lastBatchOccupiedSeats;
         }
     }
     

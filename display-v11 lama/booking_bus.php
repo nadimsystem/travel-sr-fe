@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sutan Raya - Business OS V8.5</title>
+    <title>Sutan Raya - Business OS V11</title>
+    <link rel="icon" type="image/webp" href="../image/logo.webp">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -60,58 +61,13 @@
 
     <div id="app" class="flex h-full w-full" v-cloak>
         
-        <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-20 flex-shrink-0 h-full shadow-sm transition-colors duration-300">
-            <div class="h-16 flex items-center justify-center border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
-                <div class="text-xl font-extrabold text-sr-blue dark:text-white tracking-tight flex items-center gap-2">
-                    <i class="bi bi-building-fill text-sr-gold"></i> Sutan<span class="text-blue-600 dark:text-blue-400">Raya</span>
-                </div>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
-                <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-2 tracking-wider">Utama</div>
-                <a href="dashboard.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold">
-                    <i class="bi bi-grid-1x2-fill w-6"></i> Dashboard
-                </a>
-                <a href="booking_management.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors justify-between text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <div class="flex items-center"><i class="bi bi-journal-text w-6"></i> Kelola Booking</div>
-                    <span v-if="pendingValidationCount > 0" class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">{{ pendingValidationCount }}</span>
-                </a>
-
-                <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Reservasi</div>
-                <a href="booking_travel.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <i class="bi bi-car-front-fill w-6"></i> Travel & Carter
-                </a>
-                <a href="booking_bus.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <i class="bi bi-bus-front-fill w-6"></i> Bus Pariwisata
-                </a>
-
-                <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Operasional</div>
-                <a href="dispatcher.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors justify-between text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <div class="flex items-center"><i class="bi bi-kanban-fill w-6"></i> Dispatcher</div>
-                    <span v-if="pendingGroupsCount > 0" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ pendingGroupsCount }}</span>
-                </a>
-                <a href="manifest.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <i class="bi bi-file-earmark-spreadsheet-fill w-6"></i> Laporan Harian
-                </a>
-                <a href="reports.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <i class="bi bi-bar-chart-fill w-6"></i> Statistik & Grafik
-                </a>
-                
-                <div class="text-[10px] font-bold text-slate-400 uppercase px-3 mb-2 mt-6 tracking-wider">Aset</div>
-                <a href="assets.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <i class="bi bi-collection-fill w-6"></i> Armada & Supir
-                </a>
-                <a href="route_management.php" class="flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <i class="bi bi-map-fill w-6"></i> Kelola Rute
-                </a>
-            </nav>
-        </aside>
+        <?php $currentPage = 'booking_bus'; include 'components/sidebar.php'; ?>
 
         <main class="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-900 relative h-full overflow-hidden transition-colors duration-300">
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shadow-sm z-10 flex-shrink-0 transition-colors duration-300">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 dark:text-white">{{ currentViewTitle }}</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V8.5 Ultimate</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Operasional V11 Ultimate</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">

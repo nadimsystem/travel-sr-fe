@@ -13,8 +13,8 @@ export const bookingMixin = {
                  );
             } else {
                 items = this.view==='bookingManagement' && this.bookingManagementTab==='bus' 
-                    ? this.bookings.filter(b=>b.serviceType==='Bus Pariwisata') 
-                    : this.bookings.filter(b=>['Travel','Carter','Dropping'].includes(b.serviceType) && b.status !== 'Antrian' && b.status !== 'Ditolak');
+                    ? this.bookings.filter(b=>b.serviceType==='Bus Pariwisata' && b.status !== 'Cancelled' && b.validationStatus !== 'Ditolak') 
+                    : this.bookings.filter(b=>['Travel','Carter','Dropping'].includes(b.serviceType) && b.status !== 'Antrian' && b.status !== 'Ditolak' && b.status !== 'Cancelled' && b.validationStatus !== 'Ditolak');
             }
             
             // Filter: Search

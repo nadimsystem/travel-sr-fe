@@ -33,6 +33,7 @@ $tables = [
         'columns' => ['id', 'name', 'big_bus_config', 'price_s33', 'price_s35', 'is_long_trip', 'minDays'],
         'source_columns' => ['id', 'name', 'big_bus_config', 'price_s33', 'price_s35', 'is_long_trip', 'min_days']
     ],
+    
     'bookings' => [
         'columns' => [
             'id', 'serviceType', 'routeId', 'date', 'time', 'passengerName', 'passengerPhone', 

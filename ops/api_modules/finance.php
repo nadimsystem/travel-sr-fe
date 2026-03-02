@@ -265,6 +265,7 @@ if ($action === 'get_billing_report') {
                         paymentReceiver as payment_receiver
                         FROM bookings 
                         WHERE downPaymentAmount > 0 
+                        AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                         ORDER BY id DESC LIMIT 5";
         
         $recent_payments = [];

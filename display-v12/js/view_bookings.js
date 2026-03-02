@@ -329,7 +329,9 @@ function renderRouteGrid(route, container) {
                 // 1. Separate fixed assignments vs flexible
                 slotBookings.forEach(b => {
                     const explicitBatch = parseInt(b.batchNumber) || 1;
-                    if (explicitBatch > 1) {
+                    const hasSeats = b.seatNumbers && b.seatNumbers.trim() !== '';
+
+                    if (explicitBatch > 1 || hasSeats) {
                          if (!batchesMap.has(explicitBatch)) batchesMap.set(explicitBatch, []);
                          batchesMap.get(explicitBatch).push(b);
                     } else {

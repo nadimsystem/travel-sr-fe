@@ -230,4 +230,40 @@ if ($action === 'delete_route') {
     else echo json_encode(['status' => 'error', 'message' => $conn->error]);
     exit;
 }
+
+// --- ROUTE BANK ACCOUNTS ---
+if ($action === 'get_route_bank_accounts') {
+    $result = $conn->query("SELECT * FROM route_bank_accounts ORDER BY route_id, sort_order ASC");
+    $rows = [];
+    while ($row = $result->fetch_assoc()) $rows[] = $row;
+    echo json_encode(['status' => 'success', 'data' => $rows]);
+    exit;
+}
+
+if ($action === 'save_route_bank_accounts') {
+    $routeId = $input['route_id'];
+    $accounts = $input['accounts']; // array of {bank_name, account_number, account_holder, sort_order}
+
+    // Delete existing for this route
+    $stmt = $conn->prepare("DELETE FROM route_bank_accounts WHERE route_id=?");
+    $stmt->bind_param("s", $routeId);
+    $stmt->execute();
+
+    // Insert new rows
+    if (!empty($accounts)) {
+        $stmt = $conn->prepare("INSERT INTO route_bank_accounts (route_id, bank_name, account_number, account_holder, sort_order) VALUES (?, ?, ?, ?, ?)");
+        foreach ($accounts as $i => $acc) {
+            $bankName = $acc['bank_name'];
+            $accountNumber = $acc['account_number'];
+            $accountHolder = $acc['account_holder'];
+            $sortOrder = isset($acc['sort_order']) ? intval($acc['sort_order']) : $i;
+            $stmt->bind_param("ssssi", $routeId, $bankName, $accountNumber, $accountHolder, $sortOrder);
+            $stmt->execute();
+        }
+    }
+
+    echo json_encode(['status' => 'success']);
+    exit;
+}
 ?>
+

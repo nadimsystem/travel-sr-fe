@@ -431,7 +431,7 @@
                                     <option value="BCA Padang">BCA Padang</option>
                                     <option value="BCA Bukittinggi">BCA Bukittinggi</option>
                                     <option value="BCA Payakumbuh">BCA Payakumbuh</option>
-                                    <option value="BCA PT">BCA PT (Sutan Raya)</option>
+                                    <option value="BCA PT">BCA PT (PT. Fajar Wisata Langgeng)</option>
                                     <option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>

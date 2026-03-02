@@ -475,7 +475,7 @@ if ($action === 'get_customer_history') {
     $phone = isset($_GET['phone']) ? $_GET['phone'] : '';
     $stmt = $conn->prepare("
         SELECT * FROM (
-            SELECT id, date, routeName, status, totalPrice FROM bookings WHERE passengerPhone = ?
+            SELECT id, date, routeName, status, totalPrice FROM bookings WHERE passengerPhone = ? AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
             UNION ALL
             SELECT id, date, routeName, status, totalPrice FROM cancelled_bookings WHERE passengerPhone = ?
         ) AS combined ORDER BY date DESC LIMIT 10

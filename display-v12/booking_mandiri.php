@@ -49,18 +49,25 @@
         <main class="flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300" :class="isSidebarOpen ? 'md:ml-64' : 'md:ml-0'">
             <?php include 'components/topbar.php'; ?>
             
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
-                <div v-if="view === 'bookingMandiri'" class="animate-fade-in">
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 relative">
+                <div v-if="view === 'bookingMandiri'" class="animate-fade-in pb-20">
                     <!-- Header -->
                     <div class="mb-4">
                         <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Booking Mandiri</h1>
                         <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Daftar booking travel yang belum diproses</p>
                     </div>
 
-                    <!-- Filters -->
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow p-3 mb-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+                        <button @click="pendingTab = 'antrian'" :class="pendingTab === 'antrian' ? 'border-blue-600 text-blue-600 border-b-2 font-bold' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 transition-colors">Booking Baru (Antrian)</button>
+                        <button @click="pendingTab = 'ditolak'" :class="pendingTab === 'ditolak' ? 'border-red-600 text-red-600 border-b-2 font-bold' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 transition-colors">Booking Ditolak</button>
+                    </div>
+
+                    <!-- Filters & Actions (Only for 'antrian') -->
+                    <div v-if="pendingTab === 'antrian'" class="bg-white dark:bg-slate-800 rounded-xl shadow p-3 mb-4 flex flex-col md:flex-row gap-4 items-end justify-between">
+                        <!-- Left: Filters -->
+                        <div class="flex flex-col md:flex-row gap-3 flex-1">
+                            <div class="min-w-[200px] flex-1 max-w-sm">
                                 <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Cari Tanggal</label>
                                 <input 
                                     type="text" 
@@ -69,7 +76,7 @@
                                     class="w-full p-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg text-sm"
                                 >
                             </div>
-                            <div>
+                            <div class="min-w-[150px]">
                                 <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Tanggal</label>
                                 <input 
                                     type="date" 
@@ -77,17 +84,21 @@
                                     class="w-full p-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg text-sm"
                                 >
                             </div>
-                            <!-- Schedule management button -->
-                            <div class="flex items-end justify-end">
-                                <button @click="openScheduleModal" class="w-full md:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors">
-                                    <i class="bi bi-clock-history"></i> Pengaturan Jam
-                                </button>
-                            </div>
+                        </div>
+                        
+                        <!-- Right: Actions -->
+                        <div class="flex items-center gap-2">
+                            <button @click="openBankModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
+                                <i class="bi bi-bank"></i> Pengaturan Rekening
+                            </button>
+                            <button @click="openScheduleModal" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
+                                <i class="bi bi-clock-history"></i> Pengaturan Jam
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Grouped by Route -->
-                    <div class="space-y-4">
+                    <!-- Grouped by Route (Antrian) -->
+                    <div v-if="pendingTab === 'antrian'" class="space-y-4">
                         <div v-for="(bookings, route) in bookingsByRoute" :key="route" class="bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
                             <!-- Route Header -->
                             <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-3 text-white">
@@ -199,22 +210,189 @@
                                                 >
                                                     <i class="bi bi-check-lg"></i> Terima Booking
                                                 </button>
-                                            </div>
+                                            </div> <!-- Closes Action Buttons -->
+                                        </div> <!-- Closes Passenger Card -->
+                                        
+                                        <!-- Empty State inside Passenger List -->
+                                        <div v-if="bookings.length === 0" class="text-center py-8 text-slate-400">
+                                            Tidak ada penumpang pending
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="bookings.length === 0" class="text-center py-8 text-slate-400">
-                                    Tidak ada penumpang pending
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="Object.keys(bookingsByRoute).length === 0" class="bg-white dark:bg-slate-800 rounded-xl shadow p-12 text-center">
+                                    </div> <!-- Closes Passenger List Wrapper -->
+                                </div> <!-- Closes Route Card -->
+                            </div> <!-- Closes Grouped By Route Wrapper -->
+                            
+                    <div v-if="pendingTab === 'antrian' && Object.keys(bookingsByRoute).length === 0" class="bg-white dark:bg-slate-800 rounded-xl shadow p-12 text-center">
                         <i class="bi bi-inbox text-6xl text-slate-300 dark:text-slate-600 mb-4"></i>
                         <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">Tidak Ada Booking Pending</h3>
                         <p class="text-slate-500 dark:text-slate-400">Semua booking sudah diproses</p>
+                    </div>
+
+                    <!-- Rejected Bookings Table -->
+                    <div v-if="pendingTab === 'ditolak'" class="bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                            <h3 class="font-bold text-slate-800 dark:text-white">Daftar Booking Ditolak</h3>
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">{{ getRejectedBookings.length }} Ditolak</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 uppercase text-xs font-bold">
+                                    <tr>
+                                        <th class="p-4">Waktu</th>
+                                        <th class="p-4">Penumpang</th>
+                                        <th class="p-4">Rute & Kursi</th>
+                                        <th class="p-4">Catatan</th>
+                                        <th class="p-4">Total Price</th>
+                                        <th class="p-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    <tr v-for="b in getRejectedBookings" :key="b.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <td class="p-4">
+                                            <div class="font-bold text-slate-800 dark:text-white">{{ formatDate(b.date) }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-slate-400">{{ b.time }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-slate-800 dark:text-white">{{ b.passengerName }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-slate-400">{{ b.passengerPhone }}</div>
+                                            <div class="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 mt-1 px-2 py-0.5 rounded inline-block">#{{ b.id }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-blue-600 dark:text-blue-400">{{ b.routeId }}</div>
+                                            <div class="text-xs font-bold mt-1">Kursi: {{ b.seatNumbers || '-' }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="text-xs text-slate-500 italic max-w-xs truncate">{{ b.bookingNote || '-' }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-red-600 dark:text-red-400">Rp {{ (b.totalPrice || 0).toLocaleString('id-ID') }}</div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5 uppercase">{{ b.paymentMethod }}</div>
+                                        </td>
+                                        <td class="p-4 text-center">
+                                            <button @click="deleteBooking(b)" class="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
+                                                <i class="bi bi-trash"></i> Hapus Permanen
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="getRejectedBookings.length === 0">
+                                        <td colspan="6" class="p-8 text-center text-slate-400 border-t border-slate-100 dark:border-slate-700">
+                                            <i class="bi bi-emoji-smile text-2xl mb-2 block"></i>
+                                            Tidak ada data booking yang ditolak
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bank Account Modal -->
+                    <div v-if="isBankModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click.self="isBankModalOpen = false">
+                        <div class="bg-white dark:bg-slate-800 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-fade-in">
+                            <!-- Modal Header -->
+                            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-800 dark:text-white"><i class="bi bi-bank mr-2 text-blue-500"></i>Pengaturan Rekening per Rute</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Kelola nomor rekening tujuan transfer untuk setiap rute</p>
+                                </div>
+                                <button @click="isBankModalOpen = false" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700"><i class="bi bi-x-lg"></i></button>
+                            </div>
+
+                            <!-- Modal Body -->
+                            <div class="flex flex-1 overflow-hidden">
+                                <!-- Left Panel: Routes -->
+                                <div class="w-1/3 border-r border-slate-100 dark:border-slate-700 overflow-y-auto custom-scrollbar p-3 space-y-1 bg-slate-50 dark:bg-slate-900/30">
+                                    <div class="text-xs font-bold text-slate-400 uppercase mb-2 px-2">Pilih Rute</div>
+                                    <div
+                                        v-for="r in routeConfig" :key="r.id"
+                                        @click="selectRouteForBank(r)"
+                                        class="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-all text-sm font-medium"
+                                        :class="selectedRouteForBank?.id === r.id
+                                            ? 'bg-blue-600 text-white shadow-sm'
+                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'"
+                                    >
+                                        <i class="bi bi-geo-alt-fill text-xs" :class="selectedRouteForBank?.id === r.id ? 'text-white' : 'text-blue-400'"></i>
+                                        <span class="truncate">{{ r.origin }} → {{ r.destination }}</span>
+                                        <span v-if="getRouteBankAccounts(r.id).length > 0" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full" :class="selectedRouteForBank?.id === r.id ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'">{{ getRouteBankAccounts(r.id).length }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Right Panel: Bank accounts for selected route -->
+                                <div class="flex-1 flex flex-col overflow-hidden">
+                                    <div v-if="!selectedRouteForBank" class="flex-1 flex items-center justify-center text-slate-400 text-sm">
+                                        <div class="text-center">
+                                            <i class="bi bi-arrow-left-circle text-3xl mb-2 block"></i>
+                                            Pilih rute di sebelah kiri
+                                        </div>
+                                    </div>
+                                    <template v-else>
+                                        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                                            <div class="font-bold text-slate-700 dark:text-white">{{ selectedRouteForBank.origin }} → {{ selectedRouteForBank.destination }}</div>
+                                            <div class="text-xs text-slate-500">{{ selectedRouteForBank.id }} — drag untuk mengatur urutan tampil</div>
+                                        </div>
+
+                                        <!-- Fixed 3-Account Drag-Droppable List -->
+                                        <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-3">
+                                            <div
+                                                v-for="(acc, idx) in editingBankAccounts"
+                                                :key="acc.key"
+                                                draggable="true"
+                                                @dragstart="onBankDragStart(idx)"
+                                                @dragover.prevent="onBankDragOver(idx)"
+                                                @drop="onBankDrop(idx)"
+                                                @dragend="dragOverIndex = null"
+                                                class="flex items-center gap-4 p-4 rounded-2xl border-2 cursor-grab active:cursor-grabbing transition-all group select-none"
+                                                :class="[
+                                                    acc.enabled
+                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
+                                                        : 'bg-slate-50 dark:bg-slate-700/30 border-slate-200 dark:border-slate-700 opacity-60',
+                                                    dragOverIndex === idx ? 'ring-2 ring-blue-400 ring-offset-1' : ''
+                                                ]"
+                                            >
+                                                <!-- Drag Handle -->
+                                                <i class="bi bi-grip-vertical text-slate-300 group-hover:text-slate-500 text-lg transition-colors flex-shrink-0"></i>
+
+                                                <!-- Order Badge -->
+                                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                                    :class="acc.enabled ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'">
+                                                    {{ idx + 1 }}
+                                                </div>
+
+                                                <!-- Account Info -->
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="font-bold text-slate-800 dark:text-white">{{ acc.bank_name }}</div>
+                                                    <div class="font-mono text-blue-600 dark:text-blue-400 text-sm font-bold">{{ acc.account_number }}</div>
+                                                    <div class="text-xs text-slate-500">a.n. {{ acc.account_holder }}</div>
+                                                </div>
+
+                                                <!-- Toggle Switch -->
+                                                <div class="flex-shrink-0">
+                                                    <button
+                                                        @click="acc.enabled = !acc.enabled"
+                                                        class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none"
+                                                        :class="acc.enabled ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'"
+                                                    >
+                                                        <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200"
+                                                            :class="acc.enabled ? 'translate-x-6' : 'translate-x-1'">
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Save Button -->
+                                        <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+                                            <div class="text-xs text-slate-400">
+                                                <i class="bi bi-info-circle mr-1"></i>
+                                                {{ editingBankAccounts.filter(a => a.enabled).length }} rekening aktif untuk rute ini
+                                            </div>
+                                            <button @click="saveBankAccounts" :disabled="isSavingBank" class="px-5 py-2 text-sm font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-40 flex items-center gap-2 transition-colors shadow-sm">
+                                                <i class="bi" :class="isSavingBank ? 'bi-arrow-repeat animate-spin' : 'bi-floppy'"></i>
+                                                {{ isSavingBank ? 'Menyimpan...' : 'Simpan' }}
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Schedule Management Modal -->

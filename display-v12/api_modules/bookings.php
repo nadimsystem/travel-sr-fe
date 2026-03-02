@@ -10,7 +10,7 @@ if ($action === 'get_occupied_seats') {
     // Modified for Transfer (Numpang) Logic: Check Native bookings OR Incoming Transfers
     $sql = "SELECT seatNumbers, seatCount, batchNumber FROM bookings 
             WHERE ((routeId=? AND physicalRouteId IS NULL) OR physicalRouteId=?) 
-            AND date=? AND time=? AND status != 'Cancelled' AND status != 'Antrian' AND status != 'Pending'";
+            AND date=? AND time=? AND status != 'Cancelled'";
     
     // Default 4 params
     $params = "ssss";
@@ -43,7 +43,7 @@ if ($action === 'get_daily_booked_seats') {
     // Fetch all active bookings for the date
     $sql = "SELECT id, passengerName, routeId, time, batchNumber, seatNumbers, status, validationStatus 
             FROM bookings 
-            WHERE date = ? AND status != 'Cancelled' AND status != 'Antrian' AND status != 'Pending'
+            WHERE date = ? AND status != 'Cancelled'
             ORDER BY routeId, time, batchNumber ASC, id ASC";
             
     $stmt = $conn->prepare($sql);

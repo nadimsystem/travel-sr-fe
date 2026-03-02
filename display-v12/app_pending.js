@@ -27,6 +27,12 @@ window.app = createApp({
         scheduleMixin,
         reportMixin
     ],
+
+    data() {
+        return {
+            pendingTab: 'antrian'
+        }
+    },
     
     created() {
         this.checkSession(); 
@@ -54,8 +60,9 @@ window.app = createApp({
             this.loadData(true); 
         }, 30000);
         
-        this.updateTime(); 
-        setInterval(this.updateTime, 1000);
+        // Disable ticking time on this heavy page to improve performance, or make it not reactive to main state
+        // this.updateTime(); 
+        // setInterval(this.updateTime, 1000);
     },
 
     watch: {
@@ -139,9 +146,6 @@ window.app = createApp({
             });
             
             // Re-format payload for saving (prices and schedules)
-            // The display-v12 API expects a specific payload format similar to how ops saves it:
-            // price_umum, price_pelajar, dll. But in our frontend it's deeply nested.
-            // Let's create proper prices prop since save_route expects $prices['umum'], etc.
             const pricesPayload = {
                 umum: route.price_umum || 0,
                 pelajar: route.price_pelajar || 0,
@@ -167,7 +171,6 @@ window.app = createApp({
                 const data = await res.json();
                 
                 if (data.status === 'success') {
-                    // Update UI immediately
                     const routeIndex = this.routeConfig.findIndex(r => r.id === route.id);
                     if (routeIndex !== -1) {
                         this.routeConfig[routeIndex].schedules = updated;
@@ -181,6 +184,119 @@ window.app = createApp({
             } finally {
                 this.loadingSchedules = false;
             }
+        },
+
+        // --- BANK ACCOUNT MODAL ---
+        async openBankModal() {
+            this.isBankModalOpen = true;
+            this.selectedRouteForBank = null;
+            this.editingBankAccounts = [];
+            await this.loadRouteBankAccounts();
+        },
+
+        async loadRouteBankAccounts() {
+            try {
+                const res = await fetch('api.php?action=get_route_bank_accounts');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.allRouteBankAccounts = data.data || [];
+                }
+            } catch(e) {
+                console.error('Error loading bank accounts', e);
+            }
+        },
+
+        getRouteBankAccounts(routeId) {
+            return this.allRouteBankAccounts.filter(a => a.route_id === routeId);
+        },
+
+        selectRouteForBank(route) {
+            this.selectedRouteForBank = route;
+            // The 3 fixed BCA accounts (always the same)
+            const PRESET_ACCOUNTS = [
+                { key: 'bca-padang',      bank_name: 'BCA PADANG',      account_number: '7425888781', account_holder: 'PT. Fajar Wisata Langgeng' },
+                { key: 'bca-bukittinggi', bank_name: 'BCA BUKITTINGGI', account_number: '7425888722', account_holder: 'PT. Fajar Wisata Langgeng' },
+                { key: 'bca-payakumbuh', bank_name: 'BCA PAYAKUMBUH', account_number: '7425888943', account_holder: 'PT. Fajar Wisata Langgeng' },
+            ];
+
+            // Load saved config for this route
+            const saved = this.getRouteBankAccounts(route.id);
+
+            if (saved.length > 0) {
+                // Re-build the list in saved order, with enabled flag
+                // Saved records = only the ones that were enabled previously, sort by sort_order
+                const sortedSaved = [...saved].sort((a, b) => parseInt(a.sort_order) - parseInt(b.sort_order));
+
+                // Build editingBankAccounts: saved ones first (enabled), then remaining presets (disabled)
+                const usedKeys = new Set(sortedSaved.map(s => s.account_number));
+                const enabledItems = sortedSaved.map(s => {
+                    const preset = PRESET_ACCOUNTS.find(p => p.account_number === s.account_number);
+                    return { ...(preset || {}), bank_name: s.bank_name, account_number: s.account_number, account_holder: s.account_holder, enabled: true };
+                });
+                const disabledItems = PRESET_ACCOUNTS
+                    .filter(p => !usedKeys.has(p.account_number))
+                    .map(p => ({ ...p, enabled: false }));
+                this.editingBankAccounts = [...enabledItems, ...disabledItems];
+            } else {
+                // No saved config: show all 3 defaults as disabled
+                this.editingBankAccounts = PRESET_ACCOUNTS.map(p => ({ ...p, enabled: false }));
+            }
+        },
+
+        onBankDragStart(idx) {
+            this._bankDragIdx = idx;
+        },
+
+        onBankDragOver(idx) {
+            this.dragOverIndex = idx;
+        },
+
+        onBankDrop(targetIdx) {
+            if (this._bankDragIdx === undefined || this._bankDragIdx === targetIdx) return;
+            const items = [...this.editingBankAccounts];
+            const [moved] = items.splice(this._bankDragIdx, 1);
+            items.splice(targetIdx, 0, moved);
+            this.editingBankAccounts = items;
+            this._bankDragIdx = undefined;
+            this.dragOverIndex = null;
+        },
+
+        async saveBankAccounts() {
+            if (!this.selectedRouteForBank) return;
+            this.isSavingBank = true;
+            try {
+                // Only save the enabled ones, in current order
+                const accountsToSave = this.editingBankAccounts
+                    .filter(a => a.enabled)
+                    .map((a, i) => ({
+                        bank_name: a.bank_name,
+                        account_number: a.account_number,
+                        account_holder: a.account_holder,
+                        sort_order: i
+                    }));
+
+                const payload = {
+                    action: 'save_route_bank_accounts',
+                    route_id: this.selectedRouteForBank.id,
+                    accounts: accountsToSave
+                };
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    await this.loadRouteBankAccounts();
+                    Swal.fire({ icon: 'success', title: 'Tersimpan!', text: 'Rekening berhasil diperbarui.', timer: 1500, showConfirmButton: false });
+                } else {
+                    Swal.fire('Gagal', data.message || 'Gagal menyimpan', 'error');
+                }
+            } catch(e) {
+                Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+            } finally {
+                this.isSavingBank = false;
+            }
         }
     },
     computed: {
@@ -188,6 +304,11 @@ window.app = createApp({
         todayRevenue() { const today = this.manifestDate; return this.bookings.filter(b => b.date === today && b.status !== 'Batal').reduce((a,b) => a + (b.totalPrice||0), 0); },
         todayPax() { const today = this.manifestDate; return this.bookings.filter(b => b.date === today && b.status !== 'Batal').length; },
         pendingValidationCount() { return this.bookings.filter(b => b.validationStatus === 'Menunggu Validasi').length; },
+
+        getRejectedBookings() {
+            return this.bookings.filter(b => b.status === 'Cancelled' && b.validationStatus === 'Ditolak')
+                                .sort((a,b) => new Date(b.id) - new Date(a.id));
+        },
 
         getFilteredBookings() {
             let items = [];

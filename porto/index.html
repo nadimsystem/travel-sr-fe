@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Website Travel Luxury Sutan Raya</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sutan-black': '#0a0a0a',
+                        'sutan-gold': '#d4af37',
+                        'sutan-gold-light': '#f3e5ab',
+                        'sutan-gray': '#2a2a2a',
+                    },
+                    fontFamily: {
+                        'serif': ['"Playfair Display"', 'serif'],
+                        'sans': ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #0a0a0a;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            /* Ensure body takes full height */
+            background-color: #050505;
+            /* Fallback solid color */
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+            color: #e5e5e5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ensure smooth gradient */
+        body {
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(100px) scale(0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .asset-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(212, 175, 55, 0.15);
+            transition: all 0.4s ease;
+        }
+
+        .asset-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8),
+                0 0 60px rgba(212, 175, 55, 0.25);
+        }
+
+        .asset-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .code-block {
+            font-family: 'Monaco', 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid #d4af37;
+            padding: 1.25rem;
+            border-radius: 10px;
+            color: #a5b3ce;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 1.5rem;
+            white-space: pre-wrap;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .accent-text {
+            background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 50%, #d4af37 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f3e5ab);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        button.nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        button.nav-btn:hover {
+            background: linear-gradient(135deg, #d4af37, #f3e5ab);
+            color: #000;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(243, 229, 171, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+            margin: 2rem 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* Continuous Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            display: inline-flex;
+            animation: scroll 20s linear infinite;
+        }
+
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .marquee-item {
+            width: 300px;
+            height: 200px;
+            margin-right: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .marquee-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .marquee-item:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Slide Number -->
+    <div class="slide-number" id="slideNumber">1 / 10</div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="nav-btn" onclick="prevSlide()">← Back</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active">
+        <div class="text-center max-w-5xl animate-in">
+            <p class="text-sutan-gold tracking-[0.4em] uppercase text-sm mb-6 font-semibold">Engineering Portfolio</p>
+            <h1 class="font-serif text-5xl md:text-7xl mb-8 leading-tight">
+                Portofolio Website Travel Luxury <br><span class="accent-text">Sutan Raya</span>
+            </h1>
+            <div class="h-1 w-32 bg-gradient-to-r from-transparent via-sutan-gold to-transparent mx-auto mb-10"></div>
+            <p class="text-xl md:text-3xl text-gray-300 font-light mb-4">
+                <span class="text-white font-bold">Nadima</span> — UI/UX Designer & Frontend Engineer
+            </p>
+
+            
+            <p class="text-gray-500 italic mb-12">Full Stack Creative • Visual Architect • Problem Solver</p>
+            <p class="mt-16 text-sm text-gray-600 italic">Tekan spasi atau → untuk memulai presentasi</p>
+            <!-- <img src="hero.png" class="rounded-[25px] position-absolute top-0 opacity-50 z-index-10" width="100%" alt=""> -->
+        </div>
+    </div>
+
+    <!-- SLIDE 2: Intro (The Unicorn) -->
+    <div class="slide">
+        <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <h2 class="font-serif text-4xl md:text-5xl mb-6 text-white">The "Unicorn" Perspective</h2>
+                <div class="text-lg text-gray-300 space-y-6 leading-relaxed">
+                    <p class="border-l-4 border-sutan-gold pl-6 italic">
+                        "Hai, saya <strong class="text-white">Nadima</strong>. Saya seorang UI/UX Designer, tapi saya
+                        juga <em class="text-sutan-gold">ngoding</em>."
+                    </p>
+                    <p>
+                        Bagi saya, desain bukan sekadar gambar cantik di Figma. Saya adalah <strong
+                            class="text-sutan-gold-light">Problem Solver</strong>.
+                        <em class="text-gray-400">I design it, I code it, I own the result.</em>
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Kombinasi ini langka. Saya bisa membangun dari <span class="text-white">konsep → desain →
+                            implementasi</span>, tanpa "lost in translation".
+                    </p>
+                </div>
+            </div>
+            <div class="glass-panel p-10 flex flex-col justify-center items-center text-center">
+                <img src="../image/logo.webp" alt="Sutan Raya Logo"
+                    class="h-24 mb-8 invert brightness-0 grayscale opacity-80">
+                <h3 class="text-2xl font-bold mb-6 text-sutan-gold">The Challenge</h3>
+                <p class="text-2xl font-serif leading-snug text-gray-200 mb-8">
+                    "Bagaimana membuat orang <em>merasakan kemewahan</em> travel dan bus seharga miliaran rupiah,
+                    <strong>hanya melalui sebuah website</strong>?"
+                </p>
+                <div class="divider w-full"></div>
+                <p class="text-white font-bold text-2xl">High-Fidelity Engineering</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: Live Website Showcase -->
+    <div class="slide">
+        <div class="max-w-6xl w-full text-center">
+            <p class="text-sutan-gold text-sm uppercase tracking-widest mb-4">Live Website Showcase</p>
+            <h2 class="font-serif text-4xl md:text-5xl mb-10 text-white">Project: <span
+                    class="accent-text">www.sutanraya.com</span></h2>
+
+            <div class="asset-container mb-8 h-100 w-full max-w-4xl mx-auto relative group">
+                <!-- Using real project asset for background -->
+                <img src="hero.png" alt="Sutan Raya Hero Background"
+                    class="obect-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700">
+
+                <!--   -->
+            </div>
+
+            <p class="text-gray-400 text-lg max-w-3xl mx-auto">
+                <strong class="text-white">Dark Luxury</strong> bukan sekadar warna hitam dan emas.
+                Ini adalah <em class="text-sutan-gold-light">pengalaman digital yang dirancang untuk meyakinkan dan
+                    menjual</em>.
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: Visual Architecture -->
+    <div class="slide">
+        <div class="max-w-6xl text-center">
+            <h2 class="font-serif text-4xl md:text-5xl mb-3 text-white">Arsitektur Visual</h2>
+            <p class="text-sutan-gold text-lg mb-12">"The Luxury Engine"</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left mb-10">
+                <div class="glass-panel p-8">
+                    <div class="feature-icon">💧</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Liquid UI Architecture</h3>
+                    <p class="text-gray-400 mb-6">
+                        Tampilan berperilaku seperti cairan, mengisi setiap inci layar dengan presisi. <strong
+                            class="text-white">100% Adaptive</strong>.
+                    </p>
+                    <div class="asset-container h-100 mt-4">
+                        <img src="hero-mobile.png" alt="Hiace Luxury Asset">
+                    </div>
+                </div>
+
+                <div class="glass-panel p-8">
+                    <div class="feature-icon">✨</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Premium Assets</h3>
+                    <p class="text-gray-400 mb-6">
+                        Penggunaan aset visual resolusi tinggi dengan teknik kompresi cerdas (WebP) untuk kecepatan
+                        maksimal.
+                    </p>
+                    <div class="asset-container h-100 mt-4">
+
+                        <img src="../armada/02.webp" alt="">
+
+                         <!-- <img src="../armada/05.webp" alt=""> -->
+                        <img src="../armada/06.webp" alt="">
+                        <!-- <img src="../armada/07.webp" alt="">
+                        <img src="../armada/08.webp" alt=""> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: Motion & Emotion (Live Gallery) -->
+    <div class="slide">
+        <div class="max-w-7xl w-full">
+            <div class="text-center mb-10">
+                <h2 class="font-serif text-4xl md:text-5xl mb-4 text-white">Motion as Emotion</h2>
+                <p class="text-gray-300 text-xl">
+                    Website ini tidak sekadar "loading", tapi <strong class="text-sutan-gold">"perform"</strong>.
+                </p>
+            </div>
+
+            <!-- CSS Marquee Gallery using REAL project assets -->
+            <div class="glass-panel p-6 mb-8 w-full overflow-hidden">
+                <div class="marquee-container">
+                    <div class="marquee-content">
+                        <!-- Duplicating items for seamless loop -->
+                        <div class="marquee-item"><img src="../armada/01.webp" alt="Armada 1"></div>
+                        <div class="marquee-item"><img src="../armada/02.webp" alt="Armada 2"></div>
+                        <div class="marquee-item"><img src="../armada/03.webp" alt="Armada 3"></div>
+                        <div class="marquee-item"><img src="../armada/04.webp" alt="Armada 4"></div>
+                        <div class="marquee-item"><img src="../armada/05.webp" alt="Armada 5"></div>
+                        <div class="marquee-item"><img src="../armada/06.webp" alt="Armada 6"></div>
+                        <div class="marquee-item"><img src="../armada/07.webp" alt="Armada 7"></div>
+                        <div class="marquee-item"><img src="../armada/08.webp" alt="Armada 8"></div>
+                        <!-- Clone set -->
+                        <div class="marquee-item"><img src="../armada/01.webp" alt="Armada 1"></div>
+                        <div class="marquee-item"><img src="../armada/02.webp" alt="Armada 2"></div>
+                        <div class="marquee-item"><img src="../armada/03.webp" alt="Armada 3"></div>
+                        <div class="marquee-item"><img src="../armada/04.webp" alt="Armada 4"></div>
+                        <div class="marquee-item"><img src="../armada/05.webp" alt="Armada 5"></div>
+                        <div class="marquee-item"><img src="../armada/06.webp" alt="Armada 6"></div>
+                        <div class="marquee-item"><img src="../armada/07.webp" alt="Armada 7"></div>
+                        <div class="marquee-item"><img src="../armada/08.webp" alt="Armada 8"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-4 text-xs text-gray-500 uppercase tracking-widest">Live Infinite Scroll
+                    Component</div>
+            </div>
+
+            <div class="max-w-2xl mx-auto glass-panel p-4 text-center">
+                <div class="code-block"
+                    style="background: transparent; padding: 0.5rem; margin: 0; box-shadow: none; border: none; font-size: 0.8rem;">
+                    const step = () => {
+                    // Ilusi Loop Tanpa Batas (60fps)
+                    if (scroller.scrollLeft >= originalWidth) scroller.scrollLeft = 0;
+                    requestAnimationFrame(step);
+                    };</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Intelligent Features -->
+    <div class="slide">
+        <div class="text-center mb-12">
+            <h2 class="font-serif text-4xl md:text-5xl mb-3 text-white">Fitur & Inteligensi</h2>
+            <p class="text-sutan-gold text-xl">"The Silent Service"</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full">
+            <div class="glass-panel p-8">
+                <div class="feature-icon">💬</div>
+                <h3 class="text-xl font-bold text-white mb-3">Zero-Friction Booking</h3>
+                <p class="text-sm text-gray-400 mb-4 leading-relaxed">
+                    Sistem mengetik pesan WhatsApp otomatis. User tinggal "Send". <strong class="text-white">Konversi
+                        naik drastis</strong>.
+                </p>
+                <div class="code-block text-xs">window.open(`wa.me/...?text=${msg}`);</div>
+            </div>
+
+            <div class="glass-panel p-8">
+                <div class="feature-icon">🌍</div>
+                <h3 class="text-xl font-bold text-white mb-3">Auto-Translate</h3>
+                <p class="text-sm text-gray-400 mb-4 leading-relaxed">
+                    O(1) Dictionary Lookup untuk ganti bahasa <strong class="text-white">instan tanpa reload</strong>.
+                </p>
+                <div class="code-block text-xs">el.innerHTML = translations[lang][key];</div>
+            </div>
+
+            <div class="glass-panel p-8">
+                <div class="feature-icon">💰</div>
+                <h3 class="text-xl font-bold text-white mb-3">Auto-Price</h3>
+                <p class="text-sm text-gray-400 mb-4 leading-relaxed">
+                    Deteksi mata uang & konversi real-time dengan <strong class="text-white">formatting harga
+                        lokal</strong>.
+                </p>
+                <div class="code-block text-xs">new Intl.NumberFormat(locale).format(val);</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: SEO & Performance -->
+    <div class="slide">
+        <div class="max-w-6xl w-full">
+            <h2 class="font-serif text-4xl md:text-5xl mb-12 text-center text-white">Dominasi Digital</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="glass-panel p-8">
+                        <div class="feature-icon">🔍</div>
+                        <h3 class="text-2xl font-bold text-sutan-gold mb-4">Google Domination (SEO)</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            Kami berbisik langsung ke mesin pencari. Dengan <strong class="text-white">JSON-LD
+                                Schema</strong>, Google membaca bisnis ini sebagai <em>entitas valid</em>.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel p-8">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="text-2xl font-bold text-sutan-gold mb-4">Blazing Fast Performance</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            Kecepatan adalah fitur #1. <strong class="text-white">Smart Lazy Loading</strong> pada aset
+                            visual memastikan konten muncul instan.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-2 transform rotate-1 hover:rotate-0 transition duration-500">
+                    <div class="asset-container h-80">
+                        <!-- Using real project asset: fitur.webp -->
+                        <img src="../image/fitur.webp" alt="Luxury Interior Feature" class="object-cover h-full w-full">
+                    </div>
+                    <div class="p-4 text-center">
+                        <p class="text-sm text-gray-500">Optimized Asset: <code
+                                class="text-sutan-gold">image/fitur.webp</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: Mobile Excellence -->
+    <div class="slide">
+        <div class="max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="font-serif text-4xl md:text-5xl mb-8 text-white">Mobile-First Excellence</h2>
+                <p class="text-xl text-gray-300 mb-8">
+                    Di era mobile, <strong class="text-sutan-gold">70% traffic</strong> datang dari smartphone.
+                    Website ini didesain <em class="text-white">mobile-first</em>.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="glass-panel p-6">
+                        <h4 class="text-sutan-gold font-bold mb-3 text-lg">Glassmorphism Bottom Nav</h4>
+                        <p class="text-sm text-gray-400">Thumb-friendly navigation design.</p>
+                    </div>
+
+                    <div class="glass-panel p-6">
+                        <h4 class="text-sutan-gold font-bold mb-3 text-lg">Floating WhatsApp FAB</h4>
+                        <p class="text-sm text-gray-400">Zero effort booking, always accessible.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <div class="glass-panel p-4" style="border-radius: 40px; border: 4px solid #333;">
+                    <!-- Using paket-thumb.png as a proxy for mobile content/app-like feel -->
+                    <div class="asset-container h-[500px] w-[280px] bg-black relative overflow-hidden rounded-[32px]">
+                        <img src="../image/paket-thumb.png" alt="Mobile View Representation"
+                            class="object-cover h-full w-full opacity-80">
+                        <div
+                            class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent flex items-end justify-center pb-4">
+                            <div class="w-1/3 h-1 bg-white rounded-full opacity-50"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: Future Proofing -->
+    <div class="slide">
+        <div class="max-w-5xl text-center">
+            <h2 class="font-serif text-4xl md:text-5xl mb-8 text-white">Future Proofing</h2>
+            <p class="text-gray-400 text-lg mb-12">Detail kecil yang membuat perbedaan besar</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="glass-panel p-8">
+                    <div class="feature-icon">🛡️</div>
+                    <h4 class="text-sutan-gold font-bold mb-3 text-lg">Self-Healing Code</h4>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Script otomatis yang mendeteksi & memperbaiki konflik cookie Google Translate.
+                    </p>
+                </div>
+
+                <div class="glass-panel p-8">
+                    <div class="feature-icon">🎮</div>
+                    <h4 class="text-sutan-gold font-bold mb-3 text-lg">Gamification Ready</h4>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Modul <strong class="text-white">Doorprize & Membership</strong> Vue.js sudah tertanam.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Closing -->
+    <div class="slide">
+        <div class="text-center max-w-5xl">
+            <h1 class="font-serif text-5xl md:text-7xl mb-10 text-white leading-tight">
+                Lebih dari Sekadar Kode.
+            </h1>
+            <p class="text-2xl md:text-3xl font-serif text-sutan-gold-light mb-12 leading-relaxed">
+                Ia adalah <strong class="accent-text">Duta Besar</strong> yang bekerja 24 jam.<br>
+                Meyakinkan tanpa memaksa. <em>Menjual tanpa terlihat berjualan</em>.
+            </p>
+
+            <div class="divider max-w-md mx-auto"></div>
+
+            <div
+                class="inline-block p-[3px] bg-gradient-to-r from-sutan-gold via-white to-sutan-gold rounded-full mt-8 mb-8">
+                <div class="bg-black px-12 py-5 rounded-full">
+                    <span class="text-sutan-gold font-bold tracking-widest uppercase text-base">Created by Nadima</span>
+                </div>
+            </div>
+
+            <p class="text-gray-500 italic text-lg mb-6">UI/UX Designer • Frontend Engineer • Visual Architect</p>
+            <p class="text-sm text-gray-600">Terima Kasih.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const slideNumber = document.getElementById('slideNumber');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            slideNumber.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.code === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) prevSlide();
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>

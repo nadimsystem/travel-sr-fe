@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial fetch for occupied seats if elements are present
     if (document.getElementById('routeSelect') && document.getElementById('dateInput') && document.getElementById('timeInput')) {
-        fetchOccupiedSeats();
+        fetchOccupiedSeats(true);
     }
     
     loadInputMemory();
@@ -218,7 +218,7 @@ function removeDpProof() {
 
 const ACCOUNTS = {
     'BCA Payakumbuh': 'BCA PAYAKUMBUH - 7425888943',
-    'BCA PT': 'BCA PT SUTAN RAYA - 7425599933',
+    'BCA PT': 'BCA PT FAJAR WISATA LANGGENG - 7425599933',
     'BCA Padang': 'BCA PADANG - 7425888781',
     'BCA Bukittinggi': 'BCA BUKITTINGGI - 7425888722'
 };
@@ -273,7 +273,7 @@ function removeKtm() {
 let currentBatch = 1;
 let availableBatches = [1];
 
-async function fetchOccupiedSeats() {
+async function fetchOccupiedSeats(isInitial = false) {
     let routeId = document.getElementById('routeSelect').value;
     // Inter-Route Overrides
     if (isInterRoute) {
@@ -296,57 +296,53 @@ async function fetchOccupiedSeats() {
         const res = await fetch(`api.php?action=get_occupied_seats&routeId=${routeId}&date=${date}&time=${time}`);
         const bookings = await res.json();
         
-        processOccupiedSeats(bookings);
+        processOccupiedSeats(bookings, isInitial);
     } catch (e) {
         console.error("Error fetching seats:", e);
-        occupiedSeats = [];
-        availableBatches = [1];
-        currentBatch = 1;
-        renderBatchSelector();
-        renderSeatAvailability();
+        processOccupiedSeats([], isInitial);
     }
 }
 
-function processOccupiedSeats(bookings) {
+function processOccupiedSeats(bookings, isInitial = false) {
     // 1. Group bookings by batchNumber with Virtual Batch fallback
     const batchesData = {};
     let maxBatch = 1;
 
     // Use a Map-like sequential fill for unassigned batches similar to view_bookings.js
-    let currentBatchForUnassigned = 1;
     const BAT_CAPACITY = 8;
     
     bookings.sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
     bookings.forEach(b => {
         let bn = parseInt(b.batchNumber) || 1;
-        if (bn > 1) {
+        const hasSeats = b.seatNumbers && b.seatNumbers.trim() !== '';
+
+        if (bn > 1 || hasSeats) {
             if (bn > maxBatch) maxBatch = bn;
-            if (!batchesData[bn]) batchesData[bn] = [];
+            if (!batchesData[bn]) batchesData[bn] = new Set();
             
-            const seats = b.seatNumbers ? b.seatNumbers.split(',').map(s => s.trim()).filter(s => s) : [];
-            seats.forEach(s => batchesData[bn].push(s));
+            const seats = hasSeats ? b.seatNumbers.split(',').map(s => s.trim()).filter(s => s) : [];
+            if (seats.length === 0) {
+                let sCount = parseInt(b.seatCount) || 1;
+                // For dummy pax, we can use a unique prefix to avoid Set collisions but still count them
+                for(let i=0; i<sCount; i++) batchesData[bn].add('dummy_' + b.id + '_' + i);
+            } else {
+                seats.forEach(s => batchesData[bn].add(s));
+            }
         } else {
             // Find space for unassigned batch
-            let seatsCount = b.seatNumbers ? b.seatNumbers.split(',').map(s => s.trim()).filter(s => s).length : (parseInt(b.seatCount) || 1);
+            let seatsCount = parseInt(b.seatCount) || 1;
             let placed = false;
             let checkBatch = 1;
             
             while (!placed) {
-                let currentBatchList = batchesData[checkBatch] || [];
-                let totalPaxInBatch = currentBatchList.length; 
+                if (!batchesData[checkBatch]) batchesData[checkBatch] = new Set();
+                let currentBatchList = batchesData[checkBatch];
+                let totalPaxInBatch = currentBatchList.size; 
                 
                 if (totalPaxInBatch + seatsCount <= BAT_CAPACITY || totalPaxInBatch === 0) {
                     if (checkBatch > maxBatch) maxBatch = checkBatch;
-                    if (!batchesData[checkBatch]) batchesData[checkBatch] = [];
-                    
-                    const seats = b.seatNumbers ? b.seatNumbers.split(',').map(s => s.trim()).filter(s => s) : [];
-                    if (seats.length === 0) {
-                        // Push dummy elements to represent pax count occupancy
-                        for(let i=0; i<seatsCount; i++) batchesData[checkBatch].push('dummy_pax');
-                    } else {
-                        seats.forEach(s => batchesData[checkBatch].push(s));
-                    }
+                    for(let i=0; i<seatsCount; i++) batchesData[checkBatch].add('dummy_' + b.id + '_' + i);
                     placed = true;
                 } else {
                     checkBatch++;
@@ -361,10 +357,13 @@ function processOccupiedSeats(bookings) {
         availableBatches.push(i);
     }
 
-    // Always offer a "New Batch" (maxBatch + 1)
-    availableBatches.push(maxBatch + 1);
+    // NEW RULE: Only offer a "New Batch" (maxBatch + 1) if the last batch has at least 5 passengers
+    const lastBatchSize = batchesData[maxBatch] ? batchesData[maxBatch].size : 0;
+    if (lastBatchSize >= 5) {
+        availableBatches.push(maxBatch + 1);
+    }
 
-    // 3. Auto-select batch if current car is full and we just loaded this schedule
+    // 3. UI Updates
     const selectorArea = document.getElementById('batchSelectorArea');
     if (availableBatches.length > 1) {
         selectorArea.classList.remove('hidden');
@@ -373,21 +372,27 @@ function processOccupiedSeats(bookings) {
     }
 
     // Determine current batch if not explicitly set by user interaction
-    // Or if previous batch is now full
-    if (batchesData[currentBatch] && batchesData[currentBatch].length >= 8) {
-        // If current batch is full, find the next one that has space or the last one (new)
-        let foundNew = false;
-        for (let i = 1; i <= maxBatch + 1; i++) {
-            if (!batchesData[i] || batchesData[i].length < 8) {
-                currentBatch = i;
-                foundNew = true;
+    // Or if previous batch is now full (strictly 8 unique seats)
+    if (isInitial && batchesData[currentBatch] && batchesData[currentBatch].size >= 8) {
+        // Only auto-jump if we haven't found a space yet
+        let foundSpace = false;
+        for (let i = 1; i <= availableBatches.length; i++) {
+            const bn = availableBatches[i-1];
+            if (!batchesData[bn] || batchesData[bn].size < 8) {
+                currentBatch = bn;
+                foundSpace = true;
                 break;
             }
         }
-        if (!foundNew) currentBatch = maxBatch + 1;
+        // If all available are full, and we can open a new one (should be covered by availableBatches logic)
+        if (!foundSpace) {
+             currentBatch = availableBatches[availableBatches.length - 1];
+        }
     }
 
-    occupiedSeats = batchesData[currentBatch] || [];
+    // Convert Set back to array for occupiedSeats compatibility
+    const currentBatchSet = batchesData[currentBatch] || new Set();
+    occupiedSeats = Array.from(currentBatchSet);
     
     renderBatchSelector();
     renderSeatAvailability();
@@ -443,9 +448,16 @@ function renderSeatAvailability() {
                 btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
                 btn.classList.add('bg-sr-blue', 'dark:bg-blue-600', 'text-white', 'scale-105');
             }
+
         }
     });
 }
+
+// async function fetchOccupiedSeats() {
+//     isInterRoute = document.getElementById('routeSelect').value === 'inter-route';
+//     if (isInterRoute) {   
+//     }
+// }
 // --- END SEAT AVAILABILITY LOGIC ---
 
 async function loadBookingData() {
@@ -627,7 +639,7 @@ function setupEventListeners() {
 
             updateTimeOptions();
             currentBatch = 1; // Reset batch to 1
-            fetchOccupiedSeats();
+            fetchOccupiedSeats(true);
             calculatePrice();
         });
     }
@@ -645,13 +657,13 @@ function setupEventListeners() {
     const dateInput = document.getElementById('dateInput');
     if (dateInput) dateInput.addEventListener('change', () => { 
         currentBatch = 1; 
-        fetchOccupiedSeats(); 
+        fetchOccupiedSeats(true); 
     });
 
     const timeInput = document.getElementById('timeInput');
     if (timeInput) timeInput.addEventListener('change', () => { 
         currentBatch = 1; 
-        fetchOccupiedSeats(); 
+        fetchOccupiedSeats(true); 
     });
 
     // Payment Method (Main)
@@ -747,7 +759,7 @@ function setupEventListeners() {
     if (physicalRouteSelect) {
         physicalRouteSelect.addEventListener('change', () => {
              currentBatch = 1;
-             fetchOccupiedSeats();
+             fetchOccupiedSeats(true);
         });
     }
 }
@@ -765,7 +777,7 @@ function handleInterRouteToggle(e) {
         selectedSeats = [];
         currentBatch = 1;
     }
-    fetchOccupiedSeats();
+    fetchOccupiedSeats(true);
 }
 
 
@@ -845,11 +857,14 @@ function updateTimeOptions() {
         if (route && route.schedules) {
             route.schedules.forEach(sched => {
                 // Handle both string format ("08:00") and object format ({time: "08:00", hidden: false})
-                const timeVal = (typeof sched === 'object' && sched !== null) ? sched.time : sched;
+                let timeVal = (typeof sched === 'object' && sched !== null) ? sched.time : sched;
                 const isHidden = (typeof sched === 'object' && sched !== null) ? !!sched.hidden : false;
                 
                 // Skip hidden schedules
                 if (isHidden) return;
+                
+                // Normalize separator so it matches database conventions and view_bookings logic
+                timeVal = timeVal.replace('.', ':');
                 
                 const option = document.createElement('option');
                 option.value = timeVal;

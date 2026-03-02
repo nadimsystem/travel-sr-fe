@@ -35,6 +35,7 @@ createApp({
                 selectedSeats: [], // Array of numbers
                 totalPrice: 0,
                 adminName: '', // Required
+                status: '', // Booking status
                 original: null // Snapshot
             },
             
@@ -113,7 +114,7 @@ createApp({
             try {
                 const res = await fetch('api.php');
                 const data = await res.json();
-                this.bookings = data.bookings.filter(b => b.status !== 'Cancelled');
+                this.bookings = data.bookings.filter(b => !['Cancelled', 'Antrian', 'Ditolak'].includes(b.status) && b.validationStatus !== 'Ditolak');
                 this.routeConfig = data.routes;
             } catch (e) {
                 console.error(e);
@@ -142,8 +143,9 @@ createApp({
                 dropoffAddress: b.dropoffAddress || '',
                 selectedSeats: b.selectedSeats ? b.selectedSeats.map(String) : [],
                 totalPrice: b.totalPrice,
-                totalPrice: b.totalPrice,
                 adminName: window.activeAdminName || '',
+                status: b.status || '',
+                validationStatus: b.validationStatus || '',
                 original: { ...b }
             };
             this.occupiedSeats = [];

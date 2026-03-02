@@ -4,15 +4,15 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$db   = 'sutanraya';
-
 // $host = 'localhost';
-// $user = 'sutanray_admin';
-// $pass = '@adminpass1998';
-// $db   = 'sutanray_db';
+// $user = 'root';
+// $pass = '';
+// $db   = 'sutanraya';
+
+$host = 'localhost';
+$user = 'sutanray_admin';
+$pass = '@adminpass1998';
+$db   = 'sutanray_db';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 

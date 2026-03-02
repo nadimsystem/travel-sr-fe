@@ -422,7 +422,7 @@
                                         <option value="BCA Padang">BCA Padang</option>
                                         <option value="BCA Bukittinggi">BCA Bukittinggi</option>
                                         <option value="BCA Payakumbuh">BCA Payakumbuh</option>
-                                        <option value="BCA PT">BCA PT (Sutan Raya)</option>
+                                        <option value="BCA PT">BCA PT (PT. Fajar Wisata Langgeng)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -495,7 +495,7 @@
                                                 <option value="BCA Padang">Padang</option>
                                                 <option value="BCA Bukittinggi">Bukittinggi</option>
                                                 <option value="BCA Payakumbuh">Payakumbuh</option>
-                                                <option value="BCA PT">PT (Sutan Raya)</option>
+                                                <option value="BCA PT">PT (PT. Fajar Wisata Langgeng)</option>
                                             </select>
                                         </div>
                                         <label class="block w-full text-center border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">

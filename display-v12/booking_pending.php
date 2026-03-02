@@ -57,6 +57,12 @@
                         <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Daftar booking travel yang belum diproses</p>
                     </div>
 
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+                        <button @click="pendingTab = 'antrian'" :class="pendingTab === 'antrian' ? 'border-blue-600 text-blue-600 border-b-2 font-bold' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 transition-colors">Booking Baru (Antrian)</button>
+                        <button @click="pendingTab = 'ditolak'" :class="pendingTab === 'ditolak' ? 'border-red-600 text-red-600 border-b-2 font-bold' : 'text-slate-500 hover:text-slate-700'" class="px-4 py-2 transition-colors">Booking Ditolak</button>
+                    </div>
+
                     <!-- Filters -->
                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow p-3 mb-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -80,8 +86,8 @@
                         </div>
                     </div>
 
-                    <!-- Grouped by Route -->
-                    <div class="space-y-4">
+                    <!-- Grouped by Route (Antrian) -->
+                    <div v-if="pendingTab === 'antrian'" class="space-y-4">
                         <div v-for="(bookings, route) in bookingsByRoute" :key="route" class="bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
                             <!-- Route Header -->
                             <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-3 text-white">
@@ -205,10 +211,67 @@
                         </div>
                     </div>
 
-                    <div v-if="Object.keys(bookingsByRoute).length === 0" class="bg-white dark:bg-slate-800 rounded-xl shadow p-12 text-center">
+                    <div v-if="pendingTab === 'antrian' && Object.keys(bookingsByRoute).length === 0" class="bg-white dark:bg-slate-800 rounded-xl shadow p-12 text-center">
                         <i class="bi bi-inbox text-6xl text-slate-300 dark:text-slate-600 mb-4"></i>
                         <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">Tidak Ada Booking Pending</h3>
                         <p class="text-slate-500 dark:text-slate-400">Semua booking sudah diproses</p>
+                    </div>
+
+                    <!-- Rejected Bookings Table -->
+                    <div v-if="pendingTab === 'ditolak'" class="bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                            <h3 class="font-bold text-slate-800 dark:text-white">Daftar Booking Ditolak</h3>
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">{{ getRejectedBookings.length }} Ditolak</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 uppercase text-xs font-bold">
+                                    <tr>
+                                        <th class="p-4">Waktu</th>
+                                        <th class="p-4">Penumpang</th>
+                                        <th class="p-4">Rute & Kursi</th>
+                                        <th class="p-4">Catatan</th>
+                                        <th class="p-4">Total Price</th>
+                                        <th class="p-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    <tr v-for="b in getRejectedBookings" :key="b.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <td class="p-4">
+                                            <div class="font-bold text-slate-800 dark:text-white">{{ formatDate(b.date) }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-slate-400">{{ b.time }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-slate-800 dark:text-white">{{ b.passengerName }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-slate-400">{{ b.passengerPhone }}</div>
+                                            <div class="text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 mt-1 px-2 py-0.5 rounded inline-block">#{{ b.id }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-blue-600 dark:text-blue-400">{{ b.routeId }}</div>
+                                            <div class="text-xs font-bold mt-1">Kursi: {{ b.seatNumbers || '-' }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="text-xs text-slate-500 italic max-w-xs truncate">{{ b.bookingNote || '-' }}</div>
+                                        </td>
+                                        <td class="p-4">
+                                            <div class="font-bold text-red-600 dark:text-red-400">Rp {{ (b.totalPrice || 0).toLocaleString('id-ID') }}</div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5 uppercase">{{ b.paymentMethod }}</div>
+                                        </td>
+                                        <td class="p-4 text-center">
+                                            <button @click="deleteBooking(b)" class="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
+                                                <i class="bi bi-trash"></i> Hapus Permanen
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="getRejectedBookings.length === 0">
+                                        <td colspan="6" class="p-8 text-center text-slate-400 border-t border-slate-100 dark:border-slate-700">
+                                            <i class="bi bi-emoji-smile text-2xl mb-2 block"></i>
+                                            Tidak ada data booking yang ditolak
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

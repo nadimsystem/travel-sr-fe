@@ -146,7 +146,7 @@
                                     <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label><input type="text" v-model="tempPayment.recv" placeholder="Nama Staf" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
                                 </div>
                                 <div v-else-if="currentPaymentMethod === 'Transfer'" class="space-y-2 animate-fade-in">
-                                    <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (Sutan Raya)</div>
+                                    <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (PT. Fajar Wisata Langgeng)</div>
                                     <label class="block w-full text-xs text-center border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                         <span v-if="!tempPayment.proof" class="text-slate-400"><i class="bi bi-cloud-upload text-lg block mb-1"></i>Upload Bukti</span>
                                         <span v-else class="text-green-600 dark:text-green-400 font-bold flex flex-col items-center"><i class="bi bi-check-circle-fill text-lg mb-1"></i> {{ tempPayment.proof }}</span>
@@ -164,7 +164,7 @@
                                         <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Penerima</label><input type="text" v-model="tempPayment.recv" placeholder="Nama Staf" class="w-full p-2 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-700 dark:text-white"></div>
                                     </div>
                                     <div v-else class="space-y-2 animate-fade-in">
-                                        <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (Sutan Raya)</div>
+                                        <div class="text-[10px] text-center bg-slate-100 dark:bg-slate-700 p-2 rounded text-slate-600 dark:text-slate-300 font-mono">BCA: 123456789 (PT. Fajar Wisata Langgeng)</div>
                                         <label class="block w-full text-xs text-center border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                             <span v-if="!tempPayment.proof" class="text-slate-400"><i class="bi bi-cloud-upload text-lg block mb-1"></i>Upload Bukti DP</span>
                                             <span v-else class="text-green-600 dark:text-green-400 font-bold flex flex-col items-center"><i class="bi bi-check-circle-fill text-lg mb-1"></i> {{ tempPayment.proof }}</span>

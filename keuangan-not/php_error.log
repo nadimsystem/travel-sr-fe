@@ -1,0 +1,78 @@
+[23-Jan-2026 17:26:30 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'position' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 17:26:33 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'position' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 17:44:31 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'position' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 17:44:33 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'position' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 18:34:10 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'password_plain' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 18:34:14 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'password_plain' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 18:37:42 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'password_plain' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 18:40:54 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'password_plain' in 'SELECT' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:6
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(6): mysqli->query('SELECT id, user...')
+#1 /home/sutanray/public_html/keuangan/api.php(80): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 6
+[23-Jan-2026 18:44:04 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'placement' in 'SET' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:87
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(87): mysqli->prepare('UPDATE users SE...')
+#1 /home/sutanray/public_html/keuangan/api.php(97): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 87
+[23-Jan-2026 18:44:10 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'placement' in 'SET' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:87
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(87): mysqli->prepare('UPDATE users SE...')
+#1 /home/sutanray/public_html/keuangan/api.php(97): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 87
+[23-Jan-2026 18:44:38 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'placement' in 'SET' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:84
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(84): mysqli->prepare('UPDATE users SE...')
+#1 /home/sutanray/public_html/keuangan/api.php(97): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 84
+[23-Jan-2026 18:44:43 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'placement' in 'SET' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:84
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(84): mysqli->prepare('UPDATE users SE...')
+#1 /home/sutanray/public_html/keuangan/api.php(97): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 84
+[23-Jan-2026 18:44:47 Asia/Jakarta] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'placement' in 'SET' in /home/sutanray/public_html/keuangan/api_modules/master_data.php:84
+Stack trace:
+#0 /home/sutanray/public_html/keuangan/api_modules/master_data.php(84): mysqli->prepare('UPDATE users SE...')
+#1 /home/sutanray/public_html/keuangan/api.php(97): include('/home/sutanray/...')
+#2 {main}
+  thrown in /home/sutanray/public_html/keuangan/api_modules/master_data.php on line 84

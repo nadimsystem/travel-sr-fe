@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <div class="nav">
+        <nav class="flex items-center justify-between w-full px-8 py-4 bg-white border-b border-gray-200">
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-bold text-blue-600">Logo</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Home</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Shop</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Categories</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Deals</a>
+            </div>
+            <div class="flex items-center space-x-5">
+                <button class="text-gray-500 hover:text-blue-600">
+                    <i class="bi bi-search text-xl"></i>
+                </button>
+                <button class="text-gray-500 hover:text-blue-600 relative">
+                    <i class="bi bi-cart3 text-xl"></i>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                </button>
+                <button class="text-gray-500 hover:text-blue-600">
+                    <i class="bi bi-person text-xl"></i>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <div class="hero">
+        <section class="relative bg-gray-50 py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                        Elevate Your Shopping <span class="text-blue-600">Experience</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8">
+                        Discover our curated collection of premium products designed to enhance your lifestyle. Quality meets affordability in every purchase.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Shop Now</a>
+                        <a href="#" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">Learn More</a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=800" alt="Hero Image" class="rounded-2xl shadow-2xl w-full object-cover">
+                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg hidden md:block">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="bi bi-check-circle-fill text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-900">Verified Quality</p>
+                                <p class="text-xs text-gray-500">100% Satisfaction Guarantee</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="">
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="flex flex-col items-center text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition duration-300">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-truck text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Global Shipping</h3>
+                <p class="text-gray-600">Seamless delivery to over 120 countries worldwide with real-time customs handling.</p>
+            </div>
+            
+            <div class="flex flex-col items-center text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition duration-300">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-lightning-charge text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Express Delivery</h3>
+                <p class="text-gray-600">Next-day delivery options available for local regions and 3-day express for international.</p>
+            </div>
+            
+            <div class="flex flex-col items-center text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition duration-300">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-geo-alt text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Live Tracking</h3>
+                <p class="text-gray-600">Advanced GPS fleet tracking allows you to monitor your shipment's exact location 24/7.</p>
+            </div>
+            
+            <div class="flex flex-col items-center text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition duration-300">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-box-seam text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Secure Handling</h3>
+                <p class="text-gray-600">Reinforced eco-friendly packaging ensuring your products arrive in pristine condition.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        </div>
+    </div>
+    
+</body>
+</html>
