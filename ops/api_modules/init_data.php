@@ -71,7 +71,7 @@ $data = [
 ];
 
 // Ambil Bookings
-$result = $conn->query("SELECT * FROM bookings ORDER BY id DESC");
+$result = $conn->query("SELECT * FROM bookings WHERE status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') ORDER BY id DESC");
 while ($row = $result->fetch_assoc()) {
     $row['id'] = $row['id']; 
     $row['seatCount'] = (int)$row['seatCount'];

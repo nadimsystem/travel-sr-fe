@@ -33,7 +33,7 @@ if ($action === 'get_reports') {
             SUM(CASE WHEN paymentStatus != 'Lunas' AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 THEN (totalPrice - COALESCE(downPaymentAmount,0)) ELSE 0 END) as unpaidAmount,
             SUM(CASE WHEN validationStatus = 'Menunggu Validasi' OR (validationStatus IS NULL AND paymentProof != '') THEN 1 ELSE 0 END) as unvalidatedCount
             FROM bookings 
-            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND DATE_FORMAT(date, '%Y-%m') = '$monthFilter' $routeCondition
+            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND DATE_FORMAT(date, '%Y-%m') = '$monthFilter' $routeCondition
             GROUP BY date ORDER BY date DESC";
     
     if ($period === 'monthly') {
@@ -43,7 +43,7 @@ if ($action === 'get_reports') {
                 SUM(CASE WHEN paymentStatus != 'Lunas' AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 THEN 1 ELSE 0 END) as unpaidCount,
                 SUM(CASE WHEN paymentStatus != 'Lunas' AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 THEN (totalPrice - COALESCE(downPaymentAmount,0)) ELSE 0 END) as unpaidAmount,
                 SUM(CASE WHEN validationStatus = 'Menunggu Validasi' OR (validationStatus IS NULL AND paymentProof != '') THEN 1 ELSE 0 END) as unvalidatedCount
-                FROM bookings WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') $routeCondition GROUP BY DATE_FORMAT(date, '%Y-%m') ORDER BY date DESC LIMIT 12";
+                FROM bookings WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') $routeCondition GROUP BY DATE_FORMAT(date, '%Y-%m') ORDER BY date DESC LIMIT 12";
     }
     
     if ($period === 'weekly') {
@@ -57,7 +57,7 @@ if ($action === 'get_reports') {
                 SUM(CASE WHEN paymentStatus != 'Lunas' AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 THEN (totalPrice - COALESCE(downPaymentAmount,0)) ELSE 0 END) as unpaidAmount,
                 SUM(CASE WHEN validationStatus = 'Menunggu Validasi' OR (validationStatus IS NULL AND paymentProof != '') THEN 1 ELSE 0 END) as unvalidatedCount
                 FROM bookings 
-                WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND DATE_FORMAT(date, '%Y-%m') = '$monthFilter' $routeCondition
+                WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND DATE_FORMAT(date, '%Y-%m') = '$monthFilter' $routeCondition
                 GROUP BY FLOOR((DAY(date) - 1) / 7)
                 ORDER BY date ASC";
     }
@@ -236,7 +236,7 @@ if ($action === 'get_reports') {
 
     $detailSql = "SELECT date, time, REPLACE(routeName, ' (Normal)', '') as routeName, batchNumber, COUNT(id) as count, SUM(seatCount) as seats, SUM(totalPrice) as tripRevenue 
                   FROM bookings 
-                  WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') $routeCondition AND (DATE_FORMAT(date, '%Y-%m') = '$monthFilter' OR date IN ('" . implode("','", $labels) . "'))
+                  WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') $routeCondition AND (DATE_FORMAT(date, '%Y-%m') = '$monthFilter' OR date IN ('" . implode("','", $labels) . "'))
                   GROUP BY date, time, REPLACE(routeName, ' (Normal)', ''), batchNumber";
     
     if ($period === 'daily') {
@@ -269,7 +269,7 @@ if ($action === 'get_reports') {
 
     $sqlRouteStats = "SELECT routeName, serviceType, SUM(totalPrice) as revenue, SUM(seatCount) as pax 
                FROM bookings 
-               WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') 
+               WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') 
                AND date BETWEEN '$routeStatsStartDate' AND '$routeStatsEndDate'
                GROUP BY routeName, serviceType";
     
@@ -386,7 +386,7 @@ if ($action === 'get_report_details') {
 
     $sql = "SELECT id, time, REPLACE(routeName, ' (Normal)', '') as routeName, passengerName, seatCount, seatNumbers, selectedSeats, totalPrice, paymentMethod, paymentStatus, downPaymentAmount, status 
             FROM bookings 
-            WHERE $where AND status NOT IN ('Cancelled', 'Batal', 'Antrian') $routeCondition
+            WHERE $where AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') $routeCondition
             ORDER BY time ASC, id ASC";
     
     $result = $conn->query($sql);
@@ -446,7 +446,7 @@ if ($action === 'get_crm_data') {
     FROM (
         SELECT passengerPhone as phone, MAX(passengerName) as name, COUNT(id) as totalTrips, SUM(totalPrice) as totalRevenue, MAX(date) as lastTrip 
         FROM bookings 
-        WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND passengerPhone != '' 
+        WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND passengerPhone != '' 
         GROUP BY passengerPhone
         
         UNION ALL
@@ -523,7 +523,7 @@ if ($action === 'get_dashboard_summary') {
             SUM(seatCount) as pax,
             SUM(CASE WHEN validationStatus = 'Menunggu Validasi' THEN 1 ELSE 0 END) as pendingValidation
             FROM bookings 
-            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND date = '$today'";
+            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND date = '$today'";
         $resToday = $conn->query($sqlToday)->fetch_assoc();
         $travelToday = (float)($resToday['revenue'] ?? 0);
 
@@ -547,7 +547,7 @@ if ($action === 'get_dashboard_summary') {
             SUM(totalPrice) as revenue, 
             SUM(seatCount) as paxTotal
             FROM bookings 
-            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND date BETWEEN '$startDate' AND '$endDate'";
+            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND date BETWEEN '$startDate' AND '$endDate'";
         $resPeriod = $conn->query($sqlPeriod)->fetch_assoc();
         $travelPeriod = (float)($resPeriod['revenue'] ?? 0);
 
@@ -582,7 +582,7 @@ if ($action === 'get_dashboard_summary') {
             COUNT(id) as count, 
             SUM(totalPrice - COALESCE(downPaymentAmount,0)) as amount 
             FROM bookings 
-            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') 
+            WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') 
             AND paymentStatus != 'Lunas' 
             AND date >= '$ninetyDaysAgo'
             AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100";
@@ -606,7 +606,7 @@ if ($action === 'get_dashboard_summary') {
              // Travel
              $sqlGraph = "SELECT DATE_FORMAT(date, '%Y-%m') as dateKey, SUM(totalPrice) as revenue, SUM(seatCount) as pax 
                           FROM bookings 
-                          WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND date BETWEEN '$startDate' AND '$endDate' 
+                          WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND date BETWEEN '$startDate' AND '$endDate' 
                           GROUP BY DATE_FORMAT(date, '%Y-%m')";
             
              // Package
@@ -632,7 +632,7 @@ if ($action === 'get_dashboard_summary') {
             // Travel
              $sqlGraph = "SELECT date as dateKey, SUM(totalPrice) as revenue, SUM(seatCount) as pax 
                           FROM bookings 
-                          WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND date BETWEEN '$startDate' AND '$endDate' 
+                          WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND date BETWEEN '$startDate' AND '$endDate' 
                           GROUP BY date";
 
             // Package
@@ -732,7 +732,7 @@ if ($action === 'get_dashboard_summary') {
                 // 6. PIE CHART DATA (Revenue & Pax by Route Group)
                 $sqlPie = "SELECT routeName, serviceType, SUM(totalPrice) as revenue, SUM(seatCount) as pax 
                            FROM bookings 
-                           WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') 
+                           WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') 
                            AND date BETWEEN '$startDate' AND '$endDate'
                            GROUP BY routeName, serviceType";
                 $resPie = $conn->query($sqlPie);
@@ -850,7 +850,7 @@ if ($action === 'get_daily_manifest') {
     
     // 1. Get Bookings
     $bookings = [];
-    $sqlBookings = "SELECT * FROM bookings WHERE date = '$date' AND status != 'Antrian' ORDER BY id DESC";
+    $sqlBookings = "SELECT * FROM bookings WHERE date = '$date' AND status NOT IN ('Antrian', 'Ditolak') ORDER BY id DESC";
     $res = $conn->query($sqlBookings);
     if ($res) {
         while ($row = $res->fetch_assoc()) {

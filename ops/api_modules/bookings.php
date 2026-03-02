@@ -7,7 +7,7 @@ if ($action === 'get_occupied_seats') {
     $time = $_GET['time'];
     $excludeId = isset($_GET['excludeId']) ? $_GET['excludeId'] : null;
 
-    $sql = "SELECT seatNumbers, seatCount, batchNumber FROM bookings WHERE routeId=? AND date=? AND time=? AND status != 'Cancelled'";
+    $sql = "SELECT seatNumbers, seatCount, batchNumber FROM bookings WHERE routeId=? AND date=? AND time=? AND status NOT IN ('Cancelled', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')";
     $params = "sss";
     $args = [$routeId, $date, $time];
 
@@ -38,7 +38,7 @@ if ($action === 'get_daily_booked_seats') {
     // Fetch all active bookings for the date
     $sql = "SELECT id, passengerName, routeId, time, batchNumber, seatNumbers, status, validationStatus 
             FROM bookings 
-            WHERE date = ? AND status != 'Cancelled'
+            WHERE date = ? AND status NOT IN ('Cancelled', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
             ORDER BY routeId, time, batchNumber";
             
     $stmt = $conn->prepare($sql);
@@ -138,7 +138,13 @@ if ($action === 'update_payment_status') {
     $pStatus = $input['paymentStatus'];
     $vStatus = $input['validationStatus'];
     
-    $stmt = $conn->prepare("UPDATE bookings SET paymentStatus=?, validationStatus=? WHERE id=?");
+    if ($vStatus === 'Ditolak') {
+        // Clear seat if booking is rejected
+        $stmt = $conn->prepare("UPDATE bookings SET paymentStatus=?, validationStatus=?, seatNumbers=NULL, selectedSeats='[]' WHERE id=?");
+    } else {
+        $stmt = $conn->prepare("UPDATE bookings SET paymentStatus=?, validationStatus=? WHERE id=?");
+    }
+    
     $stmt->bind_param("sss", $pStatus, $vStatus, $id);
     
     if($stmt->execute()) echo json_encode(['status' => 'success']);
@@ -326,7 +332,7 @@ if ($action === 'get_booking_history') {
     
     $sql = "SELECT *
             FROM bookings 
-            WHERE status NOT IN ('Cancelled', 'Antrian')
+            WHERE status NOT IN ('Cancelled', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
             ORDER BY date DESC, input_date DESC";
     
     $result = $conn->query($sql);

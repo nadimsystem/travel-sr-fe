@@ -1,0 +1,52 @@
+[
+    {
+        "id": "BKT-PDG",
+        "origin": "Bukittinggi",
+        "schedules": "[{\"time\":\"05:00\",\"hidden\":false},{\"time\":\"06:00\",\"hidden\":false},{\"time\":\"08:00\",\"hidden\":false},{\"time\":\"10:00\",\"hidden\":false},{\"time\":\"13:00\",\"hidden\":false},{\"time\":\"15:00\",\"hidden\":false},{\"time\":\"17:00\",\"hidden\":false},{\"time\":\"18:00\",\"hidden\":false},{\"time\":\"19:00\",\"hidden\":false}]"
+    },
+    {
+        "id": "BKT-PDG-2",
+        "origin": "Bukittinggi Via Sitinjau",
+        "schedules": "[{\"time\":\"03:00\",\"hidden\":true},{\"time\":\"04:00\",\"hidden\":true},{\"time\":\"05:00\",\"hidden\":true},{\"time\":\"08:00\",\"hidden\":true},{\"time\":\"09:00\",\"hidden\":true},{\"time\":\"12:00\",\"hidden\":false},{\"time\":\"13:00\",\"hidden\":false},{\"time\":\"14:00\",\"hidden\":false},{\"time\":\"18:00\",\"hidden\":false}]"
+    },
+    {
+        "id": "PDG-BKT",
+        "origin": "Padang via sitinjau",
+        "schedules": "[\"08:00\",\"10:00\",\"12:00\",\"14:00\",\"16:00\",\"18:00\",\"20:00\"]"
+    },
+    {
+        "id": "PDG-BKT-2",
+        "origin": "Padang",
+        "schedules": "[\"04.00\",\"05.00\",\"07:00\",\"08:00\",\"10:00\",\"14:00\",\"16:00\",\"15:00\",\"17:00\",\"18:00\",\"19:00\",\"20:00\",\"21:00\"]"
+    },
+    {
+        "id": "PDG-PKU",
+        "origin": "Padang",
+        "schedules": "[\"06:00\",\"20:00\",\"21:00\",\"22:00\"]"
+    },
+    {
+        "id": "PDG-PYK",
+        "origin": "Padang",
+        "schedules": "[\"05:00\",\"06:00\",\"08:00\",\"10:00\",\"12:00\",\"14:00\",\"17:00\",\"18:00\",\"19:00\",\"20:00\",\"21:00\"]"
+    },
+    {
+        "id": "PDG-PYK-2",
+        "origin": "Padang via sitinjau",
+        "schedules": "[\"08:00\",\"10:00\",\"12:00\",\"14:00\",\"16:00\",\"18:00\",\"20:00\"]"
+    },
+    {
+        "id": "PKU-PDG",
+        "origin": "Pekanbaru",
+        "schedules": "[\"10:00\",\"20:00\"]"
+    },
+    {
+        "id": "PYK-PDG",
+        "origin": "Payakumbuh",
+        "schedules": "[\"05:00\",\"07:00\",\"10:00\",\"12:00\",\"14:00\",\"17:00\"]"
+    },
+    {
+        "id": "PYK-PDG-2",
+        "origin": "PAYAKUMBUH via sitinjau",
+        "schedules": "[\"05:00\",\"06:00\",\"07:00\",\"08:00\",\"09:00\",\"10:00\",\"11:00\",\"12:00\"]"
+    }
+]

@@ -11,6 +11,7 @@ if ($action === 'get_payment_proofs') {
             $sql = "SELECT id, date, time, passengerName, passengerPhone, totalPrice, paymentProof, validationStatus, paymentStatus, routeId, routeName, serviceType, seatCount, destinationAccount, transferSentDate, bookingNote 
                     FROM bookings 
                     WHERE paymentProof IS NOT NULL AND paymentProof != '' 
+                    AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                     AND date = ?
                     ORDER BY time DESC";
             $stmt = $conn->prepare($sql);
@@ -27,7 +28,7 @@ if ($action === 'get_payment_proofs') {
         } else {
             // Get available dates and counts for navigation
             // If month is provided, filter by month
-            $whereClause = "WHERE paymentProof IS NOT NULL AND paymentProof != ''";
+            $whereClause = "WHERE paymentProof IS NOT NULL AND paymentProof != '' AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')";
             $params = [];
             $types = "";
 
@@ -73,7 +74,7 @@ if ($action === 'get_proof_months') {
     try {
         $sql = "SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') as month_value, DATE_FORMAT(date, '%M %Y') as month_label
                 FROM bookings 
-                WHERE paymentProof IS NOT NULL AND paymentProof != '' 
+                WHERE paymentProof IS NOT NULL AND paymentProof != '' AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                 ORDER BY month_value DESC";
         $result = $conn->query($sql);
         $months = [];
@@ -98,6 +99,7 @@ if ($action === 'get_ktm_proofs') {
             $sql = "SELECT id, date, time, passengerName, passengerPhone, totalPrice, ktmProof, validationStatus, paymentStatus, routeId, routeName, serviceType, seatCount, destinationAccount, transferSentDate, bookingNote 
                     FROM bookings 
                     WHERE ktmProof IS NOT NULL AND ktmProof != '' 
+                    AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                     AND date = ?
                     ORDER BY time DESC";
             $stmt = $conn->prepare($sql);
@@ -115,7 +117,7 @@ if ($action === 'get_ktm_proofs') {
             // Get available dates and counts for navigation
             $sql = "SELECT date, COUNT(*) as count 
                     FROM bookings 
-                    WHERE ktmProof IS NOT NULL AND ktmProof != '' 
+                    WHERE ktmProof IS NOT NULL AND ktmProof != '' AND status NOT IN ('Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                     GROUP BY date 
                     ORDER BY date DESC 
                     LIMIT 60";

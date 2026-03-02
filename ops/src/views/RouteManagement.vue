@@ -189,11 +189,29 @@ const formatRupiah = (val) => new Intl.NumberFormat('id-ID', { style: 'currency'
  * Sehingga kompatibel dengan data yang sudah ada di DB.
  */
 const normalizeSchedules = (schedules) => {
-    if (!schedules || schedules.length === 0) return [];
-    return schedules.map(s => {
-        if (typeof s === 'string') return { time: s, hidden: false };
-        return { time: s.time, hidden: !!s.hidden };
-    });
+    if (!schedules) return [];
+    
+    let parsed = schedules;
+    if (typeof schedules === 'string') {
+        try { parsed = JSON.parse(schedules); } catch (e) { return []; }
+    }
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.map(s => {
+        if (typeof s === 'string') {
+             if (s === '[object Object]') return null;
+             return { time: s, hidden: false };
+        }
+        if (s && typeof s === 'object') {
+             let timeVal = s.time;
+             if (timeVal && typeof timeVal === 'object') {
+                 timeVal = timeVal.time || '00:00';
+             }
+             if (timeVal === undefined || timeVal === '[object Object]') return null;
+             return { time: String(timeVal), hidden: !!s.hidden };
+        }
+        return null;
+    }).filter(s => s !== null);
 };
 
 const fetchRoutes = async () => {
@@ -290,7 +308,7 @@ const saveRoute = async () => {
 
         // Parse new time list from input
         const newTimes = (routeModal.value.data.schedulesInput || '')
-            .split(',').map(s => s.trim()).filter(s => s);
+            .split(',').map(s => s.trim()).filter(s => s && s !== '[object Object]');
 
         // Merge: keep hidden state for existing times, set hidden=false for new ones
         const mergedSchedules = newTimes.map(time => {

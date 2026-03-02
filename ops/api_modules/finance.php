@@ -156,7 +156,7 @@ if ($action === 'get_outstanding_bookings') {
                     status
                     status
                 FROM bookings 
-                WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian') AND paymentStatus != 'Lunas'
+                WHERE status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') AND paymentStatus != 'Lunas'
                 ORDER BY date DESC";
                 
         $result = $conn->query($sql);
@@ -206,7 +206,7 @@ if ($action === 'get_billing_report') {
         $sqlOutstanding = "SELECT COUNT(*) as cnt, SUM(totalPrice - COALESCE(downPaymentAmount,0)) as total 
                             FROM bookings 
                             WHERE (totalPrice - COALESCE(downPaymentAmount,0)) > 100 
-                            AND status NOT IN ('Cancelled', 'Batal', 'Antrian') 
+                            AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak') 
                             AND paymentStatus != 'Lunas'";
         $res = $conn->query($sqlOutstanding);
         if (!$res) throw new Exception("Error Stats 1: " . $conn->error);
@@ -220,7 +220,7 @@ if ($action === 'get_billing_report') {
                     FROM bookings 
                     WHERE downPaymentAmount > 0 
                     AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 
-                    AND status NOT IN ('Cancelled', 'Batal', 'Antrian')
+                    AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                     AND paymentStatus != 'Lunas'";
         $res = $conn->query($sqlDP);
         if (!$res) throw new Exception("Error Stats 2: " . $conn->error);
@@ -234,7 +234,7 @@ if ($action === 'get_billing_report') {
                         FROM bookings
                         WHERE STR_TO_DATE(date, '%Y-%m-%d') < CURDATE() 
                         AND (totalPrice - COALESCE(downPaymentAmount,0)) > 100 
-                        AND status NOT IN ('Cancelled', 'Batal', 'Antrian')
+                        AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')
                         AND paymentStatus != 'Lunas'";
         $res = $conn->query($sqlOverdue);
         if (!$res) throw new Exception("Error Stats 3: " . $conn->error);
@@ -246,7 +246,7 @@ if ($action === 'get_billing_report') {
         // 4. Unvalidated Count
         $sqlUnvalidated = "SELECT COUNT(*) as cnt FROM bookings 
                             WHERE (validationStatus = 'Menunggu Validasi' OR (validationStatus IS NULL AND paymentProof IS NOT NULL AND paymentProof != ''))
-                            AND status NOT IN ('Cancelled', 'Batal', 'Antrian')";
+                            AND status NOT IN ('Cancelled', 'Batal', 'Antrian', 'Ditolak') AND (validationStatus IS NULL OR validationStatus != 'Ditolak')";
         $res = $conn->query($sqlUnvalidated);
         if (!$res) throw new Exception("Error Stats 4: " . $conn->error);
         if ($row = $res->fetch_assoc()) {
