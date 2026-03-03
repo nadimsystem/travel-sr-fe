@@ -245,13 +245,15 @@ const bankAccounts = computed(() => {
 const groupedRoutes = computed(() => {
     const groups = {}
     routes.value.forEach(route => {
+        const origin = route.origin || '';
+        const dest = route.destination || '';
         // Skip routes that contain 'via sitinjau' (case-insensitive)
-        if (route.origin.toLowerCase().includes('via sitinjau') || route.destination.toLowerCase().includes('via sitinjau')) {
+        if (origin.toLowerCase().includes('via sitinjau') || dest.toLowerCase().includes('via sitinjau')) {
             return
         }
 
         // Create base key, normalizing 'via' texts to only get the base city
-        let o = route.origin.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
+        let o = origin.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
         
         // Capitalize words
         o = o.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -407,11 +409,11 @@ const handleFileUpload = (event, field) => {
     const file = event.target.files[0]
     if (!file) return
 
-    if (!file.type.match('image.*')) {
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
         Swal.fire({
             icon: 'error',
             title: 'Format Salah',
-            text: 'Harap unggah file gambar (JPG/PNG).',
+            text: 'Harap unggah file gambar format JPG atau PNG saja.',
             confirmButtonColor: '#2563eb'
         })
         event.target.value = ''
@@ -674,7 +676,7 @@ const processBooking = async (payload) => {
                     </div>
                     
                     <div class="relative">
-                        <input type="file" ref="ktmInputRef" @change="e => handleFileUpload(e, 'ktmProof')" accept="image/*" class="hidden" id="ktm-upload">
+                        <input type="file" ref="ktmInputRef" @change="e => handleFileUpload(e, 'ktmProof')" accept="image/png,image/jpeg" class="hidden" id="ktm-upload">
                         
                         <div v-if="!formData.ktmProof" class="w-full">
                             <label for="ktm-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-orange-300 border-dashed rounded-xl cursor-pointer bg-white hover:bg-orange-50 transition-colors">
@@ -958,7 +960,7 @@ const processBooking = async (payload) => {
                         </div>
                         
                         <div class="relative">
-                            <input type="file" ref="proofInputRef" @change="e => handleFileUpload(e, 'paymentProof')" accept="image/*" class="hidden" id="proof-upload">
+                            <input type="file" ref="proofInputRef" @change="e => handleFileUpload(e, 'paymentProof')" accept="image/png,image/jpeg" class="hidden" id="proof-upload">
                             
                             <div v-if="!formData.paymentProof" class="w-full">
                                 <label for="proof-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-white hover:bg-slate-50 hover:border-blue-400 transition-colors shadow-sm">

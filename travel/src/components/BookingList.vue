@@ -13,6 +13,14 @@ const filters = ref({
   time: ''
 })
 
+// Date constraints: min = today, max = 1 month ahead
+const today = new Date().toISOString().split('T')[0]
+const maxDate = (() => {
+  const d = new Date()
+  d.setMonth(d.getMonth() + 1)
+  return d.toISOString().split('T')[0]
+})()
+
 // Fetch all routes mapping and schedule definitions
 const fetchRoutes = async () => {
   try {
@@ -31,6 +39,29 @@ const fetchRoutes = async () => {
 const formatRupiah = (number) => {
   const parsed = parseInt(String(number || '').replace(/\D/g, '')) || 0;
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parsed)
+}
+
+// Fallback Prices in case DB returns 0
+const fallbackPrices = {
+  'BKT-PDG': { umum: 120000, pelajar: 100000 },
+  'BKT-PDG-2': { umum: 250000, pelajar: 250000 },
+  'PDG-BKT': { umum: 120000, pelajar: 100000 },
+  'PDG-BKT-2': { umum: 120000, pelajar: 100000 },
+  'PDG-PYK': { umum: 150000, pelajar: 130000 },
+  'PDG-PYK-2': { umum: 250000, pelajar: 250000 },
+  'PYK-PDG': { umum: 150000, pelajar: 130000 },
+  'PYK-PDG-2': { umum: 250000, pelajar: 250000 },
+  'BKT-PKU': { umum: 220000, pelajar: 220000 },
+  'PKU-BKT': { umum: 220000, pelajar: 220000 }
+}
+
+const getRoutePrice = (route, type = 'umum') => {
+  const rawStr = type === 'umum'
+    ? String(route.price_umum || route.price || route.harga || route.tarif || '')
+    : String(route.price_pelajar || '')
+  const parsed = parseInt(rawStr.replace(/\D/g, '')) || 0
+  if (parsed > 0) return parsed
+  return fallbackPrices[route.id]?.[type] || 0
 }
 
 const formatDate = (dateString) => {
@@ -211,6 +242,20 @@ const filteredRoutes = computed(() => {
     return result
 })
 
+// Grouped routes for the select dropdown (mirrors BookingForm logic)
+const groupedRoutesForSelect = computed(() => {
+    const groups = {}
+    routes.value.forEach(route => {
+        // Skip via sitinjau routes
+        if (route.origin.toLowerCase().includes('via sitinjau') || route.destination.toLowerCase().includes('via sitinjau')) return
+        let o = route.origin.toLowerCase().replace(/ via .*/, '').replace(/ \(.*\)/, '').trim()
+        o = o.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        if (!groups[o]) groups[o] = []
+        groups[o].push(route)
+    })
+    return Object.keys(groups).sort().map(key => ({ label: `Keberangkatan: ${key}`, routes: groups[key] }))
+})
+
 // Group schedules by time, inject seat data
 const groupedRoutes = computed(() => {
     return filteredRoutes.value.map(route => {
@@ -311,7 +356,7 @@ const getSeatClass = (seatNum, batch) => {
              
              <!-- Date -->
              <div class="relative group">
-                <input type="date" v-model="filters.date" class="w-full pl-11 p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-slate-800">
+                <input type="date" v-model="filters.date" :min="today" :max="maxDate" class="w-full pl-11 p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-slate-800">
                 <i class="bi bi-calendar-event absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500"></i>
              </div>
 
@@ -319,9 +364,11 @@ const getSeatClass = (seatNum, batch) => {
              <div class="relative group">
                 <select v-model="filters.routeId" class="w-full pl-11 p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold appearance-none text-slate-800">
                     <option value="">Semua Rute</option>
-                    <option v-for="route in routes" :key="route.id" :value="route.id">
-                        {{ cleanRouteName(route.origin) }} ➔ {{ cleanRouteName(route.destination) }}
-                    </option>
+                    <optgroup v-for="group in groupedRoutesForSelect" :key="group.label" :label="group.label">
+                        <option v-for="route in group.routes" :key="route.id" :value="route.id">
+                            {{ route.origin }} ➔ {{ route.destination }}
+                        </option>
+                    </optgroup>
                 </select>
                 <i class="bi bi-geo-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500"></i>
              </div>
@@ -367,10 +414,10 @@ const getSeatClass = (seatNum, batch) => {
                      <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                           <i class="bi bi-send-fill text-xl"></i>
                      </div>
-                     <div>
-                         <h3 class="text-lg font-black text-slate-800 tracking-tight">{{ cleanRouteName(route.origin) }} <i class="bi bi-arrow-right text-slate-400 mx-1"></i> {{ cleanRouteName(route.destination) }}</h3>
-                         <p class="text-xs text-slate-500 mt-0.5">Tarif Umum: <span class="font-bold text-blue-600">{{ formatRupiah(route.price_umum || route.price || route.harga || route.tarif) }}</span> / kursi &nbsp;·&nbsp; Pelajar: <span class="font-bold text-green-600">{{ formatRupiah(route.price_pelajar) }}</span></p>
-                     </div>
+                         <div>
+                          <h3 class="text-lg font-black text-slate-800 tracking-tight">{{ cleanRouteName(route.origin) }} <i class="bi bi-arrow-right text-slate-400 mx-1"></i> {{ cleanRouteName(route.destination) }}</h3>
+                          <p class="text-xs text-slate-500 mt-0.5">Tarif Umum: <span class="font-bold text-blue-600">{{ formatRupiah(getRoutePrice(route, 'umum')) }}</span> / kursi &nbsp;·&nbsp; Pelajar: <span class="font-bold text-green-600">{{ formatRupiah(getRoutePrice(route, 'pelajar')) }}</span></p>
+                         </div>
                 </div>
 
                 <!-- Schedules Horizontal List -->
