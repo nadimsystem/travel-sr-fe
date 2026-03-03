@@ -23,7 +23,7 @@ const formData = ref({
   dropoffMapLink: '',
   passengerType: 'Umum',
   ktmProof: '', // Base64
-  paymentMethod: 'Transfer',
+  paymentMethod: 'QRIS',
   destinationAccount: '',
   transferSentDate: new Date().toISOString().split('T')[0],
   paymentProof: '', // Base64
@@ -476,7 +476,8 @@ const validateStep = (step) => {
     }
     if (step === 4) {
         if (!formData.value.pickupAddress) return "Alamat Penjemputan wajib diisi."
-        if (!formData.value.destinationAccount || !formData.value.paymentProof) return "Pilih rekening tujuan dan unggah bukti transfer."
+        if (formData.value.paymentMethod === 'Transfer' && !formData.value.destinationAccount) return "Pilih rekening tujuan."
+        if (!formData.value.paymentProof) return "Unggah bukti pembayaran."
     }
     return true
 }
@@ -905,23 +906,45 @@ const processBooking = async (payload) => {
                             </p>
                             
                             <div class="space-y-4 relative z-10">
-                                <div v-show="bankAccounts.length > 1">
-                                    <label class="text-[10px] font-bold text-blue-200 uppercase tracking-widest block mb-1">Rekening Tujuan</label>
-                                    <select v-model="formData.destinationAccount" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-sm outline-none focus:border-white focus:bg-white/20 transition-all text-white appearance-none h-11">
-                                        <option value="" disabled class="text-slate-800">Pilih Rekening BCA...</option>
-                                        <option v-for="b in bankAccounts" :key="b.value" :value="b.value" class="text-slate-800">{{ b.label }}</option>
-                                    </select>
+                                <div class="flex gap-2 mb-4 bg-white/10 p-1 rounded-xl">
+                                    <button type="button" @click="formData.paymentMethod = 'QRIS'" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all" :class="formData.paymentMethod === 'QRIS' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'">QRIS</button>
+                                    <button type="button" @click="formData.paymentMethod = 'Transfer'" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all" :class="formData.paymentMethod === 'Transfer' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'">Transfer Bank</button>
                                 </div>
-                                
+
                                 <transition name="fade">
-                                    <div v-if="selectedBankAccount" class="bg-white/10 border border-white/10 rounded-xl p-3 flex justify-between items-center backdrop-blur-sm">
-                                        <div>
-                                            <p class="text-[10px] text-blue-200 uppercase tracking-wider mb-0.5 font-medium">No. Rekening {{ selectedBankAccount.value.split('-')[0].trim() || 'BCA' }}</p>
-                                            <p class="font-mono text-lg font-bold">{{ selectedBankAccount.label.match(/\d+/)[0] }}</p>
+                                    <div v-if="formData.paymentMethod === 'QRIS'" class="bg-white rounded-xl p-4 flex flex-col items-center justify-center shadow-inner">
+                                        <p class="text-blue-800 text-xs font-bold mb-3 uppercase tracking-wide">Scan QRIS</p>
+                                        <img src="/QR.jpeg" alt="QRIS" class="w-full max-w-[250px] h-auto object-contain rounded-lg border border-slate-200 mb-3" />
+                                        
+                                        <a href="/QR.jpeg" download="QRIS_PT_Fajar_Wisata_Langgeng.jpeg" class="flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 w-full max-w-[200px] py-2 rounded-lg text-xs font-bold transition-colors mb-2">
+                                            <i class="bi bi-download"></i> Download QRIS
+                                        </a>
+
+                                        <p class="text-[10px] text-slate-500 mt-1 text-center items-center justify-center flex flex-col">
+                                            <span>Atas Nama: <span class="font-bold text-slate-700">PT Fajar Wisata Langgeng</span></span>
+                                        </p>
+                                    </div>
+                                </transition>
+
+                                <transition name="fade">
+                                    <div v-if="formData.paymentMethod === 'Transfer'" class="space-y-4">
+                                        <div v-show="bankAccounts.length > 1">
+                                            <label class="text-[10px] font-bold text-blue-200 uppercase tracking-widest block mb-1">Rekening Tujuan</label>
+                                            <select v-model="formData.destinationAccount" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-sm outline-none focus:border-white focus:bg-white/20 transition-all text-white appearance-none h-11">
+                                                <option value="" disabled class="text-slate-800">Pilih Rekening BCA...</option>
+                                                <option v-for="b in bankAccounts" :key="b.value" :value="b.value" class="text-slate-800">{{ b.label }}</option>
+                                            </select>
                                         </div>
-                                        <button @click.prevent="copyToClipboard(selectedBankAccount.label.match(/\d+/)[0])" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white text-white hover:text-blue-600 transition-colors shadow-sm" title="Salin Rekening">
-                                            <i class="bi bi-files"></i>
-                                        </button>
+                                        
+                                        <div v-if="selectedBankAccount" class="bg-white/10 border border-white/10 rounded-xl p-3 flex justify-between items-center backdrop-blur-sm">
+                                            <div>
+                                                <p class="text-[10px] text-blue-200 uppercase tracking-wider mb-0.5 font-medium">No. Rekening {{ selectedBankAccount.value.split('-')[0].trim() || 'BCA' }}</p>
+                                                <p class="font-mono text-lg font-bold">{{ selectedBankAccount.label.match(/\d+/) ? selectedBankAccount.label.match(/\d+/)[0] : '' }}</p>
+                                            </div>
+                                            <button @click.prevent="copyToClipboard(selectedBankAccount.label.match(/\d+/)[0])" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white text-white hover:text-blue-600 transition-colors shadow-sm" title="Salin Rekening">
+                                                <i class="bi bi-files"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </transition>
                             </div>
@@ -931,7 +954,7 @@ const processBooking = async (payload) => {
                     <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="bi bi-cloud-arrow-up-fill text-blue-500"></i>
-                            <h4 class="font-bold text-slate-800 text-sm">Upload Bukti Transfer</h4>
+                            <h4 class="font-bold text-slate-800 text-sm">Upload Bukti Pembayaran</h4>
                         </div>
                         
                         <div class="relative">
@@ -954,7 +977,7 @@ const processBooking = async (payload) => {
                                     <img :src="formData.paymentProof" class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-700 truncate">Bukti Transfer</p>
+                                    <p class="text-sm font-bold text-slate-700 truncate">Bukti Pembayaran</p>
                                     <p class="text-xs text-blue-600 font-medium flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Selesai Upload</p>
                                 </div>
                                 <button @click.prevent="removeFile('paymentProof')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors" title="Ubah foto">

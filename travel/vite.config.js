@@ -52,6 +52,11 @@ export default defineConfig({
         target: 'http://localhost/travel-sr-fe/travel',
         changeOrigin: true,
         secure: false
+      },
+      '/display-v12': {
+        target: 'http://localhost/travel-sr-fe',
+        changeOrigin: true,
+        secure: false
       }
     }
   }

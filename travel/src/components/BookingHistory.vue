@@ -138,10 +138,31 @@ const formatRupiah = (number) => {
 
 const viewProof = (path) => {
     if(!path) return
-    // Adjust path matching backend logic
-    const cleanPath = path.replace(/^uploads\//, '')
+    // Remove any leading slashes first
+    let cleanPath = path.replace(/^\/+/, '')
+    // Remove known directory prefixes
+    cleanPath = cleanPath.replace(/^public\//, '')
+    cleanPath = cleanPath.replace(/^uploads\//, '')
+    cleanPath = cleanPath.replace(/^buktibayar\//, '')
+    cleanPath = cleanPath.replace(/^\/+/, '')
+    
     const url = `/display-v12/uploads/${cleanPath}`
-    window.open(url, '_blank')
+    
+    Swal.fire({
+        imageUrl: url,
+        imageAlt: 'Bukti Pembayaran',
+        imageWidth: '100%',
+        title: 'Bukti Pembayaran',
+        showConfirmButton: true,
+        confirmButtonText: '<i class="bi bi-download"></i> Buka / Download',
+        confirmButtonColor: '#2563eb',
+        showCloseButton: true,
+        didOpen: () => {},
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open(url, '_blank')
+        }
+    })
 }
 
 onMounted(() => {

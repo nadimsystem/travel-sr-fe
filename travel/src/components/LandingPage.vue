@@ -21,7 +21,7 @@ const navigate = (page) => {
         </div>
 
         <!-- Title Area -->
-        <h1 class="text-3xl font-extrabold text-slate-800 mb-3 tracking-tight">Travel <span class="text-blue-600">Sutan Raya</span></h1>
+        <h1 class="text-3xl font-extrabold text-slate-800 mb-3 tracking-tight"> <span class="text-yellow-600">Sutan Raya Travel</span></h1>
         <p class="text-slate-500 text-sm leading-relaxed px-4">Aplikasi resmi pemesanan tiket travel Sutan Raya. Aman, Cepat, dan Nyaman.</p>
     </div>
 
@@ -29,11 +29,11 @@ const navigate = (page) => {
     <div class="w-full max-w-sm space-y-4 animate-fade-in-up" style="animation-delay: 0.1s">
         
         <!-- Primary Action -->
-        <button @click="navigate('form')" class="w-full relative group overflow-hidden bg-blue-600 text-white rounded-2xl p-4 shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:-translate-y-1 transition-all duration-300 transform active:scale-95 text-left border border-blue-500">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <button @click="navigate('form')" class="w-full relative group overflow-hidden bg-yellow-600 text-white rounded-2xl p-4 shadow-lg shadow-yellow-600/20 hover:shadow-yellow-600/40 hover:-translate-y-1 transition-all duration-300 transform active:scale-95 text-left border border-yellow-500">
+            <div class="absolute inset-0 bg-gradient-to-r from-yellow-600 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="relative z-10 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-200 block mb-1">Mulai Perjalanan</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-yellow-200 block mb-1">Mulai Perjalanan</span>
                     <span class="text-lg font-bold">Pesan Tiket</span>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:bg-white group-hover:text-blue-600 transition-colors">

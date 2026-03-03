@@ -283,7 +283,7 @@ function createBooking($conn, $sanitizedData = null) {
 
     // 3. Prepare Defaults
     $id = $b['id'];
-    if (empty($id)) $id = time() . rand(100,999);
+    if (empty($id)) $id = date('Ymd') . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
     
     $status = 'Antrian';
     $validationStatus = isset($b['validationStatus']) ? $b['validationStatus'] : 'Menunggu Validasi';
