@@ -9,6 +9,7 @@ const emit = defineEmits(['booking-created'])
 const loading = ref(false)
 const error = ref(null)
 const success = ref(false)
+const isReady = ref(false) // Defer heavy rendering to prevent transition lag
 
 const routes = ref([])
 const formData = ref({
@@ -350,6 +351,11 @@ const formatRupiah = (number) => {
 
 // Lifecycle
 onMounted(async () => {
+    // Defer rendering of the heavy form to allow page transition to run smoothly
+    setTimeout(() => {
+        isReady.value = true
+    }, 150) // small delay to let fade-in start
+
     // Fetch Routes
     try {
         const res = await axios.get('api/?action=get_routes')
@@ -594,84 +600,121 @@ const processBooking = async (payload) => {
 </script>
 
 <template>
-  <div class="booking-form-container max-w-2xl mx-auto py-6 md:py-10 px-4 pb-32">
+  <div class="booking-form-container max-w-2xl mx-auto py-6 md:py-10 px-0 md:px-4 pb-32">
     
     <!-- Step Indicator -->
-    <div class="mb-8 relative z-0 mt-2">
-        <div class="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-[2px] bg-slate-100 -z-10 rounded-full"></div>
+    <div class="mb-8 relative z-0 mt-2 px-6">
+        <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-slate-200/50 -z-10 rounded-full"></div>
         <div class="flex items-center justify-between">
             <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center gap-2">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg transition-all duration-300 z-10"
-                     :class="currentStep > index + 1 ? 'bg-green-500 text-white shadow-sm' : 
-                             currentStep === index + 1 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 scale-110' : 
-                             'bg-white text-slate-300 border border-slate-200'">
-                    <i v-if="currentStep > index + 1" class="bi bi-check-lg"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-[12px] md:rounded-[14px] flex items-center justify-center font-bold text-base md:text-lg transition-all duration-300 z-10"
+                     :class="currentStep > index + 1 ? 'bg-[#34c759] text-white shadow-sm' : 
+                             currentStep === index + 1 ? 'bg-[#0071e3] text-white shadow-lg shadow-blue-500/20 scale-110' : 
+                             'bg-white text-[#8e8e93] border border-slate-200 shadow-sm'">
+                    <i v-if="currentStep > index + 1" class="bi bi-check-lg text-lg"></i>
                     <i v-else :class="step.icon"></i>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="mb-8 flex items-center gap-3">
-        <button @click="$emit('go-home')" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors">
-            <i class="bi bi-arrow-left"></i>
+    <div class="mb-6 flex items-center gap-4 px-6">
+        <button @click="$emit('go-home')" class="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[#0071e3] hover:bg-slate-50 transition-colors active:scale-95">
+            <i class="bi bi-chevron-left text-lg"></i>
         </button>
         <div>
-            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">{{ steps[currentStep-1].title }}</h2>
+            <h1 class="text-3xl font-bold text-[#1d1d1f] tracking-tight">{{ steps[currentStep-1].title }}</h1>
         </div>
     </div>
 
-    <!-- Form Content Wrapper -->
-    <form @submit.prevent class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-6 md:p-8 relative min-h-[400px]">
+    <!-- Form Content Wrapper (iOS Inset Grouped Style) -->
+    <!-- Skeleton Loading Screen -->
+    <div v-if="!isReady" class="px-5 py-2 animate-pulse space-y-8">
+        <!-- Step Indicator Skeleton -->
+        <div class="flex items-center justify-between px-1">
+            <div v-for="i in 5" :key="i" class="flex flex-col items-center gap-2">
+                <div class="w-10 h-10 rounded-[12px] bg-slate-200"></div>
+            </div>
+        </div>
+
+        <!-- Title Skeleton -->
+        <div class="px-1 space-y-2">
+            <div class="h-8 w-48 bg-slate-200 rounded-full"></div>
+        </div>
+
+        <!-- Card Skeleton -->
+        <div class="bg-white rounded-[20px] border border-slate-100 shadow-sm p-6 space-y-6">
+            <div class="h-3 w-36 bg-slate-200 rounded-full"></div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="h-24 bg-slate-100 rounded-[16px]"></div>
+                <div class="h-24 bg-slate-100 rounded-[16px]"></div>
+            </div>
+            <div class="h-px bg-slate-100"></div>
+            <div class="space-y-2">
+                <div class="h-3 w-24 bg-slate-200 rounded-full"></div>
+                <div class="h-14 bg-slate-100 rounded-[14px]"></div>
+            </div>
+            <div class="space-y-2">
+                <div class="h-3 w-32 bg-slate-200 rounded-full"></div>
+                <div class="h-14 bg-slate-100 rounded-[14px]"></div>
+            </div>
+        </div>
+
+        <!-- Bottom button skeleton -->
+        <div class="h-14 bg-slate-200 rounded-full mt-4"></div>
+    </div><form v-else @submit.prevent class="relative min-h-[400px] animate-fade-in">
         
-        <div v-if="currentStep === 1" class="animate-fade-in space-y-6">
+        <!-- STEP 1: Data Penumpang -->
+        <div v-if="currentStep === 1" class="animate-fade-in space-y-8 px-5">
             
-            <div class="mb-6 flex items-center gap-2 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
-                <i class="bi bi-person-fill text-blue-600"></i> Data Penumpang
-            </div>
-
-            <div class="space-y-3">
-                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-2 px-1">KATEGORI PENUMPANG</label>
-                <div class="space-y-3">
-                    <button type="button" @click="formData.passengerType = 'Umum'" class="w-full p-4 rounded-xl border-1.5 transition-all text-left flex items-center justify-center gap-2 group"
-                            :class="formData.passengerType === 'Umum' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'">
-                        <i class="bi bi-person text-lg"></i>
-                        <span class="font-bold">Umum</span>
-                    </button>
-                    
-                    <button type="button" @click="formData.passengerType = 'Mahasiswa / Pelajar'" class="w-full relative p-4 rounded-xl border-1.5 transition-all text-center flex items-center justify-center gap-2 group overflow-hidden"
-                            :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'">
-                        <div class="absolute right-0 top-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 pb-1.5 rounded-bl-xl rounded-tr-xl">Hemat 20rb</div>
-                        <i class="bi bi-mortarboard text-lg"></i>
-                        <span class="font-bold">Mahasiswa / Pelajar</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="space-y-5">
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NAMA LENGKAP</label>
-                    <div class="relative">
-                        <input type="text" v-model="formData.passengerName" placeholder="Nama penumpang..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
+            <div class="bg-white rounded-[20px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6 space-y-6">
+                    <div>
+                        <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-4">Kategori Penumpang</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" @click="formData.passengerType = 'Umum'" 
+                                    class="p-4 rounded-[16px] border-2 transition-all flex flex-col items-center gap-3 active:scale-95"
+                                    :class="formData.passengerType === 'Umum' ? 'bg-[#0071e3]/5 border-[#0071e3] text-[#0071e3]' : 'bg-[#f5f5f7] border-transparent text-[#8e8e93]'">
+                                <i class="bi bi-person text-3xl"></i>
+                                <span class="font-bold text-sm">Umum</span>
+                            </button>
+                            
+                            <button type="button" @click="formData.passengerType = 'Mahasiswa / Pelajar'" 
+                                    class="relative p-4 rounded-[16px] border-2 transition-all flex flex-col items-center gap-3 active:scale-95"
+                                    :class="formData.passengerType === 'Mahasiswa / Pelajar' ? 'bg-[#0071e3]/5 border-[#0071e3] text-[#0071e3]' : 'bg-[#f5f5f7] border-transparent text-[#8e8e93]'">
+                                <div class="absolute right-0 top-0 bg-[#ff3b30] text-white text-[10px] font-bold px-3 py-1 pb-1.5 rounded-bl-[12px]">Hemat 20k</div>
+                                <i class="bi bi-mortarboard text-3xl"></i>
+                                <span class="font-bold text-sm">Pelajar</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NO. WHATSAPP</label>
-                    <div class="relative">
-                        <input type="tel" v-model="formData.passengerPhone" placeholder="08..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 placeholder:text-slate-400">
+                    <div class="space-y-4 pt-4 border-t border-[rgba(0,0,0,0.03)]">
+                        <div>
+                            <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-1.5 px-1">Nama Lengkap</label>
+                            <input type="text" v-model="formData.passengerName" placeholder="Contoh: John Doe" 
+                                   class="w-full h-[54px] px-5 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc]">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-1.5 px-1">Nomor WhatsApp</label>
+                            <input type="tel" v-model="formData.passengerPhone" placeholder="08xxxxxxxxxx" 
+                                   class="w-full h-[54px] px-5 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc]">
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Conditional KTM Upload -->
             <transition name="expand">
-                <div v-if="formData.passengerType === 'Mahasiswa / Pelajar'" class="p-5 bg-orange-50 border border-orange-200 rounded-xl space-y-4">
-                    <div class="flex items-start gap-3">
-                        <i class="bi bi-info-circle-fill text-orange-500 mt-0.5"></i>
+                <div v-if="formData.passengerType === 'Mahasiswa / Pelajar'" class="bg-[#ff9500]/5 border border-[#ff9500]/20 rounded-[20px] p-6 space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-[#ff9500] text-white rounded-full flex items-center justify-center shrink-0">
+                            <i class="bi bi-person-vcard-fill text-xl"></i>
+                        </div>
                         <div>
-                            <h4 class="font-bold text-orange-800 text-sm">Upload Identitas (Wajib)</h4>
-                            <p class="text-xs text-orange-600/80 mt-1">Sertakan foto KTM atau Kartu Pelajar untuk mendapatkan diskon perjalanan Rp 20.000.</p>
+                            <h4 class="font-bold text-[#1d1d1f] text-base">Verifikasi Identitas</h4>
+                            <p class="text-sm text-[#8e8e93] mt-1 font-medium">Unggah foto KTM atau Kartu Pelajar untuk klaim diskon.</p>
                         </div>
                     </div>
                     
@@ -679,25 +722,23 @@ const processBooking = async (payload) => {
                         <input type="file" ref="ktmInputRef" @change="e => handleFileUpload(e, 'ktmProof')" accept="image/png,image/jpeg" class="hidden" id="ktm-upload">
                         
                         <div v-if="!formData.ktmProof" class="w-full">
-                            <label for="ktm-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-orange-300 border-dashed rounded-xl cursor-pointer bg-white hover:bg-orange-50 transition-colors">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <i class="bi bi-cloud-arrow-up text-2xl text-orange-500 mb-2"></i>
-                                    <p class="mb-1 text-sm font-semibold text-orange-700">Sentuh untuk Upload KTM</p>
-                                    <p class="text-xs text-orange-500 opacity-80">JPG, PNG (Max. 2MB)</p>
-                                </div>
+                            <label for="ktm-upload" class="flex flex-col items-center justify-center w-full h-40 bg-white border-2 border-dashed border-[#ff9500]/30 rounded-[16px] cursor-pointer hover:bg-[#ff9500]/5 hover:border-[#ff9500] transition-all">
+                                <i class="bi bi-camera-fill text-3xl text-[#ff9500] mb-3"></i>
+                                <p class="text-sm font-bold text-[#ff9500]">Ambil Foto KTM</p>
+                                <p class="text-[11px] text-[#8e8e93] mt-1">JPG/PNG (Maks. 2MB)</p>
                             </label>
                         </div>
 
-                        <div v-else class="relative w-full rounded-xl overflow-hidden border border-orange-200 bg-white p-2 flex items-center gap-4 group">
-                             <div class="w-16 h-16 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden relative shrink-0">
+                        <div v-else class="relative w-full rounded-[16px] overflow-hidden border border-[rgba(0,0,0,0.05)] bg-white p-3 flex items-center gap-4 shadow-sm">
+                             <div class="w-16 h-16 rounded-[10px] bg-[#f5f5f7] overflow-hidden shrink-0">
                                  <img :src="formData.ktmProof" class="w-full h-full object-cover">
                              </div>
                              <div class="flex-1 min-w-0">
-                                 <p class="text-sm font-bold text-slate-700 truncate">KTM Tersimpan</p>
-                                 <p class="text-xs text-emerald-600 font-medium flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Upload Berhasil</p>
+                                 <p class="text-sm font-bold text-[#1d1d1f] truncate">ID Terunggah</p>
+                                 <p class="text-xs text-[#34c759] font-semibold flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Siap diverifikasi</p>
                              </div>
-                             <button @click.prevent="removeFile('ktmProof')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors" title="Hapus foto">
-                                 <i class="bi bi-trash-fill"></i>
+                             <button @click.prevent="removeFile('ktmProof')" class="w-10 h-10 rounded-full bg-[#ff3b30]/10 text-[#ff3b30] flex items-center justify-center hover:bg-[#ff3b30]/20 transition-colors">
+                                 <i class="bi bi-trash3-fill"></i>
                              </button>
                         </div>
                     </div>
@@ -707,403 +748,397 @@ const processBooking = async (payload) => {
         </div>
 
         <!-- STEP 2: Rute & Jadwal -->
-        <div v-if="currentStep === 2" class="animate-fade-in space-y-6">
-            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
-                <i class="bi bi-map-fill text-[#ff6b00]"></i> Pilih Perjalanan
-            </div>
+        <div v-if="currentStep === 2" class="animate-fade-in space-y-6 px-5">
             
-            <div class="space-y-5 flex-1 mt-2">
-                
-                <div class="relative group">
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">RUTE PERJALANAN</label>
-                    <div class="relative">
-                        <select v-model="formData.routeId" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none text-slate-800 cursor-pointer">
-                            <option value="" disabled>Pilih Rute</option>
-                            <optgroup v-for="group in groupedRoutes" :key="group.label" :label="group.label">
-                                <option v-for="route in group.routes" :key="route.id" :value="route.id" class="py-2">
-                                    {{ route.origin }} ➔ {{ route.destination }}
-                                </option>
-                            </optgroup>
-                        </select>
-                        <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="relative group">
-                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">TANGGAL</label>
+            <div class="bg-white rounded-[20px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6 space-y-8">
+                    <div>
+                        <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-3 px-1">Tujuan Perjalanan</label>
                         <div class="relative">
-                            <input type="date" v-model="formData.date" class="w-full p-3.5 pr-10 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 cursor-pointer">
-                            <i class="bi bi-calendar absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    <div class="relative group">
-                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 group-focus-within:text-blue-600 transition-colors">JAM</label>
-                        <div class="relative">
-                            <select v-model="formData.time" :disabled="!formData.routeId" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed text-slate-800 cursor-pointer">
-                                <option value="" disabled>Pilih Jam</option>
-                                <option v-for="t in availableTimes" :key="t" :value="t">{{ t }}</option>
+                            <select v-model="formData.routeId" class="w-full h-[54px] pl-12 pr-10 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all appearance-none font-medium text-[#1d1d1f] cursor-pointer">
+                                <option value="" disabled>Pilih Rute Perjalanan</option>
+                                <optgroup v-for="group in groupedRoutes" :key="group.label" :label="group.label">
+                                    <option v-for="route in group.routes" :key="route.id" :value="route.id">
+                                        {{ route.origin }} ➔ {{ route.destination }}
+                                    </option>
+                                </optgroup>
                             </select>
-                            <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                            <i class="bi bi-map-fill absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8e93] text-lg"></i>
+                            <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[#c7c7cc]"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-3 px-1">Tanggal</label>
+                            <div class="relative">
+                                <input type="date" v-model="formData.date" class="w-full h-[54px] pl-12 pr-4 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-medium text-[#1d1d1f] cursor-pointer">
+                                <i class="bi bi-calendar-event-fill absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8e93] text-lg"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest block mb-3 px-1">Waktu</label>
+                            <div class="relative">
+                                <select v-model="formData.time" :disabled="!formData.routeId" class="w-full h-[54px] pl-12 pr-10 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all appearance-none disabled:opacity-40 disabled:cursor-not-allowed font-medium text-[#1d1d1f] cursor-pointer">
+                                    <option value="" disabled>Pilih Jam</option>
+                                    <option v-for="t in availableTimes" :key="t" :value="t">{{ t }}</option>
+                                </select>
+                                <i class="bi bi-clock-fill absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8e93] text-lg"></i>
+                                <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[#c7c7cc]"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <div v-if="formData.routeId" class="bg-[#0071e3]/5 border border-[#0071e3]/10 rounded-[20px] p-6 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-[#0071e3] uppercase tracking-wider mb-1">Estimasi Perjalanan</p>
+                    <p class="text-[#1d1d1f] font-bold text-lg leading-tight">Sekitar 2-3 Jam</p>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <i class="bi bi-lightning-charge-fill text-[#ff9500] text-xl"></i>
+                </div>
+            </div>
+
         </div>
 
         <!-- STEP 3: Pilih Kursi -->
-        <div v-if="currentStep === 3" class="animate-fade-in space-y-6">
-            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
-                <i class="bi bi-grid-3x3-gap-fill text-[#00c853]"></i> Pilih Kursi
-            </div>
-
-            <div class="mt-8 pt-8 border-t border-slate-200">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">Pilih Kursi</h3>
-            </div>
+        <div v-if="currentStep === 3" class="animate-fade-in space-y-8 px-5">
             
-            <div v-if="seatLoading" class="flex flex-col items-center justify-center py-16">
-                 <div class="w-10 h-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                 <p class="text-slate-500 text-sm font-medium animate-pulse">Memuat denah kursi...</p>
-            </div>
+            <div class="bg-white rounded-[20px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-[#1d1d1f] tracking-tight">Denah Armada</h3>
+                            <p class="text-sm text-[#8e8e93] font-medium mt-1">Pilih kursi yang Anda inginkan.</p>
+                        </div>
+                        <div class="bg-[#f5f5f7] px-3 py-1.5 rounded-full text-[11px] font-bold text-[#8e8e93] uppercase tracking-wider">
+                            Armada {{ currentBatch }} / {{ availableBatches.length }}
+                        </div>
+                    </div>
+                    
+                    <div v-if="seatLoading" class="flex flex-col items-center justify-center py-16">
+                         <div class="w-12 h-12 border-[3px] border-[#0071e3]/10 border-t-[#0071e3] rounded-full animate-spin mb-4"></div>
+                         <p class="text-[#8e8e93] text-sm font-bold animate-pulse">Menghubungkan ke armada...</p>
+                    </div>
 
-            <div v-else class="flex flex-col items-center">
-                 
-                 <!-- Batch UI Selector -->
-                 <div v-if="availableBatches.length > 0" class="mb-6 w-full max-w-[300px] mx-auto">
-                     <div class="flex items-center gap-2 mb-1">
-                         <span class="text-xs font-bold text-slate-800 uppercase">PILIH KURSI (ARMADA {{currentBatch}})</span>
-                     </div>
-                     <p class="text-[10px] text-slate-400 mb-3"><i class="bi bi-info-circle text-slate-300 mr-1"></i> Tersedia {{availableBatches.length}} armada karena tingginya permintaan di jam ini.</p>
-                     <div class="flex flex-wrap gap-2" v-if="availableBatches.length > 1">
-                         <button type="button" v-for="b in availableBatches" :key="b" @click="currentBatch = b"
-                                 class="w-10 h-10 rounded-lg text-sm font-bold transition-all flex items-center justify-center border"
-                                 :class="currentBatch === b ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300'">
-                            {{ b }}
-                         </button>
-                     </div>
-                 </div>
+                    <div v-else class="flex flex-col items-center">
+                         
+                         <!-- Batch Switching UI -->
+                         <div v-if="availableBatches.length > 1" class="mb-10 flex gap-2">
+                             <button type="button" v-for="b in availableBatches" :key="b" @click="currentBatch = b"
+                                     class="w-12 h-12 rounded-[14px] text-sm font-bold transition-all flex items-center justify-center border-2 active:scale-90"
+                                     :class="currentBatch === b ? 'bg-[#0071e3] text-white border-[#0071e3] shadow-md shadow-blue-500/20' : 'bg-white text-[#8e8e93] border-[#f5f5f7]'">
+                                {{ b }}
+                             </button>
+                         </div>
 
-                 <!-- Physical Seat Map Outline -->
-                 <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 max-w-[300px] mx-auto w-full relative">
-
-                     <div class="flex justify-center pt-4">
-                         <div class="bg-slate-100 p-4 rounded-xl border border-slate-200 relative w-[180px]">
+                         <!-- iOS Style Seat Map -->
+                         <div class="bg-[#f5f5f7] p-8 rounded-[40px] w-fit mx-auto relative border border-[rgba(0,0,0,0.03)] shadow-inner">
+                             <!-- Windshield -->
+                             <div class="absolute top-4 left-1/2 -translate-x-1/2 w-[60%] h-1 bg-white/50 rounded-full blur-[0.5px]"></div>
                              
-                             <!-- Row 1: Helper / Driver -->
-                             <div class="grid grid-cols-3 gap-3 mb-4">
-                                 <button type="button" @click="toggleSeat('CC')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('CC')">CC</button>
-                                 
-                                 <div></div> <!-- Gap -->
+                             <div class="flex flex-col gap-6 pt-4 w-[200px]">
+                                 <!-- Row 1 -->
+                                 <div class="flex justify-between w-full">
+                                     <button type="button" @click="toggleSeat('CC')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('CC')">CC</button>
+                                     <div class="w-14 h-14 shrink-0 rounded-[16px] bg-[#e5e5ea] text-[#8e8e93] flex items-center justify-center text-[11px] font-black tracking-tighter shadow-inner opacity-60">SPR</div>
+                                 </div>
 
-                                 <div class="w-10 h-10 rounded-lg bg-slate-200 text-slate-500 border border-slate-300 flex items-center justify-center text-[10px] font-bold select-none pointer-events-none">
-                                     SPR
+                                 <!-- Row 2 -->
+                                 <div class="flex justify-between w-full">
+                                     <button type="button" @click="toggleSeat('1')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('1')">1</button>
+                                     <button type="button" @click="toggleSeat('2')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('2')">2</button>
+                                 </div>
+
+                                 <!-- Row 3 -->
+                                 <div class="flex justify-between w-full">
+                                     <button type="button" @click="toggleSeat('3')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('3')">3</button>
+                                     <button type="button" @click="toggleSeat('4')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('4')">4</button>
+                                 </div>
+
+                                 <!-- Row 4 (Back Bench) -->
+                                 <div class="flex justify-between w-full">
+                                     <button type="button" @click="toggleSeat('5')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('5')">5</button>
+                                     <button type="button" @click="toggleSeat('6')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('6')">6</button>
+                                     <button type="button" @click="toggleSeat('7')" class="w-14 h-14 shrink-0 rounded-[16px] flex items-center justify-center text-[15px] font-bold transition-all transform active:scale-90 shadow-sm border" :class="getSeatClass('7')">7</button>
                                  </div>
                              </div>
-                             
-                             <!-- Row 2:  1 and 2 -->
-                             <div class="grid grid-cols-3 gap-3 mb-4">
-                                 <button type="button" @click="toggleSeat('1')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('1')">1</button>
-                                 <div></div> <!-- Gap -->
-                                 <button type="button" @click="toggleSeat('2')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('2')">2</button>
-                             </div>
-
-                             <!-- Row 3:  3 and 4 -->
-                             <div class="grid grid-cols-3 gap-3 mb-4">
-                                 <button type="button" @click="toggleSeat('3')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('3')">3</button>
-                                 <div></div> <!-- Gap -->
-                                 <button type="button" @click="toggleSeat('4')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('4')">4</button>
-                             </div>
-
-                             <!-- Row 4:  5, 6, 7 (Back Seat) -->
-                             <div class="grid grid-cols-3 gap-3">
-                                 <button type="button" @click="toggleSeat('5')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('5')">5</button>
-                                 <button type="button" @click="toggleSeat('6')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('6')">6</button>
-                                 <button type="button" @click="toggleSeat('7')" class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border transition-all" :class="getSeatClass('7')">7</button>
-                             </div>
-
                          </div>
-                     </div>
-                 </div>
 
-                 <!-- Legend & Status -->
-                 <div class="mt-6 flex flex-wrap justify-center gap-4 text-[11px] font-medium text-slate-500 px-4 py-2">
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-white border border-slate-200"></div> Kosong</span>
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-blue-600 border border-blue-600"></div> Dipilih</span>
-                     <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-slate-500 border border-slate-500"></div> Terisi</span>
-                 </div>
-
-                 <!-- Price Info -->
-                 <div class="mt-6 bg-slate-50 rounded-2xl p-4 w-full flex items-center justify-between border-t border-slate-100">
-                      <div>
-                          <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">TOTAL HARGA</p>
-                      </div>
-                      <div class="text-right">
-                          <p class="font-bold text-xl text-blue-600">{{ formatRupiah(totalPrice) }}</p>
-                      </div>
-                 </div>
-
+                         <!-- Legend -->
+                         <div class="mt-10 flex flex-wrap justify-center gap-6 text-[12px] font-bold text-[#8e8e93] py-4 border-t border-[rgba(0,0,0,0.03)] w-full">
+                             <span class="flex items-center gap-2.5"><div class="w-5 h-5 rounded-[6px] bg-white border shadow-sm"></div> Tersedia</span>
+                             <span class="flex items-center gap-2.5"><div class="w-5 h-5 rounded-[6px] bg-[#0071e3] border-[#0071e3] shadow-md shadow-blue-300/30"></div> Dipilih</span>
+                             <span class="flex items-center gap-2.5"><div class="w-5 h-5 rounded-[6px] bg-[#1d1d1f] border-[#1d1d1f] shadow-sm"></div> Terisi</span>
+                         </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Price Summary Box -->
+            <div class="bg-white rounded-[20px] shadow-sm border border-[rgba(0,0,0,0.03)] p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-[11px] font-bold text-[#8e8e93] uppercase tracking-widest">SUBTOTAL PEMBAYARAN</p>
+                    <p class="text-[12px] font-bold text-[#0071e3]">{{ selectedSeats.length }} Kursi</p>
+                </div>
+                <div class="flex items-end justify-between">
+                    <h4 class="text-3xl font-black text-[#1d1d1f] tracking-tight leading-none">{{ formatRupiah(totalPrice) }}</h4>
+                    <p class="text-[11px] text-[#8e8e93] font-medium">Lanjut untuk konfirmasi jemputan</p>
+                </div>
+            </div>
+
         </div>
 
         <!-- STEP 4: Alamat & Bayar -->
-        <div v-if="currentStep === 4" class="animate-fade-in space-y-6">
+        <div v-if="currentStep === 4" class="animate-fade-in space-y-8 px-5">
             
-            <div class="flex flex-col md:flex-row gap-6">
-                <!-- LEfT: ADDRESSES -->
-                <div class="flex-1 space-y-6">
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 relative overflow-hidden group">
-                        <!-- Decorative side line -->
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
-                        <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2"><i class="bi bi-geo-alt text-blue-500"></i> Detail Penjemputan</h4>
+            <div class="bg-white rounded-[24px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6 space-y-6">
+                    <div>
+                        <h4 class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i class="bi bi-geo-alt-fill text-[#0071e3]"></i> Penjemputan & Pengantaran
+                        </h4>
                         
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Alamat Penjemputan</label>
-                                <textarea v-model="formData.pickupAddress" rows="2" placeholder="Cth: Jl. Perintis Kemerdekaan No.17, Padang..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 resize-none shadow-sm"></textarea>
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <label class="text-[13px] font-bold text-[#1d1d1f] block px-1">Alamat Penjemputan</label>
+                                <textarea v-model="formData.pickupAddress" rows="2" placeholder="Detail jalan, patokan, dll..." 
+                                          class="w-full p-4 bg-[#f5f5f7] border-0 rounded-[14px] text-[15px] outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc] resize-none"></textarea>
+                                <input type="url" v-model="formData.pickupMapLink" placeholder="Link Google Maps (Opsional)" 
+                                       class="w-full h-12 px-4 bg-[#f5f5f7] border-0 rounded-[12px] text-xs outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-mono text-[#0071e3] placeholder:text-[#c7c7cc] placeholder:font-sans">
                             </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Link Google Maps <span class="text-slate-400 lowercase font-normal">(opsional, membantu supir)</span></label>
-                                <input type="url" v-model="formData.pickupMapLink" placeholder="https://maps.app.goo.gl/..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 shadow-sm font-mono placeholder:font-sans">
+
+                            <div class="pt-6 border-t border-[rgba(0,0,0,0.03)] space-y-2">
+                                <label class="text-[13px] font-bold text-[#1d1d1f] block px-1">Alamat Pengantaran <span class="text-[#8e8e93] font-normal">(Opsional)</span></label>
+                                <textarea v-model="formData.dropoffAddress" rows="2" placeholder="Kosongkan jika turun di pool..." 
+                                          class="w-full p-4 bg-[#f5f5f7] border-0 rounded-[14px] text-[15px] outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc] resize-none"></textarea>
+                                <input type="url" v-model="formData.dropoffMapLink" placeholder="Link Google Maps (Opsional)" 
+                                       class="w-full h-12 px-4 bg-[#f5f5f7] border-0 rounded-[12px] text-xs outline-none focus:ring-4 focus:ring-[#0071e3]/10 transition-all font-mono text-[#0071e3] placeholder:text-[#c7c7cc] placeholder:font-sans">
                             </div>
                         </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 relative overflow-hidden group">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-green-500"></div>
-                        <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2"><i class="bi bi-pin-map text-green-500"></i> Detail Pengantaran <span class="text-[10px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Opsional</span></h4>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Alamat Pengantaran</label>
-                                <textarea v-model="formData.dropoffAddress" rows="2" placeholder="Kosongkan jika turun di pool..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 resize-none shadow-sm"></textarea>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Link Google Maps <span class="text-slate-400 lowercase font-normal">(opsional, membantu supir)</span></label>
-                                <input type="url" v-model="formData.dropoffMapLink" placeholder="https://maps.app.goo.gl/..." class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 shadow-sm font-mono placeholder:font-sans">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Catatan Tambahan / Barang Bawaan</label>
-                        <input type="text" v-model="formData.bookingNote" placeholder="Cth: Bawa 1 koper besar, dan 1 dus kardus" class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 shadow-sm">
                     </div>
                 </div>
-                
-                <!-- RIGHT: PAYMENT -->
-                <div class="flex-1 space-y-6">
-                    
+            </div>
+
+            <!-- Payment Group -->
+            <div class="bg-white rounded-[24px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6 space-y-6">
                     <div>
-                        <h4 class="font-bold text-slate-800 text-sm mb-3">Informasi Pembayaran</h4>
-                        <div class="bg-blue-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                            <!-- decoration -->
-                            <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-10 -translate-y-10"></div>
-                            
-                            <p class="text-white/80 text-[11px] font-bold uppercase tracking-widest mb-1">Total Tagihan</p>
-                            <p class="font-black text-3xl tracking-tight mb-4 flex items-center gap-2">
-                                {{ formatRupiah(totalPrice) }}
-                                <i class="bi bi-check-circle-fill text-blue-300 text-lg"></i>
-                            </p>
-                            
-                            <div class="space-y-4 relative z-10">
-                                <div class="flex gap-2 mb-4 bg-white/10 p-1 rounded-xl">
-                                    <button type="button" @click="formData.paymentMethod = 'QRIS'" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all" :class="formData.paymentMethod === 'QRIS' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'">QRIS</button>
-                                    <button type="button" @click="formData.paymentMethod = 'Transfer'" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all" :class="formData.paymentMethod === 'Transfer' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'">Transfer Bank</button>
-                                </div>
-
-                                <transition name="fade">
-                                    <div v-if="formData.paymentMethod === 'QRIS'" class="bg-white rounded-xl p-4 flex flex-col items-center justify-center shadow-inner">
-                                        <p class="text-blue-800 text-xs font-bold mb-3 uppercase tracking-wide">Scan QRIS</p>
-                                        <img src="/QR.jpeg" alt="QRIS" class="w-full max-w-[250px] h-auto object-contain rounded-lg border border-slate-200 mb-3" />
-                                        
-                                        <a href="/QR.jpeg" download="QRIS_PT_Fajar_Wisata_Langgeng.jpeg" class="flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 w-full max-w-[200px] py-2 rounded-lg text-xs font-bold transition-colors mb-2">
-                                            <i class="bi bi-download"></i> Download QRIS
-                                        </a>
-
-                                        <p class="text-[10px] text-slate-500 mt-1 text-center items-center justify-center flex flex-col">
-                                            <span>Atas Nama: <span class="font-bold text-slate-700">PT Fajar Wisata Langgeng</span></span>
-                                        </p>
-                                    </div>
-                                </transition>
-
-                                <transition name="fade">
-                                    <div v-if="formData.paymentMethod === 'Transfer'" class="space-y-4">
-                                        <div v-show="bankAccounts.length > 1">
-                                            <label class="text-[10px] font-bold text-blue-200 uppercase tracking-widest block mb-1">Rekening Tujuan</label>
-                                            <select v-model="formData.destinationAccount" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-sm outline-none focus:border-white focus:bg-white/20 transition-all text-white appearance-none h-11">
-                                                <option value="" disabled class="text-slate-800">Pilih Rekening BCA...</option>
-                                                <option v-for="b in bankAccounts" :key="b.value" :value="b.value" class="text-slate-800">{{ b.label }}</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div v-if="selectedBankAccount" class="bg-white/10 border border-white/10 rounded-xl p-3 flex justify-between items-center backdrop-blur-sm">
-                                            <div>
-                                                <p class="text-[10px] text-blue-200 uppercase tracking-wider mb-0.5 font-medium">No. Rekening {{ selectedBankAccount.value.split('-')[0].trim() || 'BCA' }}</p>
-                                                <p class="font-mono text-lg font-bold">{{ selectedBankAccount.label.match(/\d+/) ? selectedBankAccount.label.match(/\d+/)[0] : '' }}</p>
-                                            </div>
-                                            <button @click.prevent="copyToClipboard(selectedBankAccount.label.match(/\d+/)[0])" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white text-white hover:text-blue-600 transition-colors shadow-sm" title="Salin Rekening">
-                                                <i class="bi bi-files"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </transition>
-                            </div>
+                        <h4 class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i class="bi bi-credit-card-fill text-[#5856d6]"></i> Metode Pembayaran
+                        </h4>
+                        
+                        <div class="bg-[#f5f5f7] p-1.5 rounded-[16px] flex gap-1.5 mb-6">
+                            <button type="button" @click="formData.paymentMethod = 'QRIS'" 
+                                    class="flex-1 py-3.5 rounded-[12px] text-[13px] font-bold transition-all active:scale-95" 
+                                    :class="formData.paymentMethod === 'QRIS' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#8e8e93]'">QRIS</button>
+                            <button type="button" @click="formData.paymentMethod = 'Transfer'" 
+                                    class="flex-1 py-3.5 rounded-[12px] text-[13px] font-bold transition-all active:scale-95" 
+                                    :class="formData.paymentMethod === 'Transfer' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#8e8e93]'">Transfer</button>
                         </div>
+
+                        <transition name="fade" mode="out-in">
+                            <div v-if="formData.paymentMethod === 'QRIS'" class="bg-white flex flex-col items-center">
+                                <div class="bg-white p-6 rounded-[24px] shadow-inner border border-slate-100 flex flex-col items-center w-full">
+                                    <img src="/QR.jpeg" alt="QRIS" class="w-full max-w-[220px] h-auto object-contain rounded-[16px] border border-slate-50 mb-4" />
+                                    <a href="/QR.jpeg" download class="text-[13px] font-bold text-[#0071e3] flex items-center gap-2 hover:opacity-70 transition-opacity">
+                                        <i class="bi bi-arrow-down-circle-fill"></i> Simpan Gambar QRIS
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div v-else-if="formData.paymentMethod === 'Transfer'" class="space-y-4">
+                                <div class="relative">
+                                    <select v-model="formData.destinationAccount" class="w-full h-[54px] px-5 bg-[#f5f5f7] border-0 rounded-[14px] text-base outline-none font-medium text-[#1d1d1f] appearance-none cursor-pointer">
+                                        <option value="" disabled>Pilih Bank Tujuan</option>
+                                        <option v-for="b in bankAccounts" :key="b.value" :value="b.value">{{ b.label }}</option>
+                                    </select>
+                                    <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[#c7c7cc]"></i>
+                                </div>
+                                
+                                <div v-if="selectedBankAccount" class="bg-[#f5f5f7] rounded-[16px] p-5 flex justify-between items-center border border-[rgba(0,0,0,0.03)]">
+                                    <div>
+                                        <p class="text-[11px] text-[#8e8e93] font-bold uppercase tracking-wider mb-1">Nomor Rekening</p>
+                                        <p class="font-bold text-xl text-[#1d1d1f] tracking-tight">{{ selectedBankAccount.label.match(/\d+/) ? selectedBankAccount.label.match(/\d+/)[0] : '' }}</p>
+                                    </div>
+                                    <button @click.prevent="copyToClipboard(selectedBankAccount.label.match(/\d+/)[0])" 
+                                            class="w-12 h-12 bg-white rounded-[14px] flex items-center justify-center text-[#0071e3] shadow-sm border border-slate-100 active:scale-90 transition-transform">
+                                        <i class="bi bi-copy text-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </transition>
                     </div>
 
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i class="bi bi-cloud-arrow-up-fill text-blue-500"></i>
-                            <h4 class="font-bold text-slate-800 text-sm">Upload Bukti Pembayaran</h4>
-                        </div>
+                    <div class="pt-8 border-t border-[rgba(0,0,0,0.03)]">
+                        <h4 class="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i class="bi bi-cloud-arrow-up-fill text-[#34c759]"></i> Bukti Pembayaran
+                        </h4>
                         
                         <div class="relative">
                             <input type="file" ref="proofInputRef" @change="e => handleFileUpload(e, 'paymentProof')" accept="image/png,image/jpeg" class="hidden" id="proof-upload">
                             
                             <div v-if="!formData.paymentProof" class="w-full">
-                                <label for="proof-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-white hover:bg-slate-50 hover:border-blue-400 transition-colors shadow-sm">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-2">
-                                             <i class="bi bi-images text-xl"></i>
-                                        </div>
-                                        <p class="mb-0.5 text-sm font-bold text-slate-600">Unggah Gambar</p>
-                                        <p class="text-[10px] text-slate-400 font-medium">JPEG atau PNG</p>
+                                <label for="proof-upload" class="flex items-center gap-5 p-5 bg-[#f5f5f7] rounded-[18px] cursor-pointer hover:bg-[#e5e5ea] transition-all border-1 border-transparent active:scale-[0.98]">
+                                    <div class="w-14 h-14 bg-white rounded-[14px] flex items-center justify-center text-[#5856d6] shadow-sm shrink-0">
+                                        <i class="bi bi-camera-fill text-2xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[15px] font-bold text-[#1d1d1f]">Unggah Bukti</p>
+                                        <p class="text-xs text-[#8e8e93] font-medium mt-0.5">Ketuk untuk mengambil foto</p>
                                     </div>
                                 </label>
                             </div>
 
-                            <div v-else class="relative w-full rounded-xl overflow-hidden border border-blue-200 bg-white p-2 shadow-sm flex items-center gap-4 group">
-                                <div class="w-16 h-16 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden relative shrink-0">
+                            <div v-else class="relative w-full rounded-[18px] overflow-hidden border border-[rgba(0,0,0,0.03)] bg-[#f5f5f7] p-3 flex items-center gap-4 shadow-inner">
+                                <div class="w-16 h-16 rounded-[12px] bg-white overflow-hidden shadow-sm shrink-0">
                                     <img :src="formData.paymentProof" class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-700 truncate">Bukti Pembayaran</p>
-                                    <p class="text-xs text-blue-600 font-medium flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Selesai Upload</p>
+                                    <p class="text-[15px] font-bold text-[#1d1d1f] truncate">Bukti Terupload</p>
+                                    <p class="text-xs text-[#34c759] font-bold flex items-center gap-1"><i class="bi bi-check-circle-fill"></i> Siap dikonfirmasi</p>
                                 </div>
-                                <button @click.prevent="removeFile('paymentProof')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors" title="Ubah foto">
+                                <button @click.prevent="removeFile('paymentProof')" class="w-10 h-10 rounded-full bg-[#ff3b30]/10 text-[#ff3b30] flex items-center justify-center active:scale-90">
                                     <i class="bi bi-x-lg"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
         </div>
 
-        <div v-if="currentStep === steps.length" class="animate-fade-in space-y-6">
-            <div class="mb-6 flex items-center gap-3 text-slate-800 font-bold text-lg border-b pb-3 border-slate-100">
-                 <i class="bi bi-card-checklist text-[#ff6b00]"></i> Konfirmasi Data
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm relative overflow-hidden">
-                <!-- Decorative element -->
-                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-                
-                <h4 class="font-bold text-slate-800 text-sm mb-4">Detail Penumpang</h4>
-                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
-                    <p class="text-slate-500 font-medium">Nama</p>
-                    <p class="font-bold text-slate-800 text-right">{{ formData.passengerName }}</p>
-                    
-                    <p class="text-slate-500 font-medium">No. WhatsApp</p>
-                    <p class="font-bold text-slate-800 text-right">{{ formData.passengerPhone }}</p>
-
-                    <p class="text-slate-500 font-medium">Tipe Penumpang</p>
-                    <p class="font-bold text-slate-800 text-right">
-                        <span class="px-2 py-0.5 rounded-md text-xs" :class="formData.passengerType === 'Umum' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'">
-                            {{ formData.passengerType }}
-                        </span>
-                    </p>
-                </div>
-                
-                <hr class="border-slate-200">
-                
-                <h4 class="font-bold text-slate-800 text-sm mb-4 mt-2">Detail Perjalanan</h4>
-                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
-                    <p class="text-slate-500 font-medium">Rute</p>
-                    <p class="font-bold text-slate-800 text-right">{{ selectedRoute ? `${selectedRoute.origin} ➔ ${selectedRoute.destination}` : '-' }}</p>
-                    
-                    <p class="text-slate-500 font-medium">Jadwal</p>
-                    <p class="font-bold text-slate-800 text-right">{{ formData.date }} <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-xs ml-1">{{ formData.time }}</span></p>
-
-                    <p class="text-slate-500 font-medium">Titik Jemput</p>
-                    <p class="font-bold text-slate-800 text-right">
-                        {{ formData.pickupAddress }}
-                        <a v-if="formData.pickupMapLink" :href="formData.pickupMapLink" target="_blank" class="block text-blue-500 text-xs font-medium hover:underline mt-1"><i class="bi bi-geo-alt-fill"></i> Buka Maps</a>
-                    </p>
-                    
-                    <p class="text-slate-500 font-medium">Lokasi Turun</p>
-                    <p class="font-bold text-slate-800 text-right">
-                        {{ formData.dropoffAddress || '-' }}
-                        <a v-if="formData.dropoffMapLink" :href="formData.dropoffMapLink" target="_blank" class="block text-blue-500 text-xs font-medium hover:underline mt-1"><i class="bi bi-geo-alt-fill"></i> Buka Maps</a>
-                    </p>
-                </div>
-
-                <hr class="border-slate-200">
-                
-                <h4 class="font-bold text-slate-800 text-sm mb-4 mt-2">Detail Pembayaran</h4>
-                <div class="grid grid-cols-2 text-sm gap-y-3 relative z-10">
-                    <p class="text-slate-500 font-medium">Metode</p>
-                    <p class="font-bold text-slate-800 text-right">{{ formData.paymentMethod }}</p>
-                    
-                    <template v-if="formData.paymentMethod === 'Transfer'">
-                        <p class="text-slate-500 font-medium">Rekening Tujuan</p>
-                        <p class="font-bold text-slate-800 text-right text-xs">{{ selectedBankAccount ? selectedBankAccount.label : '-' }}</p>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Total Price Summary Box -->
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
-                <i class="bi bi-wallet2 absolute -right-4 -bottom-4 text-6xl text-white/10"></i>
-                <div class="relative z-10 flex justify-between items-center">
-                    <div>
-                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider mb-1">Total Pembayaran</p>
-                        <p class="text-2xl font-black tracking-tight">{{ formatRupiah(totalPrice) }}</p>
+        <!-- STEP 5: Konfirmasi Data -->
+        <div v-if="currentStep === steps.length" class="animate-fade-in space-y-8 px-5 pb-10">
+            
+            <div class="bg-[#1d1d1f] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                            <i class="bi bi-ticket-perforated text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Ringkasan Tiket</h3>
                     </div>
-                    <div class="text-right">
-                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider mb-1">Kursi Dipilih</p>
-                        <p class="text-xl font-bold">{{ selectedSeats.length }} Kursi</p>
-                        <p class="text-[10px] text-blue-200 mt-0.5">({{ selectedSeats.join(', ') }})</p>
+
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">PENUMPANG</p>
+                                <p class="text-lg font-bold tracking-tight">{{ formData.passengerName }}</p>
+                                <p class="text-xs text-[#a1a1a6] font-medium">{{ formData.passengerPhone }}</p>
+                            </div>
+                            <div class="text-right space-y-1">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">TIPE</p>
+                                <p class="text-sm font-bold bg-white/10 px-3 py-1 rounded-full inline-block">{{ formData.passengerType }}</p>
+                            </div>
+                        </div>
+
+                        <div class="h-px bg-white/10 w-full"></div>
+
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">DARI</p>
+                                <p class="text-xl font-black tracking-tighter">{{ selectedRoute ? selectedRoute.origin : '-' }}</p>
+                            </div>
+                            <div class="space-y-1 text-right">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">KE</p>
+                                <p class="text-xl font-black tracking-tighter">{{ selectedRoute ? selectedRoute.destination : '-' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-end pt-4">
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">JADWAL</p>
+                                <p class="text-lg font-bold">{{ formData.date }}</p>
+                                <p class="text-lg font-black text-[#0071e3]">{{ formData.time }}</p>
+                            </div>
+                            <div class="text-right space-y-1">
+                                <p class="text-[10px] text-[#a1a1a6] font-black uppercase tracking-widest">KURSI</p>
+                                <p class="text-3xl font-black text-white leading-none">#{{ selectedSeats.join(', ') }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <!-- Abstract shape -->
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[#0071e3] opacity-20 blur-[60px] rounded-full"></div>
+            </div>
+
+            <!-- Detailed Inset List for other info -->
+            <div class="bg-white rounded-[24px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                <div class="p-6 space-y-6">
+                    <div class="flex justify-between items-center group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-[#f5f5f7] rounded-[12px] flex items-center justify-center text-[#1d1d1f]">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-bold text-[#8e8e93] uppercase tracking-wider">Penjemputan</p>
+                                <p class="text-[15px] font-bold text-[#1d1d1f] mt-0.5 line-clamp-1">{{ formData.pickupAddress }}</p>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-[#c7c7cc]"></i>
+                    </div>
+
+                    <div class="h-px bg-[#f5f5f7] w-full ml-13"></div>
+
+                    <div class="flex justify-between items-center group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-[#f5f5f7] rounded-[12px] flex items-center justify-center text-[#1d1d1f]">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-bold text-[#8e8e93] uppercase tracking-wider">Metode Pembayaran</p>
+                                <p class="text-[15px] font-bold text-[#1d1d1f] mt-0.5 uppercase">{{ formData.paymentMethod }}</p>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-[#c7c7cc]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Price Fixed Bar at bottom will handle the real button, but we put a summary here too -->
+            <div class="bg-[#34c759] rounded-[24px] p-6 text-white text-center shadow-lg active:scale-95 transition-transform" v-if="!loading">
+                <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">Total yang Dibayarkan</p>
+                <p class="text-3xl font-black tracking-tighter">{{ formatRupiah(totalPrice) }}</p>
             </div>
             
         </div>
 
     </form>
 
-    <!-- Navigation Buttons Outside Card -->
-    <div class="mt-6">
-        <!-- Steps Navigation -->
-        <div class="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-4">
-            <button v-if="currentStep < steps.length" type="button" @click="currentStep === 1 ? $emit('go-home') : prevStep()" 
-                    class="flex-1 py-4 bg-slate-50 border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
-                {{ currentStep === 1 ? 'Batal' : 'Kembali' }}
+    <!-- Navigation Buttons - Floating Style for Mobile-First experience -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-[rgba(0,0,0,0.05)] p-4 md:p-6 z-50 flex items-center justify-center pb-safe-area">
+        <div class="max-w-2xl w-full flex gap-3">
+            <button v-if="currentStep > 1" type="button" @click="prevStep()" 
+                    class="flex-1 h-[58px] bg-[#f5f5f7] text-[#1d1d1f] font-bold text-[16px] rounded-[18px] transition-all transform active:scale-95">
+                Kembali
             </button>
-            <button v-if="currentStep === steps.length" type="button" @click="prevStep()" 
-                    class="flex-1 py-4 bg-slate-50 border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
-                Kembali Edit
+            <button v-else type="button" @click="$emit('go-home')" 
+                    class="flex-1 h-[58px] bg-[#f5f5f7] text-[#1d1d1f] font-bold text-[16px] rounded-[18px] transition-all transform active:scale-95">
+                Batal
             </button>
             
-            <button v-if="currentStep < steps.length" type="button" @click="nextStep"
-                    class="flex-1 py-4 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all transform active:scale-95">
-                Lanjut
-            </button>
+            <template v-if="currentStep < steps.length">
+                <button type="button" @click="nextStep"
+                        class="flex-[2] h-[58px] bg-[#0071e3] text-white font-bold text-[16px] rounded-[18px] shadow-lg shadow-blue-500/20 transition-all transform active:scale-95">
+                    Lanjutkan
+                </button>
+            </template>
+            
+            <template v-else>
+                <button type="button" @click="submitBooking" :disabled="loading"
+                        class="flex-[2] h-[58px] bg-[#34c759] text-white font-bold text-[16px] rounded-[18px] shadow-lg shadow-green-500/20 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                    <span v-if="loading" class="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <span v-else>Konfirmasi & Bayar</span>
+                </button>
+            </template>
         </div>
-
-        <!-- Step 5: Submit Trigger -->
-        <button v-if="currentStep === steps.length" type="button" @click="submitBooking" :disabled="loading"
-                class="w-full py-4 bg-green-500 text-white font-bold text-base rounded-2xl shadow-md hover:bg-green-600 hover:-translate-y-1 transition-all transform active:scale-95 flex justify-center items-center gap-2">
-            <span v-if="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            <span v-else><i class="bi bi-send-fill mb-0.5"></i> Proses Pemesanan</span>
-        </button>
     </div>
-
-    <br><br><br><br>
+<br><br><br>
   </div>
 </template>
 

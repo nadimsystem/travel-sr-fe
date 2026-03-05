@@ -17,6 +17,7 @@ const historyLoading = ref(false)
 const errorMsg = ref(null)
 
 const handleLogin = async () => {
+    errorMsg.value = null
     if (!loginPhone.value || !loginName.value) {
         Swal.fire({
             icon: 'warning',
@@ -65,6 +66,7 @@ const handleLogin = async () => {
 }
 
 const loadHistory = async () => {
+    errorMsg.value = null
     const session = JSON.parse(localStorage.getItem('travel_history_session'))
     if (!session || !session.phone || !session.name) return
 
@@ -101,6 +103,7 @@ const logout = () => {
     bookingHistory.value = []
     loginPhone.value = ''
     loginName.value = ''
+    errorMsg.value = null
 }
 
 const getStatusBadgeClass = (status) => {
@@ -146,7 +149,21 @@ const viewProof = (path) => {
     cleanPath = cleanPath.replace(/^buktibayar\//, '')
     cleanPath = cleanPath.replace(/^\/+/, '')
     
-    const url = `/display-v12/uploads/${cleanPath}`
+    // Auto detect base folder for uploads
+    const currentPath = window.location.pathname;
+    let baseFolder = '';
+    if (currentPath.includes('/display-v11')) {
+        baseFolder = '/display-v11';
+    } else if (currentPath.includes('/display-v12')) {
+        baseFolder = '/display-v12';
+    } else if (currentPath.includes('/travel-sr-fe/travel')) {
+        baseFolder = '/travel-sr-fe/travel';
+    } else {
+        const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        baseFolder = isOnline ? '/display-v11' : '/display-v12';
+    }
+    
+    const url = `${baseFolder}/uploads/${cleanPath}`
     
     Swal.fire({
         imageUrl: url,
@@ -171,137 +188,157 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="booking-history-container max-w-3xl mx-auto py-6 md:py-10 px-4">
+  <div class="booking-history-container max-w-2xl mx-auto py-6 md:py-12 px-5 min-h-screen">
     
     <!-- Login State -->
     <transition name="fade" mode="out-in">
-        <div v-if="!isLoggedIn" class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-8 text-center max-w-md mx-auto mt-10">
-            <div class="mb-6 flex justify-center">
-                <div class="w-16 h-16 bg-blue-50/50 text-[#00c853] rounded-2xl flex items-center justify-center">
-                    <i class="bi bi-person-lines-fill text-3xl"></i>
+        <div v-if="!isLoggedIn" class="animate-fade-in mt-12">
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-[#f5f5f7] rounded-[24px] flex items-center justify-center mx-auto mb-6 shadow-sm">
+                    <i class="bi bi-ticket-perforated-fill text-4xl text-[#0071e3]"></i>
                 </div>
-            </div>
-            <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Riwayat Perjalanan</h2>
-            <p class="text-slate-500 text-[11px] mb-8">Masukan data diri kamu untuk melihat tiket perjalan yang sudah di pesen ya!</p>
-            
-            <div v-if="errorMsg" class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-left flex items-start gap-3">
-                <i class="bi bi-exclamation-circle-fill text-red-500 mt-0.5"></i>
-                <div>
-                    <p class="text-sm font-bold text-red-800">Oops, Data Tidak Ditemukan</p>
-                    <p class="text-[11px] text-red-600 mt-0.5">{{ errorMsg }}</p>
-                </div>
+                <h2 class="text-[32px] font-black text-[#1d1d1f] tracking-tight mb-3">Pesanan Saya</h2>
+                <p class="text-[#8e8e93] text-[15px] font-medium leading-relaxed px-4">Masukan nama dan nomor WhatsApp untuk memantau tiket perjalanan kamu.</p>
             </div>
             
-            <form @submit.prevent="handleLogin" class="space-y-5 text-left">
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NO. WHATSAPP</label>
-                    <div class="relative">
-                        <input type="tel" v-model="loginPhone" placeholder="08..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
-                    </div>
+            <div v-if="errorMsg" class="mb-8 p-5 bg-[#ff3b30]/5 border border-[#ff3b30]/10 rounded-[20px] flex items-start gap-4">
+                <div class="w-10 h-10 bg-[#ff3b30] rounded-full flex items-center justify-center shrink-0">
+                    <i class="bi bi-exclamation-triangle-fill text-white"></i>
                 </div>
                 <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5 px-1">NAMA LENGKAP</label>
-                    <div class="relative">
-                        <input type="text" v-model="loginName" placeholder="Nama penumpang..." class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800">
+                    <p class="text-[15px] font-bold text-[#1d1d1f]">Gagal Memuat</p>
+                    <p class="text-[13px] text-[#ff3b30] font-medium mt-0.5">{{ errorMsg }}</p>
+                </div>
+            </div>
+            
+            <form @submit.prevent="handleLogin" class="space-y-4">
+                <div class="bg-white rounded-[24px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden">
+                    <div class="p-1">
+                        <div class="relative">
+                            <input type="tel" v-model="loginPhone" placeholder="Nomor WhatsApp (08...)" 
+                                   class="w-full h-[64px] px-6 bg-transparent border-0 text-[17px] outline-none font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc]">
+                        </div>
+                        <div class="h-px bg-[#f5f5f7] mx-6"></div>
+                        <div class="relative">
+                            <input type="text" v-model="loginName" placeholder="Nama Lengkap" 
+                                   class="w-full h-[64px] px-6 bg-transparent border-0 text-[17px] outline-none font-medium text-[#1d1d1f] placeholder:text-[#c7c7cc]">
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" :disabled="loginLoading" class="w-full bg-blue-600 text-white font-bold p-4 rounded-xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all mt-4 flex justify-center items-center">
-                    <span v-if="loginLoading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    <span v-else>Lihat Tiket Saya</span>
+                <button type="submit" :disabled="loginLoading" 
+                        class="w-full h-[64px] bg-[#0071e3] text-white font-bold text-[17px] rounded-[22px] shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex justify-center items-center gap-3">
+                    <span v-if="loginLoading" class="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <span v-else>Cek Riwayat Pesanan</span>
                 </button>
             </form>
         </div>
 
         <!-- Logged In / List State -->
-        <div v-else class="animate-fade-in space-y-6">
+        <div v-else class="animate-fade-in space-y-8 pb-safe-area">
             
-            <div class="bg-blue-600 rounded-[2rem] p-5 flex items-center justify-between shadow-md mb-8">
-                 <div class="flex items-center gap-3">
-                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-blue-400 text-blue-600 font-bold text-lg">
+            <!-- Profile Header Card -->
+            <div class="bg-white rounded-[28px] p-6 flex items-center justify-between shadow-sm border border-[rgba(0,0,0,0.03)] border-b-2">
+                 <div class="flex items-center gap-4">
+                     <div class="w-14 h-14 bg-gradient-to-br from-[#0071e3] to-[#5856d6] rounded-[18px] flex items-center justify-center text-white font-black text-xl shadow-md shadow-blue-500/10">
                          {{ loginName.charAt(0).toUpperCase() }}
                      </div>
                      <div>
-                         <h2 class="text-white font-bold text-lg leading-tight">{{ loginName }}</h2>
-                         <p class="text-blue-100 text-[11px]">{{ loginPhone }}</p>
+                         <h2 class="text-[19px] font-black text-[#1d1d1f] leading-none mb-1.5">{{ loginName }}</h2>
+                         <div class="flex items-center gap-1.5">
+                             <span class="w-2 h-2 bg-[#34c759] rounded-full"></span>
+                             <p class="text-[#8e8e93] text-[13px] font-bold">{{ loginPhone }}</p>
+                         </div>
                      </div>
                  </div>
-                 <button @click="logout" class="w-10 h-10 bg-white/10 rounded-xl text-white flex items-center justify-center hover:bg-white/20 transition-colors">
-                     <i class="bi bi-box-arrow-right text-lg"></i>
+                 <button @click="logout" class="w-12 h-12 bg-[#f5f5f7] rounded-[15px] text-[#ff3b30] flex items-center justify-center active:scale-90 transition-transform">
+                     <i class="bi bi-power text-xl"></i>
                  </button>
             </div>
 
-            <div v-if="historyLoading" class="text-center py-20">
-                 <div class="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                 <p class="text-slate-500 text-sm font-medium">Memuat tiket...</p>
+            <div v-if="historyLoading" class="flex flex-col items-center justify-center py-20">
+                 <div class="w-12 h-12 border-4 border-[#f5f5f7] border-t-[#0071e3] rounded-full animate-spin mb-6"></div>
+                 <p class="text-[#8e8e93] text-[15px] font-bold">Menyinkronkan data...</p>
             </div>
             
-            <div v-else-if="errorMsg" class="text-center py-10 bg-red-50 rounded-2xl border border-red-100">
-                <p class="text-red-500 text-sm font-medium">{{ errorMsg }}</p>
-            </div>
-
-            <div v-else-if="bookingHistory.length === 0" class="text-center py-20 bg-white rounded-[1.5rem] border border-slate-200 shadow-sm">
-                <i class="bi bi-ticket-detailed text-5xl text-slate-300 mb-4 block"></i>
-                <h3 class="font-bold text-slate-700 text-lg mb-2">Belum Ada Transaksi</h3>
-                <p class="text-slate-500 text-sm mb-6">Anda belum memiliki riwayat pemesanan tiket travel.</p>
-                <button @click="emit('go-to-booking')" class="px-6 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:bg-blue-700 transition-colors">
+            <div v-else-if="bookingHistory.length === 0" class="text-center py-24 bg-white rounded-[32px] border border-[rgba(0,0,0,0.03)] shadow-sm px-8">
+                <div class="w-24 h-24 bg-[#f5f5f7] rounded-full flex items-center justify-center mx-auto mb-8">
+                    <i class="bi bi-ticket-slash text-4xl text-[#c7c7cc]"></i>
+                </div>
+                <h3 class="font-black text-[#1d1d1f] text-2xl mb-3">Belum Ada Tiket</h3>
+                <p class="text-[#8e8e93] text-[15px] font-medium mb-10 leading-relaxed">Sepertinya kamu belum melakukan pemesanan perjalanan bersama kami.</p>
+                <button @click="emit('go-to-booking')" 
+                        class="px-8 h-[58px] bg-[#0071e3] text-white font-bold text-[16px] rounded-[20px] shadow-lg shadow-blue-500/15 hover:opacity-90 transition-all active:scale-95">
                     Pesan Tiket Sekarang
                 </button>
             </div>
 
-            <div v-else class="space-y-4">
-                <div v-for="booking in bookingHistory" :key="booking.id" class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 overflow-hidden relative group hover:border-blue-300 transition-colors">
+            <div v-else class="space-y-6">
+                <div v-for="booking in bookingHistory" :key="booking.id" 
+                     class="bg-white rounded-[32px] shadow-sm border border-[rgba(0,0,0,0.03)] overflow-hidden active:scale-[0.98] transition-all border-b-2">
                     
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-bl-full -z-0"></div>
-
-                    <div class="p-6 relative z-10">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
-                                    <i class="bi bi-bus-front-fill text-lg"></i>
+                    <div class="p-7">
+                        <!-- Card Header -->
+                        <div class="flex items-start justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-[#f5f5f7] rounded-[18px] flex items-center justify-center shrink-0">
+                                    <i class="bi bi-bus-front-fill text-2xl text-[#1d1d1f]"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-black text-slate-800 text-lg tracking-tight leading-none mb-1">{{ booking.routeName || booking.route_name || booking.rute || '-' }}</h3>
-                                    <p class="text-slate-500 text-[11px] font-medium">{{ formatDate(booking.date || booking.booking_date || booking.tanggal_berangkat) }} • {{ booking.time || booking.jam_berangkat }}</p>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h3 class="font-black text-[#1d1d1f] text-xl tracking-tighter">{{ (booking.routeName || booking.route_name || booking.rute || '-').split('➔')[0] }}</h3>
+                                        <i class="bi bi-arrow-right text-[#c7c7cc]"></i>
+                                        <h3 class="font-black text-[#1d1d1f] text-xl tracking-tighter">{{ (booking.routeName || booking.route_name || booking.rute || '-').split('➔')[1] }}</h3>
+                                    </div>
+                                    <p class="text-[#0071e3] text-[13px] font-black uppercase tracking-widest">{{ formatDate(booking.date || booking.booking_date || booking.tanggal_berangkat, 'short') }} • {{ booking.time || booking.jam_berangkat }}</p>
                                 </div>
                             </div>
-                            
-                            <!-- Status Badge -->
-                            <div class="px-3 py-1.5 rounded-l-xl rounded-tr-xl text-[10px] font-bold uppercase tracking-wider" :class="getStatusBadgeClass(booking.status)">
-                                {{ booking.status || 'MENUNGGU VERIFIKASI' }}
+                            <!-- Status -->
+                            <div class="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm" :class="getStatusBadgeClass(booking.status)">
+                                {{ booking.status || 'PROSES' }}
                             </div>
                         </div>
 
-                        <div class="border-t border-dashed border-slate-200 my-4"></div>
-
-                        <div class="grid grid-cols-2 gap-y-4 gap-x-2">
-                            <div>
-                                <p class="text-[10px] text-slate-400 mb-0.5">Kode Booking</p>
-                                <p class="font-bold text-slate-700 text-sm">#{{ booking.id }}</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] text-slate-400 mb-0.5">Tipe Penumpang</p>
-                                <p class="font-bold text-slate-700 text-sm">{{ booking.passengerType || booking.passenger_type || booking.jenis_penumpang || 'Umum' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] text-slate-400 mb-1">Kursi dipesan</p>
-                                <div class="flex gap-1 flex-wrap">
-                                    <span v-for="seat in (booking.seatNumbers || booking.seat_numbers || booking.kursi || '').split(',')" :key="seat" class="w-6 h-6 bg-slate-100 text-slate-700 rounded text-[10px] font-black flex items-center justify-center border border-slate-200">{{ seat.trim() }}</span>
+                        <!-- Ticket Body -->
+                        <div class="bg-[#f5f5f7] rounded-[24px] p-6 mb-6">
+                            <div class="grid grid-cols-2 gap-y-6">
+                                <div>
+                                    <p class="text-[10px] font-black text-[#8e8e93] uppercase tracking-widest mb-1">KODE BOOKING</p>
+                                    <p class="font-black text-[#1d1d1f] text-[17px] tracking-tight">#{{ booking.id }}</p>
                                 </div>
-                            </div>
-                            <div>
-                                <p class="text-[10px] text-slate-400 mb-0.5">Total Harga</p>
-                                <p class="font-bold text-blue-600 text-sm">{{ formatRupiah(booking.totalPrice || booking.total_price || booking.harga) }}</p>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-black text-[#8e8e93] uppercase tracking-widest mb-1">TIPE</p>
+                                    <p class="font-black text-[#1d1d1f] text-[17px] tracking-tight">{{ booking.passengerType || booking.passenger_type || booking.jenis_penumpang || 'Umum' }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-[#8e8e93] uppercase tracking-widest mb-2">KURSI</p>
+                                    <div class="flex gap-2 flex-wrap">
+                                        <span v-for="seat in (booking.seatNumbers || booking.seat_numbers || booking.kursi || '').split(',')" 
+                                              :key="seat" 
+                                              class="w-8 h-8 bg-white text-[#1d1d1f] rounded-[10px] text-[12px] font-black flex items-center justify-center border border-[rgba(0,0,0,0.05)] shadow-sm">
+                                            {{ seat.trim() }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-black text-[#8e8e93] uppercase tracking-widest mb-1">TOTAL BAYAR</p>
+                                    <p class="font-black text-[#0071e3] text-[20px] tracking-tighter">{{ formatRupiah(booking.totalPrice || booking.total_price || booking.harga) }}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Attachments Action -->
-                        <div v-if="booking.paymentProof || booking.payment_proof || booking.ktmProof || booking.ktm_proof" class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
-                             <button v-if="booking.paymentProof || booking.payment_proof" @click.prevent="viewProof(booking.paymentProof || booking.payment_proof)" class="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-md hover:bg-blue-100 transition-colors flex items-center gap-1.5">
-                                 <i class="bi bi-receipt"></i> Bukti Pembayaran
+                        <!-- Card Footer / Actions -->
+                        <div v-if="booking.paymentProof || booking.payment_proof || booking.ktmProof || booking.ktm_proof" 
+                             class="flex flex-wrap gap-3">
+                             <button v-if="booking.paymentProof || booking.payment_proof" 
+                                     @click.prevent="viewProof(booking.paymentProof || booking.payment_proof)" 
+                                     class="flex-1 h-12 bg-white border border-[#f5f5f7] rounded-[14px] text-[13px] font-black text-[#1d1d1f] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                                 <i class="bi bi-receipt-cutoff text-lg text-[#0071e3]"></i> Bukti Bayar
                              </button>
-                             <button v-if="booking.ktmProof || booking.ktm_proof" @click.prevent="viewProof(booking.ktmProof || booking.ktm_proof)" class="text-[11px] font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-md hover:bg-orange-100 transition-colors flex items-center gap-1.5">
-                                 <i class="bi bi-person-vcard"></i> Foto Identitas/KTM
+                             <button v-if="booking.ktmProof || booking.ktm_proof" 
+                                     @click.prevent="viewProof(booking.ktmProof || booking.ktm_proof)" 
+                                     class="flex-1 h-12 bg-white border border-[#f5f5f7] rounded-[14px] text-[13px] font-black text-[#1d1d1f] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                                 <i class="bi bi-person-vcard-fill text-lg text-[#5856d6]"></i> Kartu KTM
                              </button>
                         </div>
                     </div>
@@ -314,15 +351,21 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-active, .fade-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: scale(0.98); }
 
 .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.pb-safe-area {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+.ml-13 { margin-left: 3.25rem; }
 </style>

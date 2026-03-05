@@ -390,8 +390,8 @@ function createBooking($conn, $sanitizedData = null) {
     $validationStatus = 'Menunggu Validasi';
     $paymentStatus    = 'Menunggu Validasi';
 
-    // ── 9. Build ID ────────────────────────────────────────────────────────────
-    $id = date('Ymd') . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+    // ── 9. Build ID (Numeric for bigint compatibility) ───────────────────────
+    $id = date('Ymd') . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 
     // ── 10. Handle image uploads (validated) ──────────────────────────────────
     $paymentProof = $b['paymentProof'] ?? '';
@@ -418,7 +418,7 @@ function createBooking($conn, $sanitizedData = null) {
 
     $selectedSeats       = isset($b['selectedSeats']) ? json_encode($b['selectedSeats']) : json_encode([]);
     $transferSentDate    = !empty($b['transferSentDate'])   ? mb_substr($b['transferSentDate'],   0, 20)  : null;
-    $destinationAccount  = !empty($b['destinationAccount']) ? mb_substr($b['destinationAccount'], 0, 100) : null;
+    $destinationAccount  = !empty($b['destinationAccount']) ? mb_substr($b['destinationAccount'], 0, 50) : null;
     $routeName           = $routeObj['origin'] . ' - ' . $routeObj['destination'];
     $serviceType         = 'Travel';
     $inputDate           = date('Y-m-d H:i:s');

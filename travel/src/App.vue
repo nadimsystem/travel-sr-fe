@@ -1,9 +1,12 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import BookingList from './components/BookingList.vue'
-import BookingForm from './components/BookingForm.vue'
-import BookingHistory from './components/BookingHistory.vue'
+import { ref, computed, onMounted, defineAsyncComponent } from 'vue'
 import LandingPage from './components/LandingPage.vue'
+
+// Lazy load heavy components so they don't block initial page load
+const BookingList = defineAsyncComponent(() => import('./components/BookingList.vue'))
+const BookingForm = defineAsyncComponent(() => import('./components/BookingForm.vue'))
+const BookingHistory = defineAsyncComponent(() => import('./components/BookingHistory.vue'))
+const FloatingWhatsApp = defineAsyncComponent(() => import('./components/FloatingWhatsApp.vue'))
 
 const currentPage = ref('landing') // 'landing', 'list', 'form', 'history'
 
@@ -79,17 +82,26 @@ const goBack = () => {
       <!-- Main Content -->
       <main class="main-content bg-slate-50 min-h-screen" :class="{'pt-0': currentPage === 'landing'}">
         <div class="container mx-auto max-w-2xl px-0 md:px-0 pb-24">
-          <transition name="page" mode="out-in">
-            <LandingPage v-if="currentPage === 'landing'" @navigate="switchPage" />
-            <BookingList v-else-if="currentPage === 'list'" />
-            <BookingForm v-else-if="currentPage === 'form'" @booking-created="handleBookingCreated" @go-home="switchPage('landing')" />
-            <BookingHistory v-else-if="currentPage === 'history'" :key="historyKey" @go-to-booking="switchPage('form')" />
-          </transition>
+          <Suspense>
+            <transition name="page" mode="out-in">
+              <LandingPage v-if="currentPage === 'landing'" @navigate="switchPage" />
+              <BookingList v-else-if="currentPage === 'list'" />
+              <BookingForm v-else-if="currentPage === 'form'" @booking-created="handleBookingCreated" @go-home="switchPage('landing')" />
+              <BookingHistory v-else-if="currentPage === 'history'" :key="historyKey" @go-to-booking="switchPage('form')" />
+            </transition>
+            
+            <template #fallback>
+              <div class="flex flex-col items-center justify-center min-h-[50vh] text-[#86868b] animate-pulse gap-3">
+                 <div class="w-8 h-8 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                 <p class="font-medium text-sm">Memuat...</p>
+              </div>
+            </template>
+          </Suspense>
         </div>
       </main>
 
       <!-- Bottom Navigation: Mobile Only -->
-      <div class="bottom-nav-container md:hidden">
+      <div class="bottom-nav-container md:hidden" v-if="currentPage !== 'form'">
         <nav class="bottom-nav">
           <!-- Item 1: Home (Back to Landing) -->
           <a href="#" class="nav-item" :class="{ active: currentPage === 'landing' }" @click.prevent="switchPage('landing')">
@@ -108,6 +120,9 @@ const goBack = () => {
           </a>
         </nav>
       </div>
+      
+      <!-- Global Floating WhatsApp -->
+      <FloatingWhatsApp />
     </div>
   </div>
 </template>
@@ -115,16 +130,18 @@ const goBack = () => {
 <style scoped>
 .app-container {
   min-height: 100vh;
-  background-color: #f8fafc;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #fcfcfc;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1d1d1f;
+  -webkit-font-smoothing: antialiased;
 }
 
 .app-header {
   height: 64px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 40;
@@ -142,21 +159,38 @@ const goBack = () => {
   pointer-events: none;
 }
 
+/* Apple-Style Liquid Glass Bottom Navigation */
 .bottom-nav {
   pointer-events: auto;
   min-width: 200px;
-  height: 60px;
-  background: rgba(30, 41, 59, 0.95); /* slate-800 */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 30px;
+  height: 64px;
+  
+  /* Extremely sheer base background */
+  background: rgba(255, 255, 255, 0.25);
+  
+  /* High blur and saturation for the vibrant iOS glass feel */
+  backdrop-filter: blur(15px) saturate(250%) brightness(1.3);
+  -webkit-backdrop-filter: blur(35px) saturate(250%) brightness(1.1);
+  
+  /* Hairline borders simulating the glass edge */
+  border: 0.5px solid rgba(255, 255, 255, 0.4);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  
+  border-radius: 32px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
-  padding: 0 20px;
-  gap: 20px;
+  
+  /* Soft, diffused shadow for depth */
+  box-shadow: 
+    0 20px 40px -10px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  
+  padding: 0 16px;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
 }
 
 .bottom-nav .nav-item {
@@ -164,46 +198,54 @@ const goBack = () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   text-decoration: none;
-  color: #94a3b8; /* slate-400 */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Charcoal gray for high legibility, avoiding harsh solid black */
+  color: #333336; 
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   position: relative;
-  height: 100%;
-  padding: 0 12px;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 24px;
 }
 
 .bottom-nav .nav-item .icon-container {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     display: flex;
     align-items: center;
 }
 
 .bottom-nav .nav-item.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  color: #000000;
+  background: rgba(0, 0, 0, 0.05); /* very subtle dark glass tint */
+  /* Re-introducing a tiny, sharp white text shadow precisely for dark backgrounds */
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .bottom-nav .nav-item span {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-size: 0.85rem;
+  font-weight: 600; /* Apple prefers semibold over black/heavy */
+  letter-spacing: -0.3px; /* Signature Apple tight tracking */
 }
 
 /* Page Transitions */
-.page-enter-active,
+.page-enter-active {
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .page-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 1, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(16px) scale(0.99);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-8px) scale(0.99);
 }
 </style>
